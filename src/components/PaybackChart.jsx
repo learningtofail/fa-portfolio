@@ -27,17 +27,33 @@ export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, h
     svg.attr("width", width).attr("height", height);
 
     const x = d3.scaleLinear().domain([0, horizonMonths]).range([0, innerW]);
-    const yMax = Math.max(cac, d3.max(data, (d) => d.cumulative)) * 1.1;
+    const yMax =
+      Math.max(
+        cac,
+        d3.max(data, (d) => d.cumulative),
+      ) * 1.1;
     const y = d3.scaleLinear().domain([0, yMax]).range([innerH, 0]);
 
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
     g.append("g")
       .attr("transform", `translate(0,${innerH})`)
-      .call(d3.axisBottom(x).ticks(Math.min(horizonMonths, 12)).tickFormat((d) => `${d}mo`))
+      .call(
+        d3
+          .axisBottom(x)
+          .ticks(Math.min(horizonMonths, 12))
+          .tickFormat((d) => `${d}mo`),
+      )
       .attr("font-size", "0.75rem");
 
-    g.append("g").call(d3.axisLeft(y).ticks(5).tickFormat((d) => `$${d3.format(",.0f")(d)}`)).attr("font-size", "0.75rem");
+    g.append("g")
+      .call(
+        d3
+          .axisLeft(y)
+          .ticks(5)
+          .tickFormat((d) => `$${d3.format(",.0f")(d)}`),
+      )
+      .attr("font-size", "0.75rem");
 
     // CAC reference line
     g.append("line")
@@ -57,8 +73,15 @@ export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, h
       .text(`CAC: $${d3.format(",.0f")(cac)}`);
 
     // Cumulative gross profit line + area
-    const line = d3.line().x((d) => x(d.month)).y((d) => y(d.cumulative));
-    const area = d3.area().x((d) => x(d.month)).y0(innerH).y1((d) => y(d.cumulative));
+    const line = d3
+      .line()
+      .x((d) => x(d.month))
+      .y((d) => y(d.cumulative));
+    const area = d3
+      .area()
+      .x((d) => x(d.month))
+      .y0(innerH)
+      .y1((d) => y(d.cumulative));
 
     g.append("path").datum(data).attr("fill", "#3a5a9b").attr("opacity", 0.15).attr("d", area);
     g.append("path").datum(data).attr("fill", "none").attr("stroke", "#3a5a9b").attr("stroke-width", 2).attr("d", line);

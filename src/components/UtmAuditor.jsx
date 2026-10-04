@@ -27,7 +27,7 @@ function normalizeRow(row) {
   const keys = Object.keys(row).reduce((acc, k) => {
     acc[k.trim().toLowerCase()] = row[k];
     return acc;
-  }, {});
+  }, /** @type {Record<string, any>} */ ({}));
 
   if (keys.url) {
     return { url: keys.url, ...extractUtmFromUrl(keys.url) };
@@ -82,7 +82,7 @@ function auditRows(rows) {
 
   // Pass 3: duplicate tuple detection (same source+medium+campaign, different url)
   const tupleToUrls = {};
-  rows.forEach((row, i) => {
+  rows.forEach((row) => {
     if (!row.source || !row.medium || !row.campaign) return;
     const tuple = `${row.source.toLowerCase()}|${row.medium.toLowerCase()}|${row.campaign.toLowerCase()}`;
     tupleToUrls[tuple] = tupleToUrls[tuple] || new Set();
@@ -105,7 +105,12 @@ function auditRows(rows) {
         issues.push({ rowIndex, field, type: "whitespace", detail: `"${val}" contains whitespace` });
       }
       if (!VALID_CHARS.test(val)) {
-        issues.push({ rowIndex, field, type: "invalid_chars", detail: `"${val}" has characters outside [a-zA-Z0-9_-]` });
+        issues.push({
+          rowIndex,
+          field,
+          type: "invalid_chars",
+          detail: `"${val}" has characters outside [a-zA-Z0-9_-]`,
+        });
       }
     });
 
@@ -184,7 +189,9 @@ export default function UtmAuditor() {
         // so don't surface it as a warning. Only real errors get shown.
         const realErrors = (results.errors || []).filter((e) => e.type !== "Delimiter");
         if (realErrors.length > 0) {
-          setParseError(`Parsed with ${realErrors.length} warning(s) — results may be incomplete. First: ${realErrors[0].message}`);
+          setParseError(
+            `Parsed with ${realErrors.length} warning(s) — results may be incomplete. First: ${realErrors[0].message}`,
+          );
         }
         const normalized = results.data.map(normalizeRow);
         setRows(normalized);
@@ -238,11 +245,11 @@ export default function UtmAuditor() {
         }}
         onClick={() => fileInputRef.current?.click()}
       >
-        <p style={{ margin: 0 }}>
-          Drop a CSV here, or click to choose a file.
-        </p>
+        <p style={{ margin: 0 }}>Drop a CSV here, or click to choose a file.</p>
         <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "#666" }}>
-          Needs either a <code>url</code> column, or <code>utm_source</code> / <code>utm_medium</code> / <code>utm_campaign</code> columns (optionally <code>utm_term</code>, <code>utm_content</code>). Nothing you upload leaves this browser tab.
+          Needs either a <code>url</code> column, or <code>utm_source</code> / <code>utm_medium</code> /{" "}
+          <code>utm_campaign</code> columns (optionally <code>utm_term</code>, <code>utm_content</code>). Nothing you
+          upload leaves this browser tab.
         </p>
         <input
           ref={fileInputRef}
@@ -256,12 +263,18 @@ export default function UtmAuditor() {
       </div>
 
       {parseError && (
-        <p role="alert" style={{ color: "#b00020" }}>{parseError}</p>
+        <p role="alert" style={{ color: "#b00020" }}>
+          {parseError}
+        </p>
       )}
 
       {rows && (
         <>
-          <div aria-live="polite" aria-atomic="true" style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}
+          >
             <StatCard label="File" value={fileName} />
             <StatCard label="Rows" value={rows.length} />
             <StatCard label="Rows with issues" value={rowsWithIssues} />
@@ -293,6 +306,7 @@ export default function UtmAuditor() {
                     {issues.map((issue, i) => {
                       const row = rows[issue.rowIndex];
                       return (
+                        // eslint-disable-next-line react/no-array-index-key -- issues have no stable id; Phase 4
                         <tr key={i}>
                           <td style={tdStyle}>{issue.rowIndex + 1}</td>
                           <td style={tdStyle}>{row.source}</td>
@@ -325,5 +339,7 @@ function StatCard({ label, value }) {
   );
 }
 
+/** @type {import("react").CSSProperties} */
 const thStyle = { textAlign: "left", borderBottom: "2px solid #ccc", padding: "0.4rem 0.6rem" };
+/** @type {import("react").CSSProperties} */
 const tdStyle = { borderBottom: "1px solid #eee", padding: "0.4rem 0.6rem" };

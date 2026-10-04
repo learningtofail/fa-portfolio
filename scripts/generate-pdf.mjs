@@ -29,9 +29,11 @@ function ensureSpace(minHeight) {
 doc.fillColor(INK).font("Helvetica-Bold").fontSize(20).text(contact.name);
 doc.fillColor(ACCENT).font("Helvetica-Bold").fontSize(12).text(summary.headline);
 doc.moveDown(0.3);
-doc.fillColor(MUTED).font("Helvetica").fontSize(9.5).text(
-  `${contact.email}  |  ${contact.linkedin}  |  ${contact.phone}  |  ${contact.location}`
-);
+doc
+  .fillColor(MUTED)
+  .font("Helvetica")
+  .fontSize(9.5)
+  .text(`${contact.email}  |  ${contact.linkedin}  |  ${contact.phone}  |  ${contact.location}`);
 doc.moveDown(1);
 
 // Summary
@@ -47,13 +49,13 @@ doc.moveDown(1);
 function sectionHeader(title) {
   ensureSpace(30);
   doc.moveDown(0.3);
-  doc
-    .fillColor(ACCENT)
-    .font("Helvetica-Bold")
-    .fontSize(13)
-    .text(title.toUpperCase(), { characterSpacing: 0.5 });
+  doc.fillColor(ACCENT).font("Helvetica-Bold").fontSize(13).text(title.toUpperCase(), { characterSpacing: 0.5 });
   const y = doc.y + 2;
-  doc.moveTo(doc.page.margins.left, y).lineTo(doc.page.width - doc.page.margins.right, y).strokeColor("#dddddd").stroke();
+  doc
+    .moveTo(doc.page.margins.left, y)
+    .lineTo(doc.page.width - doc.page.margins.right, y)
+    .strokeColor("#dddddd")
+    .stroke();
   doc.moveDown(0.6);
 }
 
@@ -117,7 +119,9 @@ doc
   .fillColor(INK)
   .font("Helvetica")
   .fontSize(9.5)
-  .text("Interactive marketing tools (UTM auditor, GTM auditor, CAC/LTV calculator, attribution modeling, disclosure checker) are live at portfolio.faysalahmed.ca/tools/ — client-side, not reproducible in a static PDF.");
+  .text(
+    "Interactive marketing tools (UTM auditor, GTM auditor, CAC/LTV calculator, attribution modeling, disclosure checker) are live at portfolio.faysalahmed.ca/tools/ — client-side, not reproducible in a static PDF.",
+  );
 
 doc.end();
 

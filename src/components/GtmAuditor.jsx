@@ -74,7 +74,12 @@ function auditContainer(json) {
     findings: [
       { key: "paused_tags", label: "Paused tags", items: pausedTags.map((t) => t.name), type: "tag" },
       { key: "orphan_tags", label: "Tags with no firing trigger", items: orphanTags.map((t) => t.name), type: "tag" },
-      { key: "unused_variables", label: "Unused variables", items: unusedVariables.map((v) => v.name), type: "variable" },
+      {
+        key: "unused_variables",
+        label: "Unused variables",
+        items: unusedVariables.map((v) => v.name),
+        type: "variable",
+      },
       { key: "unused_triggers", label: "Unused triggers", items: unusedTriggers.map((t) => t.name), type: "trigger" },
       {
         key: "duplicate_names",
@@ -112,7 +117,7 @@ export default function GtmAuditor() {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const json = JSON.parse(reader.result);
+        const json = JSON.parse(String(reader.result));
         const audit = auditContainer(json);
         setResult(audit);
       } catch (err) {
@@ -135,9 +140,7 @@ export default function GtmAuditor() {
     if (file) handleFile(file);
   };
 
-  const chartData = result
-    ? result.findings.map((f) => ({ label: f.label, value: f.items.length }))
-    : [];
+  const chartData = result ? result.findings.map((f) => ({ label: f.label, value: f.items.length })) : [];
   const totalIssues = result ? result.findings.reduce((sum, f) => sum + f.items.length, 0) : 0;
 
   return (
@@ -167,14 +170,30 @@ export default function GtmAuditor() {
         <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "#666" }}>
           Export from GTM: Admin &rarr; Export Container. Nothing you upload leaves this browser tab.
         </p>
-        <input ref={fileInputRef} type="file" accept=".json,application/json" onChange={onInputChange} tabIndex={-1} aria-hidden="true" style={{ display: "none" }} />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={onInputChange}
+          tabIndex={-1}
+          aria-hidden="true"
+          style={{ display: "none" }}
+        />
       </div>
 
-      {error && <p role="alert" style={{ color: "#b00020" }}>{error}</p>}
+      {error && (
+        <p role="alert" style={{ color: "#b00020" }}>
+          {error}
+        </p>
+      )}
 
       {result && (
         <>
-          <div aria-live="polite" aria-atomic="true" style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}
+          >
             <StatCard label="File" value={fileName} />
             <StatCard label="Tags" value={result.counts.tags} />
             <StatCard label="Triggers" value={result.counts.triggers} />
@@ -191,9 +210,12 @@ export default function GtmAuditor() {
                 .filter((f) => f.items.length > 0)
                 .map((f) => (
                   <div key={f.key} style={{ marginTop: "1.5rem" }}>
-                    <h3 style={{ marginBottom: "0.4rem" }}>{f.label} ({f.items.length})</h3>
+                    <h3 style={{ marginBottom: "0.4rem" }}>
+                      {f.label} ({f.items.length})
+                    </h3>
                     <ul>
                       {f.items.map((item, i) => (
+                        // eslint-disable-next-line react/no-array-index-key -- items are plain strings that can repeat; Phase 4
                         <li key={i}>{item}</li>
                       ))}
                     </ul>
@@ -201,7 +223,10 @@ export default function GtmAuditor() {
                 ))}
             </>
           ) : (
-            <p>No hygiene issues found across {result.counts.tags} tags, {result.counts.triggers} triggers, and {result.counts.variables} variables.</p>
+            <p>
+              No hygiene issues found across {result.counts.tags} tags, {result.counts.triggers} triggers, and{" "}
+              {result.counts.variables} variables.
+            </p>
           )}
         </>
       )}

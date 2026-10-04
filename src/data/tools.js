@@ -5,7 +5,8 @@ export const tools = [
   {
     slug: "utm-auditor",
     name: "UTM Governance Auditor",
-    description: "Upload a CSV of URLs or UTM parameters and audit them for governance drift — missing fields, casing inconsistency, invalid characters, duplicate campaign definitions.",
+    description:
+      "Upload a CSV of URLs or UTM parameters and audit them for governance drift — missing fields, casing inconsistency, invalid characters, duplicate campaign definitions.",
     live: true,
   },
   {

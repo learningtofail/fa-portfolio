@@ -26,7 +26,11 @@ export default function GroupedBarChart({ data, seriesKeys }) {
     svg.selectAll("*").remove();
     svg.attr("width", width).attr("height", height);
 
-    const x0 = d3.scaleBand().domain(data.map((d) => d.group)).range([0, innerW]).paddingInner(0.3);
+    const x0 = d3
+      .scaleBand()
+      .domain(data.map((d) => d.group))
+      .range([0, innerW])
+      .paddingInner(0.3);
     const x1 = d3.scaleBand().domain(seriesKeys).range([0, x0.bandwidth()]).padding(0.08);
     const maxVal = d3.max(data, (d) => d3.max(d.series, (s) => s.value)) || 1;
     const y = d3.scaleLinear().domain([0, maxVal]).nice().range([innerH, 0]);

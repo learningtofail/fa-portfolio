@@ -37,46 +37,123 @@ export default function CacCalculator() {
     const paybackMonths = monthlyGrossProfit > 0 ? cac / monthlyGrossProfit : NaN;
     const horizonMonths = Math.max(12, Math.ceil(Math.min(lifespanMonths, paybackMonths * 2 || 12)));
 
-    return { cac, monthlyGrossProfit, lifespanMonths, ltv, ltvCacRatio, paybackMonths, horizonMonths, usedCappedLifespan: churnPct <= 0 };
+    return {
+      cac,
+      monthlyGrossProfit,
+      lifespanMonths,
+      ltv,
+      ltvCacRatio,
+      paybackMonths,
+      horizonMonths,
+      usedCappedLifespan: churnPct <= 0,
+    };
   }, [spend, newCustomers, avgRevenue, grossMarginPct, churnPct]);
 
   const health = ltvCacHealth(results.ltvCacRatio);
 
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 900 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "1rem",
+          marginBottom: "1.5rem",
+        }}
+      >
         <div style={fieldStyle}>
-          <label htmlFor="cac-spend" style={labelStyle}>Total sales &amp; marketing spend ($)</label>
-          <input id="cac-spend" type="number" min="0" value={spend} onChange={(e) => setSpend(Number(e.target.value))} style={inputStyle} />
+          <label htmlFor="cac-spend" style={labelStyle}>
+            Total sales &amp; marketing spend ($)
+          </label>
+          <input
+            id="cac-spend"
+            type="number"
+            min="0"
+            value={spend}
+            onChange={(e) => setSpend(Number(e.target.value))}
+            style={inputStyle}
+          />
         </div>
         <div style={fieldStyle}>
-          <label htmlFor="cac-customers" style={labelStyle}>New customers acquired</label>
-          <input id="cac-customers" type="number" min="0" value={newCustomers} onChange={(e) => setNewCustomers(Number(e.target.value))} style={inputStyle} />
+          <label htmlFor="cac-customers" style={labelStyle}>
+            New customers acquired
+          </label>
+          <input
+            id="cac-customers"
+            type="number"
+            min="0"
+            value={newCustomers}
+            onChange={(e) => setNewCustomers(Number(e.target.value))}
+            style={inputStyle}
+          />
         </div>
         <div style={fieldStyle}>
-          <label htmlFor="cac-revenue" style={labelStyle}>Average revenue per customer / month ($)</label>
-          <input id="cac-revenue" type="number" min="0" value={avgRevenue} onChange={(e) => setAvgRevenue(Number(e.target.value))} style={inputStyle} />
+          <label htmlFor="cac-revenue" style={labelStyle}>
+            Average revenue per customer / month ($)
+          </label>
+          <input
+            id="cac-revenue"
+            type="number"
+            min="0"
+            value={avgRevenue}
+            onChange={(e) => setAvgRevenue(Number(e.target.value))}
+            style={inputStyle}
+          />
         </div>
         <div style={fieldStyle}>
-          <label htmlFor="cac-margin" style={labelStyle}>Gross margin (%)</label>
-          <input id="cac-margin" type="number" min="0" max="100" value={grossMarginPct} onChange={(e) => setGrossMarginPct(Number(e.target.value))} style={inputStyle} />
+          <label htmlFor="cac-margin" style={labelStyle}>
+            Gross margin (%)
+          </label>
+          <input
+            id="cac-margin"
+            type="number"
+            min="0"
+            max="100"
+            value={grossMarginPct}
+            onChange={(e) => setGrossMarginPct(Number(e.target.value))}
+            style={inputStyle}
+          />
         </div>
         <div style={fieldStyle}>
-          <label htmlFor="cac-churn" style={labelStyle}>Monthly churn rate (%) — 0 assumes a 60-month cap</label>
-          <input id="cac-churn" type="number" min="0" max="100" step="0.1" value={churnPct} onChange={(e) => setChurnPct(Number(e.target.value))} style={inputStyle} />
+          <label htmlFor="cac-churn" style={labelStyle}>
+            Monthly churn rate (%) — 0 assumes a 60-month cap
+          </label>
+          <input
+            id="cac-churn"
+            type="number"
+            min="0"
+            max="100"
+            step="0.1"
+            value={churnPct}
+            onChange={(e) => setChurnPct(Number(e.target.value))}
+            style={inputStyle}
+          />
         </div>
       </div>
 
-      <div aria-live="polite" aria-atomic="true" style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}
+      >
         <StatCard label="CAC" value={isFinite(results.cac) ? `$${results.cac.toFixed(2)}` : "—"} />
         <StatCard label="LTV" value={isFinite(results.ltv) ? `$${results.ltv.toFixed(2)}` : "—"} />
-        <StatCard label="LTV:CAC" value={isFinite(results.ltvCacRatio) ? `${results.ltvCacRatio.toFixed(2)}:1` : "—"} sub={health.label} subColor={health.color} />
-        <StatCard label="Payback period" value={isFinite(results.paybackMonths) ? `${results.paybackMonths.toFixed(1)} months` : "—"} />
+        <StatCard
+          label="LTV:CAC"
+          value={isFinite(results.ltvCacRatio) ? `${results.ltvCacRatio.toFixed(2)}:1` : "—"}
+          sub={health.label}
+          subColor={health.color}
+        />
+        <StatCard
+          label="Payback period"
+          value={isFinite(results.paybackMonths) ? `${results.paybackMonths.toFixed(1)} months` : "—"}
+        />
       </div>
 
       {results.usedCappedLifespan && (
         <p style={{ fontSize: "0.85rem", color: "#8a6408" }}>
-          Churn rate is 0 — lifespan is capped at 60 months for this calculation rather than treated as infinite. Set a real churn rate for an accurate LTV.
+          Churn rate is 0 — lifespan is capped at 60 months for this calculation rather than treated as infinite. Set a
+          real churn rate for an accurate LTV.
         </p>
       )}
 
@@ -93,14 +170,15 @@ export default function CacCalculator() {
       )}
 
       <p style={{ fontSize: "0.8rem", color: "#6b6b6b", marginTop: "1.5rem" }}>
-        LTV:CAC benchmarks (3:1+ healthy, below 1:1 losing money per customer) are common SaaS
-        rules of thumb, not universal targets — capital-intensive or long-sales-cycle businesses
-        read differently. All calculations happen in this browser tab; nothing is sent anywhere.
+        LTV:CAC benchmarks (3:1+ healthy, below 1:1 losing money per customer) are common SaaS rules of thumb, not
+        universal targets — capital-intensive or long-sales-cycle businesses read differently. All calculations happen
+        in this browser tab; nothing is sent anywhere.
       </p>
     </div>
   );
 }
 
+/** @param {{ label: string, value: string, sub?: string, subColor?: string }} props */
 function StatCard({ label, value, sub, subColor }) {
   return (
     <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: "0.75rem 1rem", minWidth: 150 }}>

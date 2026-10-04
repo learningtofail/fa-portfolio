@@ -5,13 +5,15 @@
 
 export const meta = {
   title: "Faysal Ahmed — VP of SEO & Organic Growth",
-  description: "22 years turning organic search into a growth engine — technical SEO, marketing analytics, and embedded product leadership, in-house and agency.",
+  description:
+    "22 years turning organic search into a growth engine — technical SEO, marketing analytics, and embedded product leadership, in-house and agency.",
 };
 
 export const summary = {
   name: "Faysal Ahmed",
   headline: "VP of SEO & Organic Growth",
-  subhead: "22 years turning organic search into a growth engine — technical SEO, marketing analytics, and embedded product leadership, in-house and agency.",
+  subhead:
+    "22 years turning organic search into a growth engine — technical SEO, marketing analytics, and embedded product leadership, in-house and agency.",
   // Off by default so the build never references a file that doesn't exist yet.
   // To add a real photo (Phase 9): drop it at public/headshot.jpg — square-ish
   // crop, at least 480x480, shoulders-up — then flip enabled to true.
@@ -34,7 +36,8 @@ export const experience = [
     location: "Mississauga, ON",
     role: "Director, SEO — Consumer Marketing & Organic Product Lead",
     dates: "June 2023 – June 2026",
-    intro: "Recruited to reverse a 20–25% year-over-year organic traffic decline at Canada's largest automotive marketplace. Operated at the intersection of technical product management, engineering governance, and multi-channel marketing across 5–6M indexed URLs and 10M+ monthly sessions on both the English (autotrader.ca) and French (autohebdo.net) properties.",
+    intro:
+      "Recruited to reverse a 20–25% year-over-year organic traffic decline at Canada's largest automotive marketplace. Operated at the intersection of technical product management, engineering governance, and multi-channel marketing across 5–6M indexed URLs and 10M+ monthly sessions on both the English (autotrader.ca) and French (autohebdo.net) properties.",
     bulletGroups: [
       {
         label: "Scope & leadership",
@@ -54,13 +57,15 @@ export const experience = [
         ],
       },
     ],
-    closing: "AutoScout24 acquired Trader Corporation at the end of 2024. The Canadian SEO engineering squad was sunset and merged into European engineering during a 2025–2026 restructuring; left cleanly on June 24, 2026, concluding a successful 3-year tenure.",
+    closing:
+      "AutoScout24 acquired Trader Corporation at the end of 2024. The Canadian SEO engineering squad was sunset and merged into European engineering during a 2025–2026 restructuring; left cleanly on June 24, 2026, concluding a successful 3-year tenure.",
   },
   {
     company: "Self-Employed — Independent Digital Marketing Consultant",
     location: "",
     role: "",
-    dates: "April 2007 – April 2019, and June 2023 – Present (concurrent with Trader Corporation, disclosed to employer of record)",
+    dates:
+      "April 2007 – April 2019, and June 2023 – Present (concurrent with Trader Corporation, disclosed to employer of record)",
     bulletGroups: [
       {
         bullets: [
@@ -141,18 +146,21 @@ export const experience = [
     location: "",
     role: "",
     dates: "2004 – 2013",
-    prose: "Foundation years spanning freelance graphic design and web development, a marketing coordinator contract rebuilding a firm's web infrastructure on WordPress, and early roles in technical support and client services.",
+    prose:
+      "Foundation years spanning freelance graphic design and web development, a marketing coordinator contract rebuilding a firm's web infrastructure on WordPress, and early roles in technical support and client services.",
   },
 ];
 
 export const skills = [
   {
     category: "Technical SEO & Localization",
-    items: "Crawl & indexation, site architecture, canonicalization, hreflang & internationalization at enterprise scale, Core Web Vitals (LCP, CLS, INP), JS rendering optimization, schema markup, faceted navigation. Tools: Google Search Console, Screaming Frog, Lumar (DeepCrawl), Ryte, plus the certified platforms below.",
+    items:
+      "Crawl & indexation, site architecture, canonicalization, hreflang & internationalization at enterprise scale, Core Web Vitals (LCP, CLS, INP), JS rendering optimization, schema markup, faceted navigation. Tools: Google Search Console, Screaming Frog, Lumar (DeepCrawl), Ryte, plus the certified platforms below.",
   },
   {
     category: "Analytics & BI",
-    items: "GA4/UA, Adobe Analytics, Piwik/Matomo, Looker Studio, Looker, Power BI, Tableau, GTM, A/B testing & statistical CRO analysis.",
+    items:
+      "GA4/UA, Adobe Analytics, Piwik/Matomo, Looker Studio, Looker, Power BI, Tableau, GTM, A/B testing & statistical CRO analysis.",
   },
   {
     category: "Data & Scripting",
@@ -160,7 +168,8 @@ export const skills = [
   },
   {
     category: "Product & Operations",
-    items: "Jira & Confluence sprint administration, Stack Rank executive business cases, SOW/WBS scheduling, Agile workflow governance, cross-functional leadership.",
+    items:
+      "Jira & Confluence sprint administration, Stack Rank executive business cases, SOW/WBS scheduling, Agile workflow governance, cross-functional leadership.",
   },
   {
     category: "Regulated Marketing",
@@ -176,11 +185,13 @@ export const skills = [
   },
   {
     category: "Certifications",
-    items: "Ahrefs, SEMrush, SEO Clarity, BrightEdge (platform certifications). Humber College: Business Administration Diploma, Marketing Diploma, Business Analyst Certificate, Project Management Certificate.",
+    items:
+      "Ahrefs, SEMrush, SEO Clarity, BrightEdge (platform certifications). Humber College: Business Administration Diploma, Marketing Diploma, Business Analyst Certificate, Project Management Certificate.",
   },
 ];
 
-export const toolsIntro = "A few things built to put this skill set to work: live, interactive, and client-side — nothing you upload leaves your browser.";
+export const toolsIntro =
+  "A few things built to put this skill set to work: live, interactive, and client-side — nothing you upload leaves your browser.";
 
 export const contact = {
   name: "Faysal Ahmed",

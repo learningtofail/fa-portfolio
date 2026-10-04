@@ -2,17 +2,26 @@
 import Base from "../../layouts/Base.astro";
 import { tools } from "../../data/tools.js";
 ---
+
 <Base title="Tools — Faysal Ahmed">
-  <main id="main-content" tabindex="-1" style="font-family: system-ui, sans-serif; max-width: 720px; margin: 4rem auto; padding: 0 1.5rem;">
+  <main
+    id="main-content"
+    tabindex="-1"
+    style="font-family: system-ui, sans-serif; max-width: 720px; margin: 4rem auto; padding: 0 1.5rem;"
+  >
     <h1>Tools</h1>
     <p>Client-side only — nothing you upload leaves your browser.</p>
     <ul style="list-style: none; padding: 0;">
       {tools.map((tool) => (
         <li style="margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 8px;">
           {tool.live ? (
-            <a href={`/tools/${tool.slug}/`}><strong>{tool.name}</strong></a>
+            <a href={`/tools/${tool.slug}/`}>
+              <strong>{tool.name}</strong>
+            </a>
           ) : (
-            <span><strong>{tool.name}</strong> <em>(coming soon)</em></span>
+            <span>
+              <strong>{tool.name}</strong> <em>(coming soon)</em>
+            </span>
           )}
           <p style="margin: 0.5rem 0 0;">{tool.description}</p>
         </li>
