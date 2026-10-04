@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Astro 4 static site with React 18 islands. See `docs/architecture.md` for the current design.
+Astro 7 static site with React 19 islands. See `docs/architecture.md` for the current design.
 
 ## Commands
 

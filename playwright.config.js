@@ -18,7 +18,9 @@ export default defineConfig({
     launchOptions: { executablePath },
   },
   webServer: {
-    command: `npm run preview -- --host 127.0.0.1 --port ${PORT}`,
+    // Astro 7 detaches `preview` into a background daemon in some environments, which
+    // Playwright reads as an early exit. --ignore-lock keeps it in the foreground.
+    command: `npm run preview -- --host 127.0.0.1 --port ${PORT} --ignore-lock`,
     url: `http://127.0.0.1:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

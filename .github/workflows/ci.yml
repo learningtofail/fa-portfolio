@@ -68,9 +68,8 @@ jobs:
           retention-days: 7
 
   audit:
-    name: Dependency audit (non-blocking until Phase 1)
+    name: Dependency audit
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -83,7 +82,7 @@ jobs:
   deploy:
     name: Deploy
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [static, unit, build-e2e]
+    needs: [static, unit, build-e2e, audit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
