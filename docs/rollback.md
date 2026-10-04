@@ -13,6 +13,20 @@ Every deploy of `main` (`.github/workflows/ci.yml`, job `deploy`, script `script
 
 Caddy serves `/opt/static-web/sites/portfolio/current`. The one-time host setup is in `docs/caddy/Caddyfile.proposed.md`.
 
+## Roll back by hand on lxc-staticweb
+
+The quickest path, with no checkout needed. Run as root after `pct enter 105` on `srv-saraswati`:
+
+```bash
+cd /opt/static-web/sites/portfolio
+ls -1 releases                                      # names sort in deploy order; `readlink current` shows the live one
+ln -s releases/<previous-id> .current.tmp && mv -T -f .current.tmp current
+readlink current
+curl -sI -H 'Host: portfolio.faysalahmed.ca' http://127.0.0.1/ | head -n 1
+```
+
+The script-based rollback below needs a bash shell and a checkout (not Windows PowerShell).
+
 ## Roll back one release (the normal case)
 
 From any machine on the tailnet that has the deploy key, or from the host itself:
