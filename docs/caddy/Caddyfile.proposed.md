@@ -1,6 +1,6 @@
 # Proposed Caddy config for portfolio.faysalahmed.ca
 
-Status: **proposal, not applied.** This file holds the complete `/etc/caddy/Caddyfile` for the static host plus the exact host-side steps. The Phase 5 PR that carries it must not be merged until step 6 is done.
+Status: **proposal, not applied.** This file holds the complete `/etc/caddy/Caddyfile` for the static host plus the exact host-side steps. The Phase 5 PR that carries it must not be merged until steps 0 to 5 are done.
 
 ## What the host looks like (verified 2026-10-04)
 
@@ -86,7 +86,9 @@ The `www` block is included so the file is complete and drop-in. Its policy is m
 
 ## Host migration (do these in order, before merging the PR)
 
-Run everything **on `lxc-staticweb`** as root (`pct enter 105` from `srv-saraswati`). Steps 1 to 4 are designed so the live site never changes while you work, because `current` starts out pointing at an exact copy of the live files.
+Run everything **on `lxc-staticweb`** as root (`pct enter 105` from `srv-saraswati`). Steps 0 to 4 are designed so the live sites never change while you work, because `current` starts out pointing at an exact copy of the live files.
+
+**Important: the Caddyfile covers both sites, so applying it switches both roots to `current` at once. Do steps 0 and 1 for BOTH sites (`www` and `portfolio`) before step 3.** Otherwise the site whose `current` is missing returns 404.
 
 **0. Find the deploy owner and back up the Caddyfile.**
 
@@ -97,7 +99,7 @@ awk -F: '$3==1001 {print $1}' /etc/passwd        # its user name, if it has one
 cp /etc/caddy/Caddyfile "/etc/caddy/Caddyfile.bak-$(date +%F)"
 ```
 
-**1. Create the release layout, keeping the live files serving.**
+**1. Create the release layout, keeping the live files serving. Repeat for the other site (replace `portfolio` with `www` in every path).**
 
 ```bash
 cd /opt/static-web/sites/portfolio
@@ -152,7 +154,7 @@ curl -sI https://portfolio.faysalahmed.ca/ | grep -iE '^(HTTP|content-security|x
 
 Open the site in a browser with DevTools and confirm the console shows no `[Report Only]` violations. Open `https://www.faysalahmed.ca` and confirm the Tools window still loads the tools in their iframes (the portfolio's `frame-ancestors` rule must allow it). Add the Uptime Kuma keyword check from `docs/rollback.md` now.
 
-**5. Migrate the other site the same way** (its repo has the matching doc). Both sites share this Caddyfile, so if you applied the whole file above, only its `current` symlink and secret remain for the other site. Do not merge either Phase 5 PR until its own site has `releases/legacy`, `current`, and the `SSH_KNOWN_HOSTS` secret.
+**5. Create the other site's `SSH_KNOWN_HOSTS` secret** in its repo, with the same line from step 2 (the `production` environment too). The Caddyfile is already applied for both sites; each site's deploys start working once its own PR is merged. Do not merge either Phase 5 PR until that site has `releases/legacy`, `current`, and its secret.
 
 **6. Merge the Phase 5 PR.** The deploy job writes `releases/<id>/`, switches `current`, and keeps the last five. Skip the local dry run: it needs a bash checkout, and a failed first deploy is harmless because it stops before switching `current`. Watch the Deploy job, then:
 
