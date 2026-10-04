@@ -227,7 +227,7 @@ export default function UtmAuditor() {
   }));
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 900 }}>
+    <div className="tool">
       <div
         onDrop={onDrop}
         onDragOver={(e) => e.preventDefault()}
@@ -239,18 +239,11 @@ export default function UtmAuditor() {
             fileInputRef.current?.click();
           }
         }}
-        style={{
-          border: "2px dashed #999",
-          borderRadius: 8,
-          padding: "2rem",
-          textAlign: "center",
-          marginBottom: "1.5rem",
-          cursor: "pointer",
-        }}
+        className="dropzone"
         onClick={() => fileInputRef.current?.click()}
       >
-        <p style={{ margin: 0 }}>Drop a CSV here, or click to choose a file.</p>
-        <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "#666" }}>
+        <p className="dropzone__title">Drop a CSV here, or click to choose a file.</p>
+        <p className="dropzone__hint">
           Needs either a <code>url</code> column, or <code>utm_source</code> / <code>utm_medium</code> /{" "}
           <code>utm_campaign</code> columns (optionally <code>utm_term</code>, <code>utm_content</code>). Nothing you
           upload leaves this browser tab.
@@ -262,23 +255,19 @@ export default function UtmAuditor() {
           onChange={onInputChange}
           tabIndex={-1}
           aria-hidden="true"
-          style={{ display: "none" }}
+          className="dropzone__input"
         />
       </div>
 
       {parseError && (
-        <p role="alert" style={{ color: "#b00020" }}>
+        <p role="alert" className="notice notice--error">
           {parseError}
         </p>
       )}
 
       {rows && (
         <>
-          <div
-            aria-live="polite"
-            aria-atomic="true"
-            style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}
-          >
+          <div aria-live="polite" aria-atomic="true" className="stat-row">
             <StatCard label="File" value={fileName} />
             <StatCard label="Rows" value={rows.length} />
             <StatCard label="Rows with issues" value={rowsWithIssues} />
@@ -293,17 +282,17 @@ export default function UtmAuditor() {
               <h2>Issues by category</h2>
               <BarChart data={issueCounts} />
 
-              <h2 style={{ marginTop: "2rem" }}>Flagged rows</h2>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ borderCollapse: "collapse", width: "100%", fontSize: "0.85rem" }}>
+              <h2 className="heading--spaced">Flagged rows</h2>
+              <div className="data-table__scroll">
+                <table className="data-table">
                   <thead>
                     <tr>
-                      <th style={thStyle}>Row</th>
-                      <th style={thStyle}>Source</th>
-                      <th style={thStyle}>Medium</th>
-                      <th style={thStyle}>Campaign</th>
-                      <th style={thStyle}>Issue</th>
-                      <th style={thStyle}>Detail</th>
+                      <th>Row</th>
+                      <th>Source</th>
+                      <th>Medium</th>
+                      <th>Campaign</th>
+                      <th>Issue</th>
+                      <th>Detail</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -312,12 +301,12 @@ export default function UtmAuditor() {
                       return (
                         // eslint-disable-next-line react/no-array-index-key -- issues have no stable id; Phase 4
                         <tr key={i}>
-                          <td style={tdStyle}>{issue.rowIndex + 1}</td>
-                          <td style={tdStyle}>{row.source}</td>
-                          <td style={tdStyle}>{row.medium}</td>
-                          <td style={tdStyle}>{row.campaign}</td>
-                          <td style={tdStyle}>{ISSUE_LABELS[issue.type]}</td>
-                          <td style={tdStyle}>{issue.detail}</td>
+                          <td>{issue.rowIndex + 1}</td>
+                          <td>{row.source}</td>
+                          <td>{row.medium}</td>
+                          <td>{row.campaign}</td>
+                          <td>{ISSUE_LABELS[issue.type]}</td>
+                          <td>{issue.detail}</td>
                         </tr>
                       );
                     })}
@@ -336,14 +325,9 @@ export default function UtmAuditor() {
 
 function StatCard({ label, value }) {
   return (
-    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: "0.75rem 1rem", minWidth: 120 }}>
-      <div style={{ fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: "1.25rem", fontWeight: 600 }}>{value}</div>
+    <div className="stat-card">
+      <div className="stat-card__label">{label}</div>
+      <div className="stat-card__value">{value}</div>
     </div>
   );
 }
-
-/** @type {import("react").CSSProperties} */
-const thStyle = { textAlign: "left", borderBottom: "2px solid #ccc", padding: "0.4rem 0.6rem" };
-/** @type {import("react").CSSProperties} */
-const tdStyle = { borderBottom: "1px solid #eee", padding: "0.4rem 0.6rem" };

@@ -2,8 +2,8 @@ import { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import { useChartWidth } from "./useChartWidth.js";
 
-// Brand-neutral placeholder palette — swap for the site's palette in Phase 7.
-const PALETTE = ["#3a5a9b", "#5c9e6f", "#c9822a", "#a25c9b", "#4aa3a3"];
+/** Series are styled by `.chart__series--N` (chart.css), which reads `--chart-N`. Series beyond five repeat the palette. */
+const seriesClass = (/** @type {number} */ index) => `chart__series--${(index % 5) + 1}`;
 
 /**
  * Grouped bar chart. data: [{ group: string, series: [{ key, value }] }]
@@ -34,19 +34,19 @@ export default function GroupedBarChart({ data, seriesKeys }) {
     const x1 = d3.scaleBand().domain(seriesKeys).range([0, x0.bandwidth()]).padding(0.08);
     const maxVal = d3.max(data, (d) => d3.max(d.series, (s) => s.value)) || 1;
     const y = d3.scaleLinear().domain([0, maxVal]).nice().range([innerH, 0]);
-    const color = d3.scaleOrdinal().domain(seriesKeys).range(PALETTE);
+    const classFor = (/** @type {string} */ key) => seriesClass(seriesKeys.indexOf(key));
 
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
     g.append("g")
       .attr("transform", `translate(0,${innerH})`)
       .call(d3.axisBottom(x0))
-      .attr("font-size", "0.75rem")
+      .attr("class", "chart__axis")
       .selectAll("text")
       .attr("transform", "rotate(-20)")
-      .style("text-anchor", "end");
+      .attr("text-anchor", "end");
 
-    g.append("g").call(d3.axisLeft(y).ticks(5)).attr("font-size", "0.75rem");
+    g.append("g").call(d3.axisLeft(y).ticks(5)).attr("class", "chart__axis");
 
     const groupG = g
       .selectAll(".group")
@@ -63,38 +63,27 @@ export default function GroupedBarChart({ data, seriesKeys }) {
       .attr("y", (d) => y(d.value))
       .attr("width", x1.bandwidth())
       .attr("height", (d) => innerH - y(d.value))
-      .attr("fill", (d) => color(d.key))
+      .attr("class", (d) => classFor(d.key))
       .attr("rx", 2);
 
     // Legend
     const legend = d3.select(legendRef.current);
     legend.selectAll("*").remove();
     const legendItems = legend
-      .selectAll(".item")
+      .selectAll(".chart__legend-item")
       .data(seriesKeys)
       .join("div")
-      .style("display", "inline-flex")
-      .style("align-items", "center")
-      .style("margin-right", "1rem")
-      .style("font-size", "0.8rem")
-      .style("font-family", "system-ui, sans-serif");
+      .attr("class", "chart__legend-item");
 
-    legendItems
-      .append("span")
-      .style("display", "inline-block")
-      .style("width", "10px")
-      .style("height", "10px")
-      .style("border-radius", "2px")
-      .style("margin-right", "0.35rem")
-      .style("background", (d) => color(d));
+    legendItems.append("span").attr("class", (d) => `chart__swatch ${classFor(d)}`);
 
     legendItems.append("span").text((d) => d);
   }, [data, seriesKeys, width, containerRef]);
 
   return (
     // Decorative — every value here is also in the "Full matrix" table below it.
-    <div ref={containerRef} style={{ width: "100%" }} aria-hidden="true">
-      <div ref={legendRef} style={{ marginBottom: "0.5rem" }}></div>
+    <div ref={containerRef} className="chart" aria-hidden="true">
+      <div ref={legendRef} className="chart__legend"></div>
       <svg ref={svgRef}></svg>
     </div>
   );

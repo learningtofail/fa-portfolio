@@ -1,0 +1,45 @@
+/* Site tokens: semantic aliases over the vendored Orchis primitives plus the few values this site owns.
+   Hex literals are allowed in token files only (Stylelint color-no-hex ignores them). Component CSS
+   reads these names and never a raw color. Contrast notes are against white (WCAG 2.x):
+   grey-550 7.5:1, grey-600 9.7:1, accent 6.9:1, success 6.3:1, warning 5.4:1, danger 7.0:1. */
+:root {
+  --font-body: system-ui, -apple-system, sans-serif;
+
+  /* Text and lines, from the Orchis grey ladder. */
+  --ink: var(--grey-800);
+  --ink-soft: var(--grey-600);
+  --muted: var(--grey-550);
+  --line: var(--grey-200);
+  --line-strong: var(--grey-250);
+  --line-faint: var(--grey-150);
+  --dropzone-border: var(--grey-450);
+  --surface: var(--white);
+  --surface-nav: rgba(255, 255, 255, 0.92);
+  --surface-skip: var(--grey-800);
+  --on-surface-skip: var(--white);
+
+  /* Site accent and status colors. These are not Orchis colors on purpose: Orchis blue-light (3.84:1)
+     and sea-light fail AA as text on white, so the resume keeps its own darker, audited values. */
+  --accent: #3a5a9b;
+  --success: #216e3b;
+  --warning: #8a6408;
+  --danger: #b00020;
+  --focus-ring: var(--accent);
+
+  /* Chart series, in legend order. Charts read these through CSS classes, never from JS. */
+  --chart-1: #3a5a9b;
+  --chart-2: #5c9e6f;
+  --chart-3: #c9822a;
+  --chart-4: #a25c9b;
+  --chart-5: #4aa3a3;
+  --chart-zero: var(--grey-200);
+
+  /* Layout */
+  --max-width: 760px;
+  --page-max-tool: 960px;
+  --page-max-wide: 1040px;
+  --page-max-index: 720px;
+  --tool-max: 900px;
+  --tool-max-wide: 960px;
+  --radius-input: 4px;
+}

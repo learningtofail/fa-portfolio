@@ -146,7 +146,7 @@ export default function GtmAuditor() {
   const totalIssues = result ? result.findings.reduce((sum, f) => sum + f.items.length, 0) : 0;
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 900 }}>
+    <div className="tool">
       <div
         onDrop={onDrop}
         onDragOver={(e) => e.preventDefault()}
@@ -158,18 +158,11 @@ export default function GtmAuditor() {
             fileInputRef.current?.click();
           }
         }}
-        style={{
-          border: "2px dashed #999",
-          borderRadius: 8,
-          padding: "2rem",
-          textAlign: "center",
-          marginBottom: "1.5rem",
-          cursor: "pointer",
-        }}
+        className="dropzone"
         onClick={() => fileInputRef.current?.click()}
       >
-        <p style={{ margin: 0 }}>Drop a GTM container export (.json) here, or click to choose a file.</p>
-        <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "#666" }}>
+        <p className="dropzone__title">Drop a GTM container export (.json) here, or click to choose a file.</p>
+        <p className="dropzone__hint">
           Export from GTM: Admin &rarr; Export Container. Nothing you upload leaves this browser tab.
         </p>
         <input
@@ -179,23 +172,19 @@ export default function GtmAuditor() {
           onChange={onInputChange}
           tabIndex={-1}
           aria-hidden="true"
-          style={{ display: "none" }}
+          className="dropzone__input"
         />
       </div>
 
       {error && (
-        <p role="alert" style={{ color: "#b00020" }}>
+        <p role="alert" className="notice notice--error">
           {error}
         </p>
       )}
 
       {result && (
         <>
-          <div
-            aria-live="polite"
-            aria-atomic="true"
-            style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}
-          >
+          <div aria-live="polite" aria-atomic="true" className="stat-row">
             <StatCard label="File" value={fileName} />
             <StatCard label="Tags" value={result.counts.tags} />
             <StatCard label="Triggers" value={result.counts.triggers} />
@@ -211,8 +200,8 @@ export default function GtmAuditor() {
               {result.findings
                 .filter((f) => f.items.length > 0)
                 .map((f) => (
-                  <div key={f.key} style={{ marginTop: "1.5rem" }}>
-                    <h3 style={{ marginBottom: "0.4rem" }}>
+                  <div key={f.key} className="finding">
+                    <h3 className="finding__title">
                       {f.label} ({f.items.length})
                     </h3>
                     <ul>
@@ -238,9 +227,9 @@ export default function GtmAuditor() {
 
 function StatCard({ label, value }) {
   return (
-    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: "0.75rem 1rem", minWidth: 100 }}>
-      <div style={{ fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: "1.25rem", fontWeight: 600 }}>{value}</div>
+    <div className="stat-card stat-card--narrow">
+      <div className="stat-card__label">{label}</div>
+      <div className="stat-card__value">{value}</div>
     </div>
   );
 }

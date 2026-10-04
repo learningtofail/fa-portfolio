@@ -199,7 +199,7 @@ export default function AttributionTool() {
   const warnings = result ? revenueWarnings(result.revenueIssues) : [];
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 960 }}>
+    <div className="tool tool--wide">
       <div
         onDrop={onDrop}
         onDragOver={(e) => e.preventDefault()}
@@ -211,18 +211,11 @@ export default function AttributionTool() {
             fileInputRef.current?.click();
           }
         }}
-        style={{
-          border: "2px dashed #999",
-          borderRadius: 8,
-          padding: "2rem",
-          textAlign: "center",
-          marginBottom: "1.5rem",
-          cursor: "pointer",
-        }}
+        className="dropzone"
         onClick={() => fileInputRef.current?.click()}
       >
-        <p style={{ margin: 0 }}>Drop a touchpoint CSV here, or click to choose a file.</p>
-        <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "#666" }}>
+        <p className="dropzone__title">Drop a touchpoint CSV here, or click to choose a file.</p>
+        <p className="dropzone__hint">
           Columns: <code>journey_id</code>, <code>channel</code>, <code>timestamp</code>, optional <code>revenue</code>.
           One row per touchpoint. Nothing you upload leaves this browser tab.
         </p>
@@ -233,30 +226,26 @@ export default function AttributionTool() {
           onChange={onInputChange}
           tabIndex={-1}
           aria-hidden="true"
-          style={{ display: "none" }}
+          className="dropzone__input"
         />
       </div>
 
       {error && (
-        <p role="alert" style={{ color: "#b00020" }}>
+        <p role="alert" className="notice notice--error">
           {error}
         </p>
       )}
 
       {result && (
         <>
-          <div
-            aria-live="polite"
-            aria-atomic="true"
-            style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem", flexWrap: "wrap" }}
-          >
+          <div aria-live="polite" aria-atomic="true" className="stat-row stat-row--tight">
             <StatCard label="File" value={fileName} />
             <StatCard label="Journeys" value={result.journeyCount} />
             <StatCard label="Touchpoints" value={result.touchpointCount} />
             <StatCard label="Channels" value={result.channels.length} />
           </div>
 
-          <p style={{ fontSize: "0.85rem", color: "#666" }}>
+          <p className="hint">
             {usedRevenue
               ? "Weighted by the revenue column where present (count-weighted as a fallback for journeys with no revenue value)."
               : "No revenue column found — every journey is weighted as 1 conversion."}
@@ -278,27 +267,23 @@ export default function AttributionTool() {
           <h2>Credit by channel, across models</h2>
           {chartData && <GroupedBarChart data={chartData} seriesKeys={MODELS} />}
 
-          <h2 style={{ marginTop: "2rem" }}>Full matrix</h2>
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ borderCollapse: "collapse", width: "100%", fontSize: "0.85rem" }}>
+          <h2 className="heading--spaced">Full matrix</h2>
+          <div className="data-table__scroll">
+            <table className="data-table">
               <thead>
                 <tr>
-                  <th style={thStyle}>Channel</th>
+                  <th>Channel</th>
                   {MODELS.map((m) => (
-                    <th style={thStyle} key={m}>
-                      {m}
-                    </th>
+                    <th key={m}>{m}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {result.channels.map((channel) => (
                   <tr key={channel}>
-                    <td style={tdStyle}>{channel}</td>
+                    <td>{channel}</td>
                     {MODELS.map((m) => (
-                      <td style={tdStyle} key={m}>
-                        {(creditFor(result, m, channel) || 0).toFixed(2)}
-                      </td>
+                      <td key={m}>{(creditFor(result, m, channel) || 0).toFixed(2)}</td>
                     ))}
                   </tr>
                 ))}
@@ -313,14 +298,9 @@ export default function AttributionTool() {
 
 function StatCard({ label, value }) {
   return (
-    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: "0.75rem 1rem", minWidth: 120 }}>
-      <div style={{ fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: "1.25rem", fontWeight: 600 }}>{value}</div>
+    <div className="stat-card">
+      <div className="stat-card__label">{label}</div>
+      <div className="stat-card__value">{value}</div>
     </div>
   );
 }
-
-/** @type {import("react").CSSProperties} */
-const thStyle = { textAlign: "left", borderBottom: "2px solid #ccc", padding: "0.4rem 0.6rem" };
-/** @type {import("react").CSSProperties} */
-const tdStyle = { borderBottom: "1px solid #eee", padding: "0.4rem 0.6rem" };

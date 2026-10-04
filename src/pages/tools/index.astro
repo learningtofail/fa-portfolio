@@ -4,16 +4,12 @@ import { tools } from "../../data/tools.js";
 ---
 
 <Base title="Tools — Faysal Ahmed">
-  <main
-    id="main-content"
-    tabindex="-1"
-    style="font-family: system-ui, sans-serif; max-width: 720px; margin: 4rem auto; padding: 0 1.5rem;"
-  >
+  <main id="main-content" tabindex="-1" class="page page--index">
     <h1>Tools</h1>
     <p>Client-side only — nothing you upload leaves your browser.</p>
-    <ul style="list-style: none; padding: 0;">
+    <ul class="tool-list">
       {tools.map((tool) => (
-        <li style="margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 8px;">
+        <li class="tool-list__item">
           {tool.live ? (
             <a href={`/tools/${tool.slug}/`}>
               <strong>{tool.name}</strong>
@@ -23,7 +19,7 @@ import { tools } from "../../data/tools.js";
               <strong>{tool.name}</strong> <em>(coming soon)</em>
             </span>
           )}
-          <p style="margin: 0.5rem 0 0;">{tool.description}</p>
+          <p class="tool-list__text">{tool.description}</p>
         </li>
       ))}
     </ul>

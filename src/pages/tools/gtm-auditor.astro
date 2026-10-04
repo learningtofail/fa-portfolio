@@ -7,16 +7,12 @@ import GtmAuditor from "../../components/GtmAuditor.jsx";
   title="GTM Container Auditor — Faysal Ahmed"
   description="Upload a GTM container export and audit tag/trigger/variable hygiene, entirely in your browser."
 >
-  <main
-    id="main-content"
-    tabindex="-1"
-    style="font-family: system-ui, sans-serif; max-width: 960px; margin: 3rem auto; padding: 0 1.5rem;"
-  >
+  <main id="main-content" tabindex="-1" class="page">
     <p>
       <a href="/tools/">&larr; All tools</a>
     </p>
     <h1>GTM Container Auditor</h1>
-    <p style="color: #555; max-width: 640px;">
+    <p class="page__intro">
       Checks a GTM container export for the hygiene problems that accumulate in long-running containers: paused tags,
       tags with no firing trigger, unused variables and triggers, duplicate names, and generic default names nobody got
       around to renaming. Nothing you upload is sent anywhere — parsing and analysis happen entirely in this tab.

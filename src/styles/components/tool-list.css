@@ -1,0 +1,16 @@
+/* The /tools/ index. */
+.tool-list {
+  list-style: none;
+  padding: 0;
+}
+
+.tool-list__item {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.tool-list__text {
+  margin: 0.5rem 0 0;
+}

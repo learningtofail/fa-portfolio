@@ -1,16 +1,6 @@
 import { useState, useMemo } from "react";
 import PaybackChart from "./PaybackChart.jsx";
 
-const inputStyle = {
-  width: "100%",
-  padding: "0.5rem",
-  border: "1px solid #ccc",
-  borderRadius: 4,
-  fontSize: "1rem",
-};
-const labelStyle = { display: "block", fontSize: "0.85rem", color: "#444", marginBottom: "0.25rem" };
-const fieldStyle = { marginBottom: "1rem" };
-
 /** Lifespan assumed when churn is 0, so LTV stays finite. The input label and the warning both read this (D11). */
 export const CAPPED_LIFESPAN_MONTHS = 60;
 
@@ -28,9 +18,6 @@ export function ltvCacHealth(ratio) {
   if (ratio <= 5) return { label: "Healthy", tone: "good" };
   return { label: "Possibly under-investing in growth", tone: "warn" };
 }
-
-/** Presentation for each tone; Phase 3 replaces this lookup with CSS classes. */
-const TONE_COLORS = { good: "#216e3b", warn: "#8a6408", bad: "#b00020" };
 
 /** Parses a number input's string. An empty or non-numeric field is NaN, so results show dashes instead of 0. */
 const parseField = (/** @type {string} */ text) => (text.trim() === "" ? NaN : Number(text));
@@ -86,17 +73,10 @@ export default function CacCalculator() {
   const health = ltvCacHealth(results.ltvCacRatio);
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 900 }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <div style={fieldStyle}>
-          <label htmlFor="cac-spend" style={labelStyle}>
+    <div className="tool">
+      <div className="field-grid">
+        <div className="field">
+          <label htmlFor="cac-spend" className="field__label">
             Total sales &amp; marketing spend ($)
           </label>
           <input
@@ -105,11 +85,11 @@ export default function CacCalculator() {
             min="0"
             value={spend}
             onChange={(e) => setSpend(e.target.value)}
-            style={inputStyle}
+            className="field__input"
           />
         </div>
-        <div style={fieldStyle}>
-          <label htmlFor="cac-customers" style={labelStyle}>
+        <div className="field">
+          <label htmlFor="cac-customers" className="field__label">
             New customers acquired
           </label>
           <input
@@ -118,11 +98,11 @@ export default function CacCalculator() {
             min="0"
             value={newCustomers}
             onChange={(e) => setNewCustomers(e.target.value)}
-            style={inputStyle}
+            className="field__input"
           />
         </div>
-        <div style={fieldStyle}>
-          <label htmlFor="cac-revenue" style={labelStyle}>
+        <div className="field">
+          <label htmlFor="cac-revenue" className="field__label">
             Average revenue per customer / month ($)
           </label>
           <input
@@ -131,11 +111,11 @@ export default function CacCalculator() {
             min="0"
             value={avgRevenue}
             onChange={(e) => setAvgRevenue(e.target.value)}
-            style={inputStyle}
+            className="field__input"
           />
         </div>
-        <div style={fieldStyle}>
-          <label htmlFor="cac-margin" style={labelStyle}>
+        <div className="field">
+          <label htmlFor="cac-margin" className="field__label">
             Gross margin (%)
           </label>
           <input
@@ -145,11 +125,11 @@ export default function CacCalculator() {
             max="100"
             value={grossMarginPct}
             onChange={(e) => setGrossMarginPct(e.target.value)}
-            style={inputStyle}
+            className="field__input"
           />
         </div>
-        <div style={fieldStyle}>
-          <label htmlFor="cac-churn" style={labelStyle}>
+        <div className="field">
+          <label htmlFor="cac-churn" className="field__label">
             Monthly churn rate (%) — 0 assumes a {CAPPED_LIFESPAN_MONTHS}-month cap
           </label>
           <input
@@ -160,16 +140,12 @@ export default function CacCalculator() {
             step="0.1"
             value={churnPct}
             onChange={(e) => setChurnPct(e.target.value)}
-            style={inputStyle}
+            className="field__input"
           />
         </div>
       </div>
 
-      <div
-        aria-live="polite"
-        aria-atomic="true"
-        style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}
-      >
+      <div aria-live="polite" aria-atomic="true" className="stat-row">
         <StatCard label="CAC" value={isFinite(results.cac) ? `$${results.cac.toFixed(2)}` : "—"} />
         <StatCard label="LTV" value={isFinite(results.ltv) ? `$${results.ltv.toFixed(2)}` : "—"} />
         <StatCard
@@ -185,7 +161,7 @@ export default function CacCalculator() {
       </div>
 
       {results.usedCappedLifespan && (
-        <p style={{ fontSize: "0.85rem", color: "#8a6408" }}>
+        <p className="notice notice--warning">
           Churn rate is 0 — lifespan is capped at {CAPPED_LIFESPAN_MONTHS} months for this calculation rather than
           treated as infinite. Set a real churn rate for an accurate LTV.
         </p>
@@ -203,7 +179,7 @@ export default function CacCalculator() {
         </>
       )}
 
-      <p style={{ fontSize: "0.8rem", color: "#6b6b6b", marginTop: "1.5rem" }}>
+      <p className="fineprint">
         LTV:CAC benchmarks (3:1+ healthy, below 1:1 losing money per customer) are common SaaS rules of thumb, not
         universal targets — capital-intensive or long-sales-cycle businesses read differently. All calculations happen
         in this browser tab; nothing is sent anywhere.
@@ -215,14 +191,10 @@ export default function CacCalculator() {
 /** @param {{ label: string, value: string, sub?: string, tone?: Tone | null }} props */
 function StatCard({ label, value, sub, tone }) {
   return (
-    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: "0.75rem 1rem", minWidth: 150 }}>
-      <div style={{ fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: "1.25rem", fontWeight: 600 }}>{value}</div>
-      {sub && (
-        <div style={{ fontSize: "0.75rem", color: (tone && TONE_COLORS[tone]) || "#666", marginTop: "0.15rem" }}>
-          {sub}
-        </div>
-      )}
+    <div className="stat-card stat-card--wide">
+      <div className="stat-card__label">{label}</div>
+      <div className="stat-card__value">{value}</div>
+      {sub && <div className={tone ? `stat-card__sub stat-card__sub--${tone}` : "stat-card__sub"}>{sub}</div>}
     </div>
   );
 }

@@ -1,4 +1,10 @@
 ---
+import "../styles/orchis.tokens.css";
+import "../styles/site.tokens.css";
+import "../styles/base.css";
+import "../styles/layout.css";
+import "../styles/components.css";
+
 interface Props {
   title: string;
   description?: string;
@@ -32,38 +38,6 @@ const { title, description = "Faysal Ahmed — VP of SEO & Organic Growth" } = A
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL("/og-image.png", Astro.site)} />
-    <style is:global>
-      /* Skip link: visually hidden until focused, first tab stop on every page. */
-      .skip-link {
-        position: absolute;
-        left: -9999px;
-        top: 0;
-        z-index: 2000;
-        background: #1a1a1a;
-        color: #fff;
-        padding: 0.6rem 1rem;
-        border-radius: 0 0 6px 0;
-        font:
-          600 0.9rem system-ui,
-          sans-serif;
-        text-decoration: none;
-      }
-      .skip-link:focus {
-        left: 0;
-      }
-      /* Consistent, visible focus ring on every interactive element sitewide —
-         WCAG 2.1 AA 2.4.7 (Focus Visible). Browser defaults are fine functionally,
-         this just makes them consistent with the site's accent color. */
-      a:focus-visible,
-      button:focus-visible,
-      input:focus-visible,
-      select:focus-visible,
-      textarea:focus-visible,
-      [tabindex]:focus-visible {
-        outline: 2px solid #3a5a9b;
-        outline-offset: 2px;
-      }
-    </style>
   </head>
   <body>
     <a href="#main-content" class="skip-link">

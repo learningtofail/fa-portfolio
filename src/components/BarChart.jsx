@@ -2,8 +2,6 @@ import { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import { useChartWidth } from "./useChartWidth.js";
 
-const LABEL_FONT_SIZE = "0.8rem";
-const LABEL_FONT_FAMILY = "system-ui, sans-serif";
 const LABEL_GAP = 16; // space between the widest label and the bars
 const MIN_LABEL_MARGIN = 80;
 const MAX_LABEL_SHARE = 0.5; // labels never take more than half the chart width
@@ -11,11 +9,7 @@ const ESTIMATED_CHAR_WIDTH = 7; // used only where text cannot be measured (jsdo
 
 /** Widest rendered label in px, measured with a hidden probe text node so the left margin fits the data (D10). */
 function measureWidestLabel(svg, labels) {
-  const probe = svg
-    .append("text")
-    .attr("font-size", LABEL_FONT_SIZE)
-    .attr("font-family", LABEL_FONT_FAMILY)
-    .attr("visibility", "hidden");
+  const probe = svg.append("text").attr("class", "chart__label").attr("visibility", "hidden");
   let widest = 0;
   labels.forEach((label) => {
     probe.text(label);
@@ -28,7 +22,7 @@ function measureWidestLabel(svg, labels) {
 
 /**
  * Minimal horizontal bar chart. data: [{ label, value }]
- * Colors are brand-neutral placeholders — swap for the site's palette in Phase 7.
+ * Fill and type styles come from CSS classes (chart.css), which read the site tokens.
  */
 export default function BarChart({ data }) {
   const svgRef = useRef(null);
@@ -71,36 +65,32 @@ export default function BarChart({ data }) {
       .attr("x", 0)
       .attr("width", (d) => x(d.value))
       .attr("height", y.bandwidth())
-      .attr("fill", (d) => (d.value > 0 ? "#3a5a9b" : "#d9d9d9"))
+      .attr("class", (d) => (d.value > 0 ? "chart__bar" : "chart__bar chart__bar--zero"))
       .attr("rx", 3);
 
-    g.selectAll(".label")
+    g.selectAll(".chart__label")
       .data(data)
       .join("text")
-      .attr("class", "label")
+      .attr("class", "chart__label")
       .attr("x", -10)
       .attr("y", (d) => y(d.label) + y.bandwidth() / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "end")
-      .attr("font-size", LABEL_FONT_SIZE)
-      .attr("font-family", LABEL_FONT_FAMILY)
       .text((d) => d.label);
 
-    g.selectAll(".value")
+    g.selectAll(".chart__value")
       .data(data)
       .join("text")
-      .attr("class", "value")
+      .attr("class", "chart__value")
       .attr("x", (d) => x(d.value) + 6)
       .attr("y", (d) => y(d.label) + y.bandwidth() / 2)
       .attr("dy", "0.35em")
-      .attr("font-size", LABEL_FONT_SIZE)
-      .attr("font-family", LABEL_FONT_FAMILY)
       .text((d) => d.value);
   }, [data, width, containerRef]);
 
   return (
     // Decorative — every value here is also in the accessible table/list below it.
-    <div ref={containerRef} style={{ width: "100%" }} aria-hidden="true">
+    <div ref={containerRef} className="chart" aria-hidden="true">
       <svg ref={svgRef}></svg>
     </div>
   );

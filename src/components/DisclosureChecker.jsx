@@ -109,19 +109,16 @@ export default function DisclosureChecker() {
   const passCount = results.filter((r) => r.pass).length;
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 900 }}>
-      <div style={{ marginBottom: "1rem" }}>
-        <label
-          htmlFor="ruleset-select"
-          style={{ display: "block", fontSize: "0.85rem", color: "#444", marginBottom: "0.25rem" }}
-        >
+    <div className="tool">
+      <div className="field">
+        <label htmlFor="ruleset-select" className="field__label">
           Ruleset
         </label>
         <select
           id="ruleset-select"
           value={rulesetKey}
           onChange={(e) => setRulesetKey(e.target.value)}
-          style={{ padding: "0.5rem", fontSize: "1rem" }}
+          className="field__select"
         >
           {Object.entries(RULESETS).map(([key, r]) => (
             <option key={key} value={key}>
@@ -131,7 +128,7 @@ export default function DisclosureChecker() {
         </select>
       </div>
 
-      <div role="radiogroup" aria-label="Input mode" style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}>
+      <div role="radiogroup" aria-label="Input mode" className="choice-group">
         <label>
           <input type="radio" name="input-mode" checked={mode === "paste"} onChange={() => setMode("paste")} /> Paste
           text (one item per line)
@@ -147,14 +144,7 @@ export default function DisclosureChecker() {
           onChange={(e) => setPastedText(e.target.value)}
           placeholder="One piece of copy per line..."
           rows={6}
-          style={{
-            width: "100%",
-            padding: "0.75rem",
-            fontFamily: "inherit",
-            fontSize: "0.95rem",
-            border: "1px solid #ccc",
-            borderRadius: 4,
-          }}
+          className="field__textarea"
         />
       ) : (
         <div
@@ -172,17 +162,11 @@ export default function DisclosureChecker() {
               fileInputRef.current?.click();
             }
           }}
-          style={{
-            border: "2px dashed #999",
-            borderRadius: 8,
-            padding: "2rem",
-            textAlign: "center",
-            cursor: "pointer",
-          }}
+          className="dropzone dropzone--flush"
           onClick={() => fileInputRef.current?.click()}
         >
-          <p style={{ margin: 0 }}>Drop a CSV here, or click to choose a file.</p>
-          <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "#666" }}>
+          <p className="dropzone__title">Drop a CSV here, or click to choose a file.</p>
+          <p className="dropzone__hint">
             Needs a <code>copy</code>, <code>text</code>, or <code>content</code> column.
           </p>
           <input
@@ -192,48 +176,44 @@ export default function DisclosureChecker() {
             onChange={onInputChange}
             tabIndex={-1}
             aria-hidden="true"
-            style={{ display: "none" }}
+            className="dropzone__input"
           />
         </div>
       )}
 
       {error && (
-        <p role="alert" style={{ color: "#b00020" }}>
+        <p role="alert" className="notice notice--error">
           {error}
         </p>
       )}
 
       {items.length > 0 && (
         <>
-          <div
-            aria-live="polite"
-            aria-atomic="true"
-            style={{ display: "flex", gap: "1.5rem", margin: "1.5rem 0", flexWrap: "wrap" }}
-          >
+          <div aria-live="polite" aria-atomic="true" className="stat-row stat-row--padded">
             <StatCard label="Items checked" value={items.length} />
             <StatCard label="Passing" value={passCount} />
             <StatCard label="Missing disclosure" value={items.length - passCount} />
           </div>
 
-          <table style={{ borderCollapse: "collapse", width: "100%", fontSize: "0.85rem" }}>
+          <table className="data-table">
             <thead>
               <tr>
-                <th style={thStyle}>#</th>
-                <th style={thStyle}>Text</th>
-                <th style={thStyle}>Result</th>
-                <th style={thStyle}>Matched</th>
+                <th>#</th>
+                <th>Text</th>
+                <th>Result</th>
+                <th>Matched</th>
               </tr>
             </thead>
             <tbody>
               {results.map((r, i) => (
                 // eslint-disable-next-line react/no-array-index-key -- rows have no stable id; Phase 4 keys by line
                 <tr key={i}>
-                  <td style={tdStyle}>{i + 1}</td>
-                  <td style={{ ...tdStyle, maxWidth: 420 }}>{r.text}</td>
-                  <td style={{ ...tdStyle, color: r.pass ? "#216e3b" : "#b00020", fontWeight: 600 }}>
+                  <td>{i + 1}</td>
+                  <td className="data-table__cell--wrap">{r.text}</td>
+                  <td className={r.pass ? "data-table__cell--pass" : "data-table__cell--fail"}>
                     {r.pass ? "Pass" : "Missing disclosure"}
                   </td>
-                  <td style={tdStyle}>{r.matched.join(", ") || "—"}</td>
+                  <td>{r.matched.join(", ") || "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -241,7 +221,7 @@ export default function DisclosureChecker() {
         </>
       )}
 
-      <p style={{ fontSize: "0.8rem", color: "#6b6b6b", marginTop: "1.5rem", maxWidth: 640 }}>
+      <p className="fineprint fineprint--narrow">
         This is a pattern-matching aid, not legal advice. A match means one of a small set of common disclosure phrases
         was found — it doesn&apos;t confirm regulatory compliance, and a miss doesn&apos;t necessarily mean copy is
         non-compliant (your required language may not be in this list). Have real campaigns reviewed by
@@ -253,14 +233,9 @@ export default function DisclosureChecker() {
 
 function StatCard({ label, value }) {
   return (
-    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: "0.75rem 1rem", minWidth: 120 }}>
-      <div style={{ fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: "1.25rem", fontWeight: 600 }}>{value}</div>
+    <div className="stat-card">
+      <div className="stat-card__label">{label}</div>
+      <div className="stat-card__value">{value}</div>
     </div>
   );
 }
-
-/** @type {import("react").CSSProperties} */
-const thStyle = { textAlign: "left", borderBottom: "2px solid #ccc", padding: "0.4rem 0.6rem" };
-/** @type {import("react").CSSProperties} */
-const tdStyle = { borderBottom: "1px solid #eee", padding: "0.4rem 0.6rem" };
