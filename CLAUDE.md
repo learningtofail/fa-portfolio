@@ -17,6 +17,8 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 - `src/data/`: `resume.js` (page and PDF content), `tools.js` (tool catalog with title, intro and meta description), `years.js` (years of experience, computed from 2004 at build time).
 - `src/styles/`: `orchis.tokens.css` (vendored, never hand-edit, pinned by `orchis.tokens.manifest.json`), `site.tokens.css` (semantic aliases and the only other place raw colors may live), `base.css`, `layout.css` (`.page`), `resume.css` (index page), `components/*.css` (BEM component styles, imported through `components.css`).
 - `scripts/tokens/`: vendoring and drift check for the Orchis tokens.
+- `scripts/deploy-release.sh`: atomic release deploy and rollback (has a `--dry-run`). `scripts/csp-hashes.mjs`: CSP hashes for Astro's inline code.
+- `docs/rollback.md`, `docs/caddy/Caddyfile.proposed.md`: recovery, and the proposed Caddy block with the one-time host migration.
 - `scripts/generate-pdf.mjs` and `scripts/pdf/ResumePdfBuilder.mjs`: build the resume PDF from `resume.js`. The PDF is generated, not tracked.
 - `tests/unit/`: Vitest + Testing Library (`tests/unit/lib/` for the lib modules). `tests/e2e/`: Playwright + axe. `tests/fixtures/`: shared fixtures, including the hand-verified attribution golden files.
 
@@ -40,4 +42,6 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 - Never key a plain object by user data (`{}` collides with `constructor`). Use `Map` or `Object.create(null)`.
 - `src/data/tools.js` is mirrored by hand in fa-www. Do not import from that repo.
 - The consultancy brand name must not appear anywhere on this site; `tests/unit/data.test.js` guards the data files.
-- Secrets and hostnames live in repository secrets, never in workflow files.
+- Secrets and hostnames live in repository secrets, never in workflow files. Pass them to steps through `env:` and read shell variables; never interpolate `${{ secrets.* }}` into a `run:` script. Pin third-party actions by full commit SHA.
+- Deploys never run `ssh-keyscan`; the host key comes from the `SSH_KNOWN_HOSTS` secret.
+- The CSP in `docs/caddy/Caddyfile.proposed.md` is enforced in e2e (`tests/e2e/csp.spec.js`). After an Astro upgrade run `npm run csp:hashes` and update the hashes there.

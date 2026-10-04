@@ -55,4 +55,6 @@ ESLint 9 with pinned rules, Prettier, `tsc --noEmit` with `checkJs`, Vitest unit
 
 ## Delivery
 
-`.github/workflows/ci.yml`: static checks (ESLint, Stylelint, Prettier, tsc, `tokens:check`), unit tests, build plus e2e and a blocking `npm audit --omit=dev --audit-level=high` job (the deploy job needs it) on every PR and push. On push to `main` the deploy job downloads the built `dist` artifact and rsyncs it over Tailscale to `/opt/static-web/sites/portfolio/`.
+`.github/workflows/ci.yml` runs on every PR and push: static checks (ESLint, Stylelint, Prettier, tsc, `tokens:check`), unit tests with the coverage gate, one `build` (astro build plus the generated PDF, uploaded as the `dist` artifact), e2e and axe against that artifact (including every page under the proposed CSP), and a blocking `npm audit --omit=dev --audit-level=high`.
+
+On push to `main` the `deploy` job needs all of them, runs in the `production` environment with `contents: read`, and queues behind any running deploy (`concurrency` with `cancel-in-progress: false`). It fails fast when the `SSH_KNOWN_HOSTS` secret is empty, connects over Tailscale (action pinned by commit SHA), and runs `scripts/deploy-release.sh`: rsync to `releases/<timestamp>-<sha>/`, atomic switch of the `current` symlink, keep the last five. Caddy serves `current`. Recovery is in `docs/rollback.md`; the proposed Caddy block with security headers and the host migration steps are in `docs/caddy/Caddyfile.proposed.md`.
