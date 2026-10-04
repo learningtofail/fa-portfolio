@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import * as d3 from "d3";
+import { useChartWidth } from "./useChartWidth.js";
 
 // Brand-neutral placeholder palette — swap for the site's palette in Phase 7.
 const PALETTE = ["#3a5a9b", "#5c9e6f", "#c9822a", "#a25c9b", "#4aa3a3"];
@@ -11,12 +12,11 @@ const PALETTE = ["#3a5a9b", "#5c9e6f", "#c9822a", "#a25c9b", "#4aa3a3"];
 export default function GroupedBarChart({ data, seriesKeys }) {
   const svgRef = useRef(null);
   const legendRef = useRef(null);
-  const containerRef = useRef(null);
+  const [containerRef, width] = useChartWidth(700);
 
   useEffect(() => {
     if (!data || data.length === 0 || !seriesKeys || seriesKeys.length === 0) return;
 
-    const width = containerRef.current?.clientWidth || 700;
     const height = 360;
     const margin = { top: 20, right: 20, bottom: 60, left: 70 };
     const innerW = width - margin.left - margin.right;
@@ -89,7 +89,7 @@ export default function GroupedBarChart({ data, seriesKeys }) {
       .style("background", (d) => color(d));
 
     legendItems.append("span").text((d) => d);
-  }, [data, seriesKeys]);
+  }, [data, seriesKeys, width, containerRef]);
 
   return (
     // Decorative — every value here is also in the "Full matrix" table below it.

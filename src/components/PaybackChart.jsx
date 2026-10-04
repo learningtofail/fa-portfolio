@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import * as d3 from "d3";
+import { useChartWidth } from "./useChartWidth.js";
 
 /**
  * Cumulative gross-profit-recovered line chart with a CAC reference line
@@ -8,12 +9,11 @@ import * as d3 from "d3";
  */
 export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, horizonMonths }) {
   const svgRef = useRef(null);
-  const containerRef = useRef(null);
+  const [containerRef, width] = useChartWidth(640);
 
   useEffect(() => {
     if (!monthlyGrossProfit || monthlyGrossProfit <= 0) return;
 
-    const width = containerRef.current?.clientWidth || 640;
     const height = 320;
     const margin = { top: 20, right: 30, bottom: 40, left: 60 };
     const innerW = width - margin.left - margin.right;
@@ -103,7 +103,7 @@ export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, h
         .attr("fill", "#216e3b")
         .text(`Payback: ${paybackMonths.toFixed(1)}mo`);
     }
-  }, [monthlyGrossProfit, cac, paybackMonths, horizonMonths]);
+  }, [monthlyGrossProfit, cac, paybackMonths, horizonMonths, width, containerRef]);
 
   return (
     // Decorative — CAC and payback period are both already in the StatCard row above.
