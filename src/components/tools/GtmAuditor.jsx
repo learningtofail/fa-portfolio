@@ -1,202 +1,44 @@
-import { useState, useRef, useCallback } from "react";
-import BarChart from "./BarChart.jsx";
+import { readFileText } from "../../lib/csv.js";
+import { auditContainer } from "../../lib/gtm/audit.js";
+import BarChart from "../charts/BarChart.jsx";
+import ErrorNotice from "../kit/ErrorNotice.jsx";
+import FileDropzone from "../kit/FileDropzone.jsx";
+import StatCard from "../kit/StatCard.jsx";
+import StatRow from "../kit/StatRow.jsx";
+import ToolShell from "../kit/ToolShell.jsx";
+import { useFileAnalysis } from "../kit/useFileAnalysis.js";
 
-const GENERIC_NAME_RE = /^(tag|trigger|variable)\s*\d*$/i;
-const UNTITLED_RE = /^(untitled|new (tag|trigger|variable))/i;
-
-function isGenericName(name) {
-  if (!name) return true;
-  return GENERIC_NAME_RE.test(name.trim()) || UNTITLED_RE.test(name.trim());
-}
-
-function collectTemplateRefs(obj, refs) {
-  if (obj == null) return;
-  if (typeof obj === "string") {
-    const re = /\{\{([^}]+)\}\}/g;
-    let m;
-    while ((m = re.exec(obj))) refs.add(m[1].trim());
-    return;
-  }
-  if (Array.isArray(obj)) {
-    obj.forEach((v) => collectTemplateRefs(v, refs));
-    return;
-  }
-  if (typeof obj === "object") {
-    Object.values(obj).forEach((v) => collectTemplateRefs(v, refs));
-  }
-}
-
-function findDuplicates(items, nameKey = "name") {
-  // Names come from user data, so group with a Map: a plain object breaks on "constructor" (D2).
-  /** @type {Map<string, any[]>} */
-  const groups = new Map();
-  items.forEach((item) => {
-    const name = item[nameKey] || "(unnamed)";
-    if (!groups.has(name)) groups.set(name, []);
-    groups.get(name).push(item);
-  });
-  return [...groups.entries()].filter(([, arr]) => arr.length > 1);
-}
-
-function auditContainer(json) {
-  const cv = json.containerVersion;
-  if (!cv) {
-    throw new Error('No "containerVersion" found — this doesn\'t look like a standard GTM export.');
-  }
-  const tags = cv.tag || [];
-  const triggers = cv.trigger || [];
-  const variables = cv.variable || [];
-
-  const allRefs = new Set();
-  tags.forEach((t) => collectTemplateRefs(t, allRefs));
-  triggers.forEach((t) => collectTemplateRefs(t, allRefs));
-  variables.forEach((v) => collectTemplateRefs(v, allRefs));
-
-  const referencedTriggerIds = new Set();
-  tags.forEach((t) => {
-    (t.firingTriggerId || []).forEach((id) => referencedTriggerIds.add(id));
-    (t.blockingTriggerId || []).forEach((id) => referencedTriggerIds.add(id));
-  });
-
-  const pausedTags = tags.filter((t) => t.paused === true);
-  const orphanTags = tags.filter((t) => !t.firingTriggerId || t.firingTriggerId.length === 0);
-  const unusedVariables = variables.filter((v) => !allRefs.has(v.name));
-  const unusedTriggers = triggers.filter((tr) => !referencedTriggerIds.has(tr.triggerId));
-
-  const dupTags = findDuplicates(tags);
-  const dupTriggers = findDuplicates(triggers);
-  const dupVariables = findDuplicates(variables);
-
-  const genericTags = tags.filter((t) => isGenericName(t.name));
-  const genericTriggers = triggers.filter((t) => isGenericName(t.name));
-  const genericVariables = variables.filter((t) => isGenericName(t.name));
-
-  return {
-    counts: { tags: tags.length, triggers: triggers.length, variables: variables.length },
-    findings: [
-      { key: "paused_tags", label: "Paused tags", items: pausedTags.map((t) => t.name), type: "tag" },
-      { key: "orphan_tags", label: "Tags with no firing trigger", items: orphanTags.map((t) => t.name), type: "tag" },
-      {
-        key: "unused_variables",
-        label: "Unused variables",
-        items: unusedVariables.map((v) => v.name),
-        type: "variable",
-      },
-      { key: "unused_triggers", label: "Unused triggers", items: unusedTriggers.map((t) => t.name), type: "trigger" },
-      {
-        key: "duplicate_names",
-        label: "Duplicate names",
-        items: [
-          ...dupTags.map(([name, arr]) => `Tag "${name}" (${arr.length}x)`),
-          ...dupTriggers.map(([name, arr]) => `Trigger "${name}" (${arr.length}x)`),
-          ...dupVariables.map(([name, arr]) => `Variable "${name}" (${arr.length}x)`),
-        ],
-        type: "mixed",
-      },
-      {
-        key: "generic_names",
-        label: "Generic/default names",
-        items: [
-          ...genericTags.map((t) => `Tag "${t.name}"`),
-          ...genericTriggers.map((t) => `Trigger "${t.name}"`),
-          ...genericVariables.map((t) => `Variable "${t.name}"`),
-        ],
-        type: "mixed",
-      },
-    ],
-  };
+/** Reads the export, parses the JSON and audits the container. Pure logic lives in lib/gtm/audit.js. */
+async function analyze(/** @type {File} */ file) {
+  return { result: auditContainer(JSON.parse(await readFileText(file))) };
 }
 
 export default function GtmAuditor() {
-  const [result, setResult] = useState(null);
-  const [fileName, setFileName] = useState("");
-  const [error, setError] = useState("");
-  const fileInputRef = useRef(null);
-
-  const handleFile = useCallback((file) => {
-    setError("");
-    setFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const json = JSON.parse(String(reader.result));
-        const audit = auditContainer(json);
-        setResult(audit);
-      } catch (err) {
-        setError(err.message || "Could not parse this file as GTM export JSON.");
-        setResult(null);
-      }
-    };
-    reader.onerror = () => setError("Could not read this file.");
-    reader.readAsText(file);
-  }, []);
-
-  const onInputChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
-  };
-
-  const onDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files?.[0];
-    if (file) handleFile(file);
-  };
-
-  const chartData = result ? result.findings.map((f) => ({ label: f.label, value: f.items.length })) : [];
+  const { fileName, result, error, analyzeFile } = useFileAnalysis(analyze);
   const totalIssues = result ? result.findings.reduce((sum, f) => sum + f.items.length, 0) : 0;
 
   return (
-    <div className="tool">
-      <div
-        onDrop={onDrop}
-        onDragOver={(e) => e.preventDefault()}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            fileInputRef.current?.click();
-          }
-        }}
-        className="dropzone"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <p className="dropzone__title">Drop a GTM container export (.json) here, or click to choose a file.</p>
-        <p className="dropzone__hint">
-          Export from GTM: Admin &rarr; Export Container. Nothing you upload leaves this browser tab.
-        </p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json,application/json"
-          onChange={onInputChange}
-          tabIndex={-1}
-          aria-hidden="true"
-          className="dropzone__input"
-        />
-      </div>
-
-      {error && (
-        <p role="alert" className="notice notice--error">
-          {error}
-        </p>
-      )}
-
+    <ToolShell>
+      <FileDropzone
+        title="Drop a GTM container export (.json) here, or click to choose a file."
+        hint="Export from GTM: Admin → Export Container. Nothing you upload leaves this browser tab."
+        accept=".json,application/json"
+        onFile={analyzeFile}
+      />
+      <ErrorNotice message={error} />
       {result && (
         <>
-          <div aria-live="polite" aria-atomic="true" className="stat-row">
-            <StatCard label="File" value={fileName} />
-            <StatCard label="Tags" value={result.counts.tags} />
-            <StatCard label="Triggers" value={result.counts.triggers} />
-            <StatCard label="Variables" value={result.counts.variables} />
-            <StatCard label="Total findings" value={totalIssues} />
-          </div>
-
+          <StatRow>
+            <StatCard label="File" value={fileName} size="narrow" />
+            <StatCard label="Tags" value={result.counts.tags} size="narrow" />
+            <StatCard label="Triggers" value={result.counts.triggers} size="narrow" />
+            <StatCard label="Variables" value={result.counts.variables} size="narrow" />
+            <StatCard label="Total findings" value={totalIssues} size="narrow" />
+          </StatRow>
           {totalIssues > 0 ? (
             <>
               <h2>Findings by category</h2>
-              <BarChart data={chartData} />
-
+              <BarChart data={result.findings.map((f) => ({ label: f.label, value: f.items.length }))} />
               {result.findings
                 .filter((f) => f.items.length > 0)
                 .map((f) => (
@@ -205,9 +47,8 @@ export default function GtmAuditor() {
                       {f.label} ({f.items.length})
                     </h3>
                     <ul>
-                      {f.items.map((item, i) => (
-                        // eslint-disable-next-line react/no-array-index-key -- items are plain strings that can repeat; Phase 4
-                        <li key={i}>{item}</li>
+                      {f.entries.map((entry) => (
+                        <li key={entry.id}>{entry.text}</li>
                       ))}
                     </ul>
                   </div>
@@ -221,15 +62,6 @@ export default function GtmAuditor() {
           )}
         </>
       )}
-    </div>
-  );
-}
-
-function StatCard({ label, value }) {
-  return (
-    <div className="stat-card stat-card--narrow">
-      <div className="stat-card__label">{label}</div>
-      <div className="stat-card__value">{value}</div>
-    </div>
+    </ToolShell>
   );
 }

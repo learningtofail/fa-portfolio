@@ -1,10 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import CacCalculator, {
-  CAPPED_LIFESPAN_MONTHS,
-  calculateCac,
-  ltvCacHealth,
-} from "../../src/components/CacCalculator.jsx";
+import CacCalculator from "../../src/components/tools/CacCalculator.jsx";
+import { CAPPED_LIFESPAN_MONTHS, calculateCac, ltvCacHealth } from "../../src/lib/cac/calc.js";
 import { statValue } from "./helpers.js";
 
 describe("CacCalculator (current behavior)", () => {

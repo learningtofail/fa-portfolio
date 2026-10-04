@@ -12,12 +12,26 @@
 
 ## Single sources of truth
 
-- `src/data/resume.js` feeds both the page and `scripts/generate-pdf.mjs`, so they cannot drift.
+- `src/data/resume.js` feeds both the page and `scripts/generate-pdf.mjs`, so they cannot drift. The years-of-experience figure comes from `src/data/years.js` (2004 to the build year), so it never goes stale in copy.
 - `src/data/tools.js` feeds the tools index and the resume page's tool cards. `fa-www` mirrors the slugs by hand. Neither repo imports the other.
 
 ## Tools
 
-Each tool is one component in `src/components/` holding parsing, audit logic and UI together: `UtmAuditor`, `GtmAuditor`, `AttributionTool`, `DisclosureChecker`, `CacCalculator`. Charts are `BarChart`, `GroupedBarChart`, `PaybackChart` (D3); they redraw through the `useChartWidth` ResizeObserver hook. Phase 4 of the refactor plan extracts the logic into pure modules.
+Each tool is a pure module in `src/lib/` plus a thin React island:
+
+| Tool                           | Logic                                | Island                                   |
+| ------------------------------ | ------------------------------------ | ---------------------------------------- |
+| UTM Governance Auditor         | `lib/utm/audit.js`                   | `components/tools/UtmAuditor.jsx`        |
+| GTM Container Auditor          | `lib/gtm/audit.js`                   | `components/tools/GtmAuditor.jsx`        |
+| Multi-Touch Attribution        | `lib/attribution/compute.js`         | `components/tools/AttributionTool.jsx`   |
+| Disclosure Language Checker    | `lib/disclosure/{rulesets,check}.js` | `components/tools/DisclosureChecker.jsx` |
+| CAC / LTV / Payback Calculator | `lib/cac/calc.js`                    | `components/tools/CacCalculator.jsx`     |
+
+Shared CSV handling is `lib/csv.js` (`parseCsvFile`, `lowercaseKeys` with prototype-free rows). The kit in `components/kit/` supplies the dropzone (`FileDropzone` over `useFileInput`), `StatRow` (owns the `aria-live` region), `StatCard`, `DataTable`, `ToolShell`, `ErrorNotice` and `useFileAnalysis` (file name, result and error state around an async analysis). Charts are in `components/charts/` (D3; `useChartWidth` redraws on resize and series colors come from CSS classes).
+
+Pages: `src/pages/tools/[slug].astro` calls `getStaticPaths` over `data/tools.js` and wraps the island in `layouts/ToolLayout.astro`. Astro cannot hydrate a component chosen at runtime, so the island per slug is named explicitly in that file.
+
+The attribution tool's credit math is pinned by golden tests built from hand-computed values (`tests/fixtures/attribution-*-golden.csv`, `tests/unit/lib/attribution.compute.test.js`).
 
 ## Styles
 
@@ -33,11 +47,11 @@ The site does not load web fonts: body text uses the system stack (`--font-body`
 
 ## Build
 
-`npm run build` runs `generate-pdf` (writes `public/faysal-ahmed-resume.pdf`, which is git-ignored) and then `astro build`.
+`npm run build` runs `generate-pdf` (`scripts/pdf/ResumePdfBuilder.mjs` writes `public/faysal-ahmed-resume.pdf`, which is git-ignored) and then `astro build`.
 
 ## Quality gates
 
-ESLint 9 with pinned rules, Prettier, `tsc --noEmit` with `checkJs`, Vitest unit tests, Playwright e2e plus axe (all pages pass with no violations). Known defects are pinned by `it.fails` (unit) and `test.fail()` (e2e) with their review ID; none are open. Open decisions (D8, D9) are in `docs/open-decisions.md`.
+ESLint 9 with pinned rules, Prettier, `tsc --noEmit` with `checkJs`, Vitest unit tests with a 90 percent coverage threshold on `src/lib`, Playwright e2e plus axe (all pages pass with no violations). Known defects are pinned by `it.fails` (unit) and `test.fail()` (e2e) with their review ID; none are open. Open decisions (D8, D9) are in `docs/open-decisions.md`.
 
 ## Delivery
 

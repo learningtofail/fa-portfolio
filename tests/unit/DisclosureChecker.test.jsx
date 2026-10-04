@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import DisclosureChecker from "../../src/components/DisclosureChecker.jsx";
+import DisclosureChecker from "../../src/components/tools/DisclosureChecker.jsx";
 import { uploadFile } from "./helpers.js";
 
 /** Returns [result, matched phrases] for every result row. */

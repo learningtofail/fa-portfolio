@@ -11,17 +11,26 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 
 ## Repo map
 
-- `src/pages/`: Astro pages. `tools/` has one page per tool.
-- `src/components/`: one React component per tool, plus the D3 charts.
-- `src/data/`: `resume.js` (page and PDF content), `tools.js` (tool catalog).
+- `src/pages/`: `index.astro` (resume) and `tools/index.astro`; `tools/[slug].astro` builds one page per live tool from `src/data/tools.js` through `src/layouts/ToolLayout.astro`. URLs stay `/tools/<slug>/`.
+- `src/lib/`: pure, unit-tested logic with JSDoc types: `csv.js`, `utm/audit.js`, `gtm/audit.js`, `attribution/compute.js`, `disclosure/{rulesets,check}.js`, `cac/calc.js`. No DOM, no React.
+- `src/components/`: `tools/` (one thin component per tool, roughly 60 to 100 lines), `kit/` (FileDropzone, StatCard, StatRow, DataTable, ToolShell, ErrorNotice, useFileInput, useFileAnalysis), `charts/` (D3 charts and `useChartWidth`).
+- `src/data/`: `resume.js` (page and PDF content), `tools.js` (tool catalog with title, intro and meta description), `years.js` (years of experience, computed from 2004 at build time).
 - `src/styles/`: `orchis.tokens.css` (vendored, never hand-edit, pinned by `orchis.tokens.manifest.json`), `site.tokens.css` (semantic aliases and the only other place raw colors may live), `base.css`, `layout.css` (`.page`), `resume.css` (index page), `components/*.css` (BEM component styles, imported through `components.css`).
 - `scripts/tokens/`: vendoring and drift check for the Orchis tokens.
-- `scripts/generate-pdf.mjs`: builds the resume PDF from `resume.js`. The PDF is generated, not tracked.
-- `tests/unit/`: Vitest + Testing Library. `tests/e2e/`: Playwright + axe.
+- `scripts/generate-pdf.mjs` and `scripts/pdf/ResumePdfBuilder.mjs`: build the resume PDF from `resume.js`. The PDF is generated, not tracked.
+- `tests/unit/`: Vitest + Testing Library (`tests/unit/lib/` for the lib modules). `tests/e2e/`: Playwright + axe. `tests/fixtures/`: shared fixtures, including the hand-verified attribution golden files.
+
+## Adding a tool
+
+1. Put the logic in a new pure module under `src/lib/<tool>/` with JSDoc types and a fixture-based test in `tests/unit/lib/`. Coverage on `src/lib` must stay at 90 percent or better (`npm run test:coverage`).
+2. Add a thin component in `src/components/tools/` built from the kit (`ToolShell`, `FileDropzone`, `useFileAnalysis`, `StatRow`, `DataTable`). It should stay well under 150 lines.
+3. Add an entry to `src/data/tools.js` (slug, name, title, description, intro, metaDescription) and one line in `src/pages/tools/[slug].astro`.
+4. Add the tool's e2e and axe cases to `tests/e2e/site.spec.js`.
 
 ## Conventions
 
 - Never push to `main`. Merging to `main` deploys production. Work on a branch and open a PR.
+- Logic goes in `src/lib`, never in a component. Never key a React list by array index; give the lib result a stable `id`.
 - ES modules, `const` by default, no `var`, no `console.log` (scripts excepted).
 - Do not widen a lint ignore or inline disable without a comment giving the reason and the plan item that removes it.
 - No inline `style` attributes, in Astro or React (an e2e test asserts zero `[style]` nodes on every page). Style with BEM classes that read tokens. Inline event handlers on components are tracked for removal in refactor Phase 4.

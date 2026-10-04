@@ -1,5 +1,5 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
-import AttributionTool from "../../src/components/AttributionTool.jsx";
+import AttributionTool from "../../src/components/tools/AttributionTool.jsx";
 import { statValue, uploadFile } from "./helpers.js";
 
 /** Reads the "Full matrix" table into { channel: { model: value } }. */

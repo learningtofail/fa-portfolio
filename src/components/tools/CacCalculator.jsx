@@ -1,164 +1,97 @@
-import { useState, useMemo } from "react";
-import PaybackChart from "./PaybackChart.jsx";
+import { useMemo, useState } from "react";
+import { calculateCac, CAPPED_LIFESPAN_MONTHS, ltvCacHealth, parseField } from "../../lib/cac/calc.js";
+import PaybackChart from "../charts/PaybackChart.jsx";
+import StatCard from "../kit/StatCard.jsx";
+import StatRow from "../kit/StatRow.jsx";
+import ToolShell from "../kit/ToolShell.jsx";
 
-/** Lifespan assumed when churn is 0, so LTV stays finite. The input label and the warning both read this (D11). */
-export const CAPPED_LIFESPAN_MONTHS = 60;
+/** Number inputs hold strings so a cleared field stays empty instead of snapping to 0 (D11). */
+const FIELDS = [
+  {
+    id: "cac-spend",
+    name: "spend",
+    label: "Total sales & marketing spend ($)",
+    initial: "50000",
+    limits: { min: "0" },
+  },
+  { id: "cac-customers", name: "newCustomers", label: "New customers acquired", initial: "200", limits: { min: "0" } },
+  {
+    id: "cac-revenue",
+    name: "avgRevenue",
+    label: "Average revenue per customer / month ($)",
+    initial: "80",
+    limits: { min: "0" },
+  },
+  {
+    id: "cac-margin",
+    name: "grossMarginPct",
+    label: "Gross margin (%)",
+    initial: "70",
+    limits: { min: "0", max: "100" },
+  },
+  {
+    id: "cac-churn",
+    name: "churnPct",
+    label: `Monthly churn rate (%) — 0 assumes a ${CAPPED_LIFESPAN_MONTHS}-month cap`,
+    initial: "3",
+    limits: { min: "0", max: "100", step: "0.1" },
+  },
+];
 
-/** @typedef {"good" | "warn" | "bad"} Tone */
-
-/**
- * Plain-language read of an LTV:CAC ratio. Returns a tone, never a color: presentation maps tone to style (D11).
- * @param {number} ratio
- * @returns {{ label: string, tone: Tone | null }} tone is null when there is no ratio to judge.
- */
-export function ltvCacHealth(ratio) {
-  if (!isFinite(ratio) || ratio <= 0) return { label: "N/A", tone: null };
-  if (ratio < 1) return { label: "Losing money on every customer", tone: "bad" };
-  if (ratio < 3) return { label: "Marginal — typical SaaS target is 3:1+", tone: "warn" };
-  if (ratio <= 5) return { label: "Healthy", tone: "good" };
-  return { label: "Possibly under-investing in growth", tone: "warn" };
-}
-
-/** Parses a number input's string. An empty or non-numeric field is NaN, so results show dashes instead of 0. */
-const parseField = (/** @type {string} */ text) => (text.trim() === "" ? NaN : Number(text));
-
-/**
- * @param {{ spend: number, newCustomers: number, avgRevenue: number, grossMarginPct: number, churnPct: number }} inputs
- * Any NaN input propagates to the metrics that depend on it.
- */
-export function calculateCac({ spend, newCustomers, avgRevenue, grossMarginPct, churnPct }) {
-  const cac = newCustomers > 0 ? spend / newCustomers : NaN;
-  const monthlyGrossProfit = avgRevenue * (grossMarginPct / 100);
-  const usedCappedLifespan = churnPct <= 0;
-  let lifespanMonths = NaN;
-  if (usedCappedLifespan) lifespanMonths = CAPPED_LIFESPAN_MONTHS;
-  else if (churnPct > 0) lifespanMonths = 1 / (churnPct / 100);
-  const ltv = monthlyGrossProfit * lifespanMonths;
-  const ltvCacRatio = cac > 0 ? ltv / cac : NaN;
-  const paybackMonths = monthlyGrossProfit > 0 ? cac / monthlyGrossProfit : NaN;
-  const horizon = Math.ceil(Math.min(lifespanMonths, paybackMonths * 2 || 12));
-  const horizonMonths = Math.max(12, isFinite(horizon) ? horizon : 12);
-  return {
-    cac,
-    monthlyGrossProfit,
-    lifespanMonths,
-    ltv,
-    ltvCacRatio,
-    paybackMonths,
-    horizonMonths,
-    usedCappedLifespan,
-  };
-}
+const money = (/** @type {number} */ n) => (isFinite(n) ? `$${n.toFixed(2)}` : "—");
 
 export default function CacCalculator() {
-  // Number inputs hold strings so a cleared field stays empty instead of snapping to 0 (D11).
-  const [spend, setSpend] = useState("50000");
-  const [newCustomers, setNewCustomers] = useState("200");
-  const [avgRevenue, setAvgRevenue] = useState("80");
-  const [grossMarginPct, setGrossMarginPct] = useState("70");
-  const [churnPct, setChurnPct] = useState("3");
-
+  const [values, setValues] = useState(() => Object.fromEntries(FIELDS.map((f) => [f.name, f.initial])));
   const results = useMemo(
     () =>
       calculateCac({
-        spend: parseField(spend),
-        newCustomers: parseField(newCustomers),
-        avgRevenue: parseField(avgRevenue),
-        grossMarginPct: parseField(grossMarginPct),
-        churnPct: parseField(churnPct),
+        spend: parseField(values.spend),
+        newCustomers: parseField(values.newCustomers),
+        avgRevenue: parseField(values.avgRevenue),
+        grossMarginPct: parseField(values.grossMarginPct),
+        churnPct: parseField(values.churnPct),
       }),
-    [spend, newCustomers, avgRevenue, grossMarginPct, churnPct],
+    [values],
   );
-
   const health = ltvCacHealth(results.ltvCacRatio);
+  const showChart = isFinite(results.cac) && results.monthlyGrossProfit > 0;
 
   return (
-    <div className="tool">
+    <ToolShell>
       <div className="field-grid">
-        <div className="field">
-          <label htmlFor="cac-spend" className="field__label">
-            Total sales &amp; marketing spend ($)
-          </label>
-          <input
-            id="cac-spend"
-            type="number"
-            min="0"
-            value={spend}
-            onChange={(e) => setSpend(e.target.value)}
-            className="field__input"
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="cac-customers" className="field__label">
-            New customers acquired
-          </label>
-          <input
-            id="cac-customers"
-            type="number"
-            min="0"
-            value={newCustomers}
-            onChange={(e) => setNewCustomers(e.target.value)}
-            className="field__input"
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="cac-revenue" className="field__label">
-            Average revenue per customer / month ($)
-          </label>
-          <input
-            id="cac-revenue"
-            type="number"
-            min="0"
-            value={avgRevenue}
-            onChange={(e) => setAvgRevenue(e.target.value)}
-            className="field__input"
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="cac-margin" className="field__label">
-            Gross margin (%)
-          </label>
-          <input
-            id="cac-margin"
-            type="number"
-            min="0"
-            max="100"
-            value={grossMarginPct}
-            onChange={(e) => setGrossMarginPct(e.target.value)}
-            className="field__input"
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="cac-churn" className="field__label">
-            Monthly churn rate (%) — 0 assumes a {CAPPED_LIFESPAN_MONTHS}-month cap
-          </label>
-          <input
-            id="cac-churn"
-            type="number"
-            min="0"
-            max="100"
-            step="0.1"
-            value={churnPct}
-            onChange={(e) => setChurnPct(e.target.value)}
-            className="field__input"
-          />
-        </div>
+        {FIELDS.map(({ id, name, label, limits }) => (
+          <div key={id} className="field">
+            <label htmlFor={id} className="field__label">
+              {label}
+            </label>
+            <input
+              id={id}
+              type="number"
+              {...limits}
+              value={values[name]}
+              onChange={(e) => setValues((prev) => ({ ...prev, [name]: e.target.value }))}
+              className="field__input"
+            />
+          </div>
+        ))}
       </div>
 
-      <div aria-live="polite" aria-atomic="true" className="stat-row">
-        <StatCard label="CAC" value={isFinite(results.cac) ? `$${results.cac.toFixed(2)}` : "—"} />
-        <StatCard label="LTV" value={isFinite(results.ltv) ? `$${results.ltv.toFixed(2)}` : "—"} />
+      <StatRow>
+        <StatCard label="CAC" value={money(results.cac)} size="wide" />
+        <StatCard label="LTV" value={money(results.ltv)} size="wide" />
         <StatCard
           label="LTV:CAC"
           value={isFinite(results.ltvCacRatio) ? `${results.ltvCacRatio.toFixed(2)}:1` : "—"}
           sub={health.label}
           tone={health.tone}
+          size="wide"
         />
         <StatCard
           label="Payback period"
           value={isFinite(results.paybackMonths) ? `${results.paybackMonths.toFixed(1)} months` : "—"}
+          size="wide"
         />
-      </div>
+      </StatRow>
 
       {results.usedCappedLifespan && (
         <p className="notice notice--warning">
@@ -167,7 +100,7 @@ export default function CacCalculator() {
         </p>
       )}
 
-      {isFinite(results.cac) && isFinite(results.monthlyGrossProfit) && results.monthlyGrossProfit > 0 && (
+      {showChart && (
         <>
           <h2>Cumulative gross profit vs. CAC</h2>
           <PaybackChart
@@ -184,17 +117,6 @@ export default function CacCalculator() {
         universal targets — capital-intensive or long-sales-cycle businesses read differently. All calculations happen
         in this browser tab; nothing is sent anywhere.
       </p>
-    </div>
-  );
-}
-
-/** @param {{ label: string, value: string, sub?: string, tone?: Tone | null }} props */
-function StatCard({ label, value, sub, tone }) {
-  return (
-    <div className="stat-card stat-card--wide">
-      <div className="stat-card__label">{label}</div>
-      <div className="stat-card__value">{value}</div>
-      {sub && <div className={tone ? `stat-card__sub stat-card__sub--${tone}` : "stat-card__sub"}>{sub}</div>}
-    </div>
+    </ToolShell>
   );
 }
