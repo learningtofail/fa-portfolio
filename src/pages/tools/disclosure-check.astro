@@ -2,18 +2,24 @@
 import Base from "../../layouts/Base.astro";
 import DisclosureChecker from "../../components/DisclosureChecker.jsx";
 ---
+
 <Base
   title="Disclosure Language Checker — Faysal Ahmed"
   description="Check marketing copy for missing common disclosure language, entirely in your browser. Not legal advice."
 >
-  <main id="main-content" tabindex="-1" style="font-family: system-ui, sans-serif; max-width: 960px; margin: 3rem auto; padding: 0 1.5rem;">
-    <p><a href="/tools/">&larr; All tools</a></p>
+  <main
+    id="main-content"
+    tabindex="-1"
+    style="font-family: system-ui, sans-serif; max-width: 960px; margin: 3rem auto; padding: 0 1.5rem;"
+  >
+    <p>
+      <a href="/tools/">&larr; All tools</a>
+    </p>
     <h1>Disclosure Language Checker</h1>
     <p style="color: #555; max-width: 640px;">
-      Scans copy for common required disclosure phrasing across a few regulated categories —
-      affiliate/sponsored content, health/pharma, age-restricted products, and financial
-      services. A pattern-matching aid, not a compliance sign-off. Nothing you enter is sent
-      anywhere.
+      Scans copy for common required disclosure phrasing across a few regulated categories — affiliate/sponsored
+      content, health/pharma, age-restricted products, and financial services. A pattern-matching aid, not a compliance
+      sign-off. Nothing you enter is sent anywhere.
     </p>
     <DisclosureChecker client:visible />
   </main>

@@ -9,9 +9,10 @@ function normalizeRow(row, fallbackIndex) {
   const keys = Object.keys(row).reduce((acc, k) => {
     acc[k.trim().toLowerCase()] = row[k];
     return acc;
-  }, {});
+  }, /** @type {Record<string, any>} */ ({}));
   const rawRevenue = keys.revenue;
-  const revenue = rawRevenue !== undefined && rawRevenue !== "" && !isNaN(Number(rawRevenue)) ? Number(rawRevenue) : null;
+  const revenue =
+    rawRevenue !== undefined && rawRevenue !== "" && !isNaN(Number(rawRevenue)) ? Number(rawRevenue) : null;
   const parsedTime = keys.timestamp ? Date.parse(keys.timestamp) : NaN;
 
   return {
@@ -66,7 +67,13 @@ function computeAttribution(journeyMap) {
   const channels = new Set();
   MODELS.forEach((m) => Object.keys(credit[m]).forEach((c) => channels.add(c)));
 
-  return { credit, channels: [...channels].sort(), totalValue, touchpointCount, journeyCount: Object.keys(journeyMap).length };
+  return {
+    credit,
+    channels: [...channels].sort(),
+    totalValue,
+    touchpointCount,
+    journeyCount: Object.keys(journeyMap).length,
+  };
 }
 
 export default function AttributionTool() {
@@ -148,22 +155,45 @@ export default function AttributionTool() {
             fileInputRef.current?.click();
           }
         }}
-        style={{ border: "2px dashed #999", borderRadius: 8, padding: "2rem", textAlign: "center", marginBottom: "1.5rem", cursor: "pointer" }}
+        style={{
+          border: "2px dashed #999",
+          borderRadius: 8,
+          padding: "2rem",
+          textAlign: "center",
+          marginBottom: "1.5rem",
+          cursor: "pointer",
+        }}
         onClick={() => fileInputRef.current?.click()}
       >
         <p style={{ margin: 0 }}>Drop a touchpoint CSV here, or click to choose a file.</p>
         <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "#666" }}>
-          Columns: <code>journey_id</code>, <code>channel</code>, <code>timestamp</code>, optional <code>revenue</code>. One row per
-          touchpoint. Nothing you upload leaves this browser tab.
+          Columns: <code>journey_id</code>, <code>channel</code>, <code>timestamp</code>, optional <code>revenue</code>.
+          One row per touchpoint. Nothing you upload leaves this browser tab.
         </p>
-        <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={onInputChange} tabIndex={-1} aria-hidden="true" style={{ display: "none" }} />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,text/csv"
+          onChange={onInputChange}
+          tabIndex={-1}
+          aria-hidden="true"
+          style={{ display: "none" }}
+        />
       </div>
 
-      {error && <p role="alert" style={{ color: "#b00020" }}>{error}</p>}
+      {error && (
+        <p role="alert" style={{ color: "#b00020" }}>
+          {error}
+        </p>
+      )}
 
       {result && (
         <>
-          <div aria-live="polite" aria-atomic="true" style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem", flexWrap: "wrap" }}
+          >
             <StatCard label="File" value={fileName} />
             <StatCard label="Journeys" value={result.journeyCount} />
             <StatCard label="Touchpoints" value={result.touchpointCount} />
@@ -174,8 +204,9 @@ export default function AttributionTool() {
             {usedRevenue
               ? "Weighted by the revenue column where present (count-weighted as a fallback for journeys with no revenue value)."
               : "No revenue column found — every journey is weighted as 1 conversion."}
-            {fallbackTimeWarning && " Some rows had no parseable timestamp — those journeys are ordered by row order in the file instead."}
-            {" "}Time-decay uses a {HALF_LIFE_DAYS}-day half-life.
+            {fallbackTimeWarning &&
+              " Some rows had no parseable timestamp — those journeys are ordered by row order in the file instead."}{" "}
+            Time-decay uses a {HALF_LIFE_DAYS}-day half-life.
           </p>
 
           <h2>Credit by channel, across models</h2>
@@ -188,7 +219,9 @@ export default function AttributionTool() {
                 <tr>
                   <th style={thStyle}>Channel</th>
                   {MODELS.map((m) => (
-                    <th style={thStyle} key={m}>{m}</th>
+                    <th style={thStyle} key={m}>
+                      {m}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -197,7 +230,9 @@ export default function AttributionTool() {
                   <tr key={channel}>
                     <td style={tdStyle}>{channel}</td>
                     {MODELS.map((m) => (
-                      <td style={tdStyle} key={m}>{(result.credit[m][channel] || 0).toFixed(2)}</td>
+                      <td style={tdStyle} key={m}>
+                        {(result.credit[m][channel] || 0).toFixed(2)}
+                      </td>
                     ))}
                   </tr>
                 ))}
@@ -219,5 +254,7 @@ function StatCard({ label, value }) {
   );
 }
 
+/** @type {import("react").CSSProperties} */
 const thStyle = { textAlign: "left", borderBottom: "2px solid #ccc", padding: "0.4rem 0.6rem" };
+/** @type {import("react").CSSProperties} */
 const tdStyle = { borderBottom: "1px solid #eee", padding: "0.4rem 0.6rem" };

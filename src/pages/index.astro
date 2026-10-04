@@ -5,17 +5,22 @@ import { tools } from "../data/tools.js";
 
 const liveTools = tools.filter((t) => t.live);
 ---
+
 <Base title={meta.title} description={meta.description}>
   <nav class="topnav" aria-label="Section">
     <div class="topnav-inner">
-      <a href="#summary" class="brand">{contact.name}</a>
+      <a href="#summary" class="brand">
+        {contact.name}
+      </a>
       <div class="links">
         <a href="#summary">Summary</a>
         <a href="#experience">Experience</a>
         <a href="#skills">Skills</a>
         <a href="#tools">Tools</a>
         <a href="#contact">Contact</a>
-        <a href="/faysal-ahmed-resume.pdf" class="pdf-link">Download PDF</a>
+        <a href="/faysal-ahmed-resume.pdf" class="pdf-link">
+          Download PDF
+        </a>
       </div>
     </div>
   </nav>
@@ -31,9 +36,13 @@ const liveTools = tools.filter((t) => t.live);
           <img class="headshot" src={summary.headshot.src} alt={summary.headshot.alt} width="128" height="128" />
         )}
       </div>
-      {summary.body.map((p) => <p>{p}</p>)}
+      {summary.body.map((p) => (
+        <p>{p}</p>
+      ))}
       <ul class="stat-strip">
-        {summary.stats.map((s) => <li>{s}</li>)}
+        {summary.stats.map((s) => (
+          <li>{s}</li>
+        ))}
       </ul>
     </section>
 
@@ -55,14 +64,17 @@ const liveTools = tools.filter((t) => t.live);
           {role.intro && <p class="role-intro">{role.intro}</p>}
           {role.prose && <p class="role-intro">{role.prose}</p>}
 
-          {role.bulletGroups && role.bulletGroups.map((group) => (
-            <div class="bullet-group">
-              {group.label && <h4>{group.label}</h4>}
-              <ul>
-                {group.bullets.map((b) => <li>{b}</li>)}
-              </ul>
-            </div>
-          ))}
+          {role.bulletGroups &&
+            role.bulletGroups.map((group) => (
+              <div class="bullet-group">
+                {group.label && <h4>{group.label}</h4>}
+                <ul>
+                  {group.bullets.map((b) => (
+                    <li>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
 
           {role.closing && <p class="role-closing">{role.closing}</p>}
         </article>
@@ -121,7 +133,10 @@ const liveTools = tools.filter((t) => t.live);
       max-width: var(--max-width);
       margin: 0 auto;
       padding: 2rem 1.5rem 5rem;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
       color: var(--ink);
       line-height: 1.55;
     }
@@ -146,10 +161,22 @@ const liveTools = tools.filter((t) => t.live);
       font-family: system-ui, sans-serif;
       font-size: 0.85rem;
     }
-    .topnav a { color: var(--ink); text-decoration: none; }
-    .topnav .brand { font-weight: 700; }
-    .topnav .links { display: flex; gap: 1.1rem; align-items: center; flex-wrap: wrap; }
-    .topnav .links a:hover { color: var(--accent); }
+    .topnav a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .topnav .brand {
+      font-weight: 700;
+    }
+    .topnav .links {
+      display: flex;
+      gap: 1.1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .topnav .links a:hover {
+      color: var(--accent);
+    }
     .pdf-link {
       border: 1px solid var(--accent);
       color: var(--accent) !important;
@@ -157,18 +184,38 @@ const liveTools = tools.filter((t) => t.live);
       padding: 0.3rem 0.8rem;
     }
 
-    .section { padding: 2.5rem 0; border-bottom: 1px solid var(--line); }
-    .section:last-child { border-bottom: none; }
+    .section {
+      padding: 2.5rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .section:last-child {
+      border-bottom: none;
+    }
 
-    h1 { font-size: 2rem; margin-bottom: 0.25rem; }
-    h2 { font-size: 1.4rem; margin-bottom: 1.25rem; }
-    h3 { font-size: 1.1rem; margin: 0; }
-    h4 { font-size: 0.95rem; margin: 0 0 0.4rem; }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+    h3 {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    h4 {
+      font-size: 0.95rem;
+      margin: 0 0 0.4rem;
+    }
     /* Skill/tool card titles are visually a step down from role titles (h3) but sit
        directly under an h2 with nothing between — using h3 here (not h4) keeps the
        heading hierarchy sequential (no skipped level) per WCAG 1.3.1 / axe heading-order. */
     .skill-card h3,
-    .tool-card h3 { font-size: 0.95rem; margin: 0 0 0.4rem; }
+    .tool-card h3 {
+      font-size: 0.95rem;
+      margin: 0 0 0.4rem;
+    }
 
     .summary-header {
       display: flex;
@@ -185,11 +232,20 @@ const liveTools = tools.filter((t) => t.live);
       border: 1px solid var(--line);
     }
     @media (max-width: 560px) {
-      .summary-header { flex-direction: column-reverse; }
-      .headshot { width: 96px; height: 96px; }
+      .summary-header {
+        flex-direction: column-reverse;
+      }
+      .headshot {
+        width: 96px;
+        height: 96px;
+      }
     }
 
-    .subhead { color: var(--muted); font-size: 1.05rem; margin-bottom: 1.25rem; }
+    .subhead {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 1.25rem;
+    }
 
     .stat-strip {
       list-style: none;
@@ -207,8 +263,12 @@ const liveTools = tools.filter((t) => t.live);
       color: var(--muted);
     }
 
-    .role { margin-bottom: 2.5rem; }
-    .role:last-child { margin-bottom: 0; }
+    .role {
+      margin-bottom: 2.5rem;
+    }
+    .role:last-child {
+      margin-bottom: 0;
+    }
     .role-header {
       display: flex;
       justify-content: space-between;
@@ -217,22 +277,53 @@ const liveTools = tools.filter((t) => t.live);
       flex-wrap: wrap;
       margin-bottom: 0.5rem;
     }
-    .role-title { margin: 0.1rem 0 0; color: var(--muted); }
-    .role-meta { text-align: right; min-width: 0; }
-    .dates { margin: 0; font-size: 0.85rem; color: var(--muted); }
-    .location { margin: 0; font-size: 0.8rem; color: var(--muted); }
-    .role-intro { color: var(--ink); }
-    .role-closing { font-size: 0.9rem; color: var(--muted); margin-top: 0.75rem; }
-    .bullet-group { margin-top: 0.75rem; }
-    .bullet-group ul { margin: 0.25rem 0 0; padding-left: 1.1rem; }
-    .bullet-group li { margin-bottom: 0.35rem; }
+    .role-title {
+      margin: 0.1rem 0 0;
+      color: var(--muted);
+    }
+    .role-meta {
+      text-align: right;
+      min-width: 0;
+    }
+    .dates {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .location {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .role-intro {
+      color: var(--ink);
+    }
+    .role-closing {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+    }
+    .bullet-group {
+      margin-top: 0.75rem;
+    }
+    .bullet-group ul {
+      margin: 0.25rem 0 0;
+      padding-left: 1.1rem;
+    }
+    .bullet-group li {
+      margin-bottom: 0.35rem;
+    }
 
     .skills-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1rem;
     }
-    .skill-card p { margin: 0; font-size: 0.88rem; color: var(--muted); }
+    .skill-card p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
 
     .tools-grid {
       display: grid;
@@ -249,14 +340,28 @@ const liveTools = tools.filter((t) => t.live);
       color: var(--ink);
       transition: border-color 0.15s;
     }
-    .tool-card:hover { border-color: var(--accent); }
-    .tool-card p { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--muted); }
+    .tool-card:hover {
+      border-color: var(--accent);
+    }
+    .tool-card p {
+      margin: 0.4rem 0 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
 
-    .contact-name { font-weight: 600; margin-bottom: 0.25rem; }
+    .contact-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
 
     @media (max-width: 480px) {
-      .topnav .links { gap: 0.7rem; font-size: 0.78rem; }
-      h1 { font-size: 1.6rem; }
+      .topnav .links {
+        gap: 0.7rem;
+        font-size: 0.78rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
     }
   </style>
 </Base>

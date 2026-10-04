@@ -58,7 +58,8 @@ export default function DisclosureChecker() {
   const [mode, setMode] = useState("paste"); // "paste" | "csv"
   const [pastedText, setPastedText] = useState("");
   const [csvRows, setCsvRows] = useState(null);
-  const [fileName, setFileName] = useState("");
+  // fileName is write-only today; the UI never shows it (Phase 4 either shows it or drops the state).
+  const [, setFileName] = useState("");
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
 
@@ -78,7 +79,7 @@ export default function DisclosureChecker() {
             const keys = Object.keys(row).reduce((acc, k) => {
               acc[k.trim().toLowerCase()] = row[k];
               return acc;
-            }, {});
+            }, /** @type {Record<string, any>} */ ({}));
             return keys.copy || keys.text || keys.content || "";
           })
           .filter((t) => t && t.trim());
@@ -98,7 +99,10 @@ export default function DisclosureChecker() {
 
   const items = useMemo(() => {
     if (mode === "csv") return csvRows || [];
-    return pastedText.split("\n").map((l) => l.trim()).filter(Boolean);
+    return pastedText
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
   }, [mode, pastedText, csvRows]);
 
   const results = useMemo(() => items.map((text) => ({ text, ...checkText(text, rulesetKey) })), [items, rulesetKey]);
@@ -107,17 +111,30 @@ export default function DisclosureChecker() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 900 }}>
       <div style={{ marginBottom: "1rem" }}>
-        <label htmlFor="ruleset-select" style={{ display: "block", fontSize: "0.85rem", color: "#444", marginBottom: "0.25rem" }}>Ruleset</label>
-        <select id="ruleset-select" value={rulesetKey} onChange={(e) => setRulesetKey(e.target.value)} style={{ padding: "0.5rem", fontSize: "1rem" }}>
+        <label
+          htmlFor="ruleset-select"
+          style={{ display: "block", fontSize: "0.85rem", color: "#444", marginBottom: "0.25rem" }}
+        >
+          Ruleset
+        </label>
+        <select
+          id="ruleset-select"
+          value={rulesetKey}
+          onChange={(e) => setRulesetKey(e.target.value)}
+          style={{ padding: "0.5rem", fontSize: "1rem" }}
+        >
           {Object.entries(RULESETS).map(([key, r]) => (
-            <option key={key} value={key}>{r.label}</option>
+            <option key={key} value={key}>
+              {r.label}
+            </option>
           ))}
         </select>
       </div>
 
       <div role="radiogroup" aria-label="Input mode" style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}>
         <label>
-          <input type="radio" name="input-mode" checked={mode === "paste"} onChange={() => setMode("paste")} /> Paste text (one item per line)
+          <input type="radio" name="input-mode" checked={mode === "paste"} onChange={() => setMode("paste")} /> Paste
+          text (one item per line)
         </label>
         <label>
           <input type="radio" name="input-mode" checked={mode === "csv"} onChange={() => setMode("csv")} /> Upload CSV
@@ -130,11 +147,22 @@ export default function DisclosureChecker() {
           onChange={(e) => setPastedText(e.target.value)}
           placeholder="One piece of copy per line..."
           rows={6}
-          style={{ width: "100%", padding: "0.75rem", fontFamily: "inherit", fontSize: "0.95rem", border: "1px solid #ccc", borderRadius: 4 }}
+          style={{
+            width: "100%",
+            padding: "0.75rem",
+            fontFamily: "inherit",
+            fontSize: "0.95rem",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+          }}
         />
       ) : (
         <div
-          onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleFile(f); }}
+          onDrop={(e) => {
+            e.preventDefault();
+            const f = e.dataTransfer.files?.[0];
+            if (f) handleFile(f);
+          }}
           onDragOver={(e) => e.preventDefault()}
           role="button"
           tabIndex={0}
@@ -144,22 +172,44 @@ export default function DisclosureChecker() {
               fileInputRef.current?.click();
             }
           }}
-          style={{ border: "2px dashed #999", borderRadius: 8, padding: "2rem", textAlign: "center", cursor: "pointer" }}
+          style={{
+            border: "2px dashed #999",
+            borderRadius: 8,
+            padding: "2rem",
+            textAlign: "center",
+            cursor: "pointer",
+          }}
           onClick={() => fileInputRef.current?.click()}
         >
           <p style={{ margin: 0 }}>Drop a CSV here, or click to choose a file.</p>
           <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "#666" }}>
             Needs a <code>copy</code>, <code>text</code>, or <code>content</code> column.
           </p>
-          <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={onInputChange} tabIndex={-1} aria-hidden="true" style={{ display: "none" }} />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            onChange={onInputChange}
+            tabIndex={-1}
+            aria-hidden="true"
+            style={{ display: "none" }}
+          />
         </div>
       )}
 
-      {error && <p role="alert" style={{ color: "#b00020" }}>{error}</p>}
+      {error && (
+        <p role="alert" style={{ color: "#b00020" }}>
+          {error}
+        </p>
+      )}
 
       {items.length > 0 && (
         <>
-          <div aria-live="polite" aria-atomic="true" style={{ display: "flex", gap: "1.5rem", margin: "1.5rem 0", flexWrap: "wrap" }}>
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{ display: "flex", gap: "1.5rem", margin: "1.5rem 0", flexWrap: "wrap" }}
+          >
             <StatCard label="Items checked" value={items.length} />
             <StatCard label="Passing" value={passCount} />
             <StatCard label="Missing disclosure" value={items.length - passCount} />
@@ -176,6 +226,7 @@ export default function DisclosureChecker() {
             </thead>
             <tbody>
               {results.map((r, i) => (
+                // eslint-disable-next-line react/no-array-index-key -- rows have no stable id; Phase 4 keys by line
                 <tr key={i}>
                   <td style={tdStyle}>{i + 1}</td>
                   <td style={{ ...tdStyle, maxWidth: 420 }}>{r.text}</td>
@@ -191,11 +242,10 @@ export default function DisclosureChecker() {
       )}
 
       <p style={{ fontSize: "0.8rem", color: "#6b6b6b", marginTop: "1.5rem", maxWidth: 640 }}>
-        This is a pattern-matching aid, not legal advice. A match means one of a small set of
-        common disclosure phrases was found — it doesn't confirm regulatory compliance, and a
-        miss doesn't necessarily mean copy is non-compliant (your required language may not be
-        in this list). Have real campaigns reviewed by compliance/legal. Nothing you enter here
-        leaves this browser tab.
+        This is a pattern-matching aid, not legal advice. A match means one of a small set of common disclosure phrases
+        was found — it doesn&apos;t confirm regulatory compliance, and a miss doesn&apos;t necessarily mean copy is
+        non-compliant (your required language may not be in this list). Have real campaigns reviewed by
+        compliance/legal. Nothing you enter here leaves this browser tab.
       </p>
     </div>
   );
@@ -210,5 +260,7 @@ function StatCard({ label, value }) {
   );
 }
 
+/** @type {import("react").CSSProperties} */
 const thStyle = { textAlign: "left", borderBottom: "2px solid #ccc", padding: "0.4rem 0.6rem" };
+/** @type {import("react").CSSProperties} */
 const tdStyle = { borderBottom: "1px solid #eee", padding: "0.4rem 0.6rem" };

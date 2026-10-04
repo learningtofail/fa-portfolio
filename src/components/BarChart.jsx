@@ -22,7 +22,10 @@ export default function BarChart({ data }) {
     svg.attr("width", width).attr("height", height);
 
     const maxVal = d3.max(data, (d) => d.value) || 1;
-    const x = d3.scaleLinear().domain([0, maxVal]).range([0, width - margin.left - margin.right]);
+    const x = d3
+      .scaleLinear()
+      .domain([0, maxVal])
+      .range([0, width - margin.left - margin.right]);
     const y = d3
       .scaleBand()
       .domain(data.map((d) => d.label))

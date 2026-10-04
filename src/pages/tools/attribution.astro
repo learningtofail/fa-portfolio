@@ -2,17 +2,24 @@
 import Base from "../../layouts/Base.astro";
 import AttributionTool from "../../components/AttributionTool.jsx";
 ---
+
 <Base
   title="Multi-Touch Attribution — Faysal Ahmed"
   description="Upload a CSV of journey touchpoints and compare last-touch, first-touch, linear, position-based, and time-decay attribution, entirely in your browser."
 >
-  <main id="main-content" tabindex="-1" style="font-family: system-ui, sans-serif; max-width: 1040px; margin: 3rem auto; padding: 0 1.5rem;">
-    <p><a href="/tools/">&larr; All tools</a></p>
+  <main
+    id="main-content"
+    tabindex="-1"
+    style="font-family: system-ui, sans-serif; max-width: 1040px; margin: 3rem auto; padding: 0 1.5rem;"
+  >
+    <p>
+      <a href="/tools/">&larr; All tools</a>
+    </p>
     <h1>Multi-Touch Attribution</h1>
     <p style="color: #555; max-width: 640px;">
-      The channel that looks best depends entirely on which attribution model you ask. Upload a
-      CSV of touchpoints and see the same data scored five different ways, side by side. Nothing
-      you upload is sent anywhere — parsing and analysis happen entirely in this tab.
+      The channel that looks best depends entirely on which attribution model you ask. Upload a CSV of touchpoints and
+      see the same data scored five different ways, side by side. Nothing you upload is sent anywhere — parsing and
+      analysis happen entirely in this tab.
     </p>
     <AttributionTool client:visible />
   </main>
