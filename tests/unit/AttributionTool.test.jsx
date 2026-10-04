@@ -54,4 +54,17 @@ describe("AttributionTool (current behavior)", () => {
     await uploadFile(container, "bad.csv", "channel,timestamp\nemail,2026-01-01\n");
     expect((await screen.findByRole("alert")).textContent).toMatch(/journey_id/);
   });
+
+  it.each(["constructor", "__proto__", "toString"])("handles a channel and a journey named %s (D2)", async (name) => {
+    const { container } = render(<AttributionTool />);
+    await uploadFile(
+      container,
+      "proto.csv",
+      `journey_id,channel,timestamp\n${name},${name},2026-01-01\n${name},email,2026-01-03\n`,
+    );
+    await waitFor(() => expect(screen.getByRole("table")).toBeTruthy());
+    expect(await statValue("Journeys")).toBe("1");
+    expect(matrix()[name]["First-touch"]).toMatch(/^1(\.00?)?$/);
+    expect(matrix().email["Last-touch"]).toMatch(/^1(\.00?)?$/);
+  });
 });

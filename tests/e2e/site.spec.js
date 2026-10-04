@@ -98,7 +98,6 @@ test.describe("prototype-colliding user data (D2)", () => {
   });
 
   test("attribution survives a channel named 'constructor'", async ({ page }) => {
-    test.fail();
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/tools/attribution/");

@@ -25,16 +25,18 @@ function normalizeRow(row, fallbackIndex) {
 }
 
 function computeAttribution(journeyMap) {
-  const credit = {};
-  MODELS.forEach((m) => (credit[m] = {}));
+  // Channel names come from user data, so credit is keyed with Map, never a plain object (D2).
+  /** @type {Map<string, Map<string, number>>} model -> channel -> credit */
+  const credit = new Map(MODELS.map((m) => [m, new Map()]));
   let totalValue = 0;
   let touchpointCount = 0;
 
   const addCredit = (model, channel, amt) => {
-    credit[model][channel] = (credit[model][channel] || 0) + amt;
+    const byChannel = credit.get(model);
+    byChannel.set(channel, (byChannel.get(channel) || 0) + amt);
   };
 
-  Object.values(journeyMap).forEach((touchesRaw) => {
+  [...journeyMap.values()].forEach((touchesRaw) => {
     const touches = [...touchesRaw].sort((a, b) => a.time - b.time);
     const n = touches.length;
     touchpointCount += n;
@@ -65,15 +67,20 @@ function computeAttribution(journeyMap) {
   });
 
   const channels = new Set();
-  MODELS.forEach((m) => Object.keys(credit[m]).forEach((c) => channels.add(c)));
+  MODELS.forEach((m) => credit.get(m).forEach((_, c) => channels.add(c)));
 
   return {
     credit,
     channels: [...channels].sort(),
     totalValue,
     touchpointCount,
-    journeyCount: Object.keys(journeyMap).length,
+    journeyCount: journeyMap.size,
   };
+}
+
+/** Credit a model gave a channel, or 0. */
+function creditFor(result, model, channel) {
+  return result.credit.get(model).get(channel) || 0;
 }
 
 export default function AttributionTool() {
@@ -96,7 +103,8 @@ export default function AttributionTool() {
           setError(`Parsed with warnings — results may be incomplete. First: ${realErrors[0].message}`);
         }
 
-        const journeyMap = {};
+        /** @type {Map<string, any[]>} */
+        const journeyMap = new Map();
         let anyRevenue = false;
         let anyFallback = false;
         results.data.forEach((row, i) => {
@@ -104,11 +112,11 @@ export default function AttributionTool() {
           if (!norm.journeyId) return; // skip rows with no journey id — can't group them
           if (norm.revenue != null) anyRevenue = true;
           if (norm.timeIsFallback) anyFallback = true;
-          journeyMap[norm.journeyId] = journeyMap[norm.journeyId] || [];
-          journeyMap[norm.journeyId].push(norm);
+          if (!journeyMap.has(norm.journeyId)) journeyMap.set(norm.journeyId, []);
+          journeyMap.get(norm.journeyId).push(norm);
         });
 
-        if (Object.keys(journeyMap).length === 0) {
+        if (journeyMap.size === 0) {
           setError('No usable rows — check for a "journey_id" column.');
           setResult(null);
           return;
@@ -138,7 +146,7 @@ export default function AttributionTool() {
   const chartData = result
     ? result.channels.map((channel) => ({
         group: channel,
-        series: MODELS.map((m) => ({ key: m, value: Math.round((result.credit[m][channel] || 0) * 100) / 100 })),
+        series: MODELS.map((m) => ({ key: m, value: Math.round((creditFor(result, m, channel) || 0) * 100) / 100 })),
       }))
     : null;
 
@@ -231,7 +239,7 @@ export default function AttributionTool() {
                     <td style={tdStyle}>{channel}</td>
                     {MODELS.map((m) => (
                       <td style={tdStyle} key={m}>
-                        {(result.credit[m][channel] || 0).toFixed(2)}
+                        {(creditFor(result, m, channel) || 0).toFixed(2)}
                       </td>
                     ))}
                   </tr>
