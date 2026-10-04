@@ -1,0 +1,16 @@
+{
+  "extends": "astro/tsconfigs/base",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["vitest/globals", "node"],
+    // Ratchet: start permissive so the existing JS passes, then tighten one flag per phase.
+    // Phase 4 turns on noImplicitAny once component props carry JSDoc types.
+    "strict": false,
+    "noImplicitAny": false
+  },
+  "include": ["src/**/*", "tests/**/*", "scripts/**/*", "*.js", "*.mjs"],
+  "exclude": ["dist", "node_modules"]
+}

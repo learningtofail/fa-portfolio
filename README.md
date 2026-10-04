@@ -70,6 +70,7 @@ This replaces the current placeholder at `/opt/static-web/sites/portfolio` (per 
 Suggested path — build locally (or on `ganesha` via code-server) and push, then let the existing static-hosting setup pick it up. Two ways to get there:
 
 **Option A — replace the repo contents and let the existing deploy path handle it:**
+
 ```bash
 # on ganesha, inside /opt/static-web/sites/portfolio
 git checkout -b phase-4-tools
