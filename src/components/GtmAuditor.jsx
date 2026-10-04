@@ -27,13 +27,15 @@ function collectTemplateRefs(obj, refs) {
 }
 
 function findDuplicates(items, nameKey = "name") {
-  const groups = {};
+  // Names come from user data, so group with a Map: a plain object breaks on "constructor" (D2).
+  /** @type {Map<string, any[]>} */
+  const groups = new Map();
   items.forEach((item) => {
     const name = item[nameKey] || "(unnamed)";
-    groups[name] = groups[name] || [];
-    groups[name].push(item);
+    if (!groups.has(name)) groups.set(name, []);
+    groups.get(name).push(item);
   });
-  return Object.entries(groups).filter(([, arr]) => arr.length > 1);
+  return [...groups.entries()].filter(([, arr]) => arr.length > 1);
 }
 
 function auditContainer(json) {

@@ -58,17 +58,24 @@ describe("GtmAuditor (current behavior)", () => {
   });
 });
 
-// Known defect (review D2). Plain-object lookups collide with Object.prototype keys, so a tag named
-// "constructor" breaks duplicate detection and the audit never renders.
-describe("GtmAuditor known defects (D2)", () => {
-  it.fails("audits a container that has a tag named 'constructor'", async () => {
+// Review D2: names are user data, so duplicate detection must not collide with Object.prototype keys.
+describe("GtmAuditor names that collide with Object.prototype (D2)", () => {
+  it.each(["constructor", "__proto__", "toString"])("audits tags, triggers and variables named %s", async (name) => {
     const { container: c } = render(<GtmAuditor />);
     await uploadFile(
       c,
       "gtm.json",
-      container({ tag: [{ name: "constructor", firingTriggerId: ["1"] }] }),
+      container({
+        tag: [
+          { name, firingTriggerId: ["1"] },
+          { name, firingTriggerId: ["1"] },
+        ],
+        trigger: [{ name, triggerId: "1" }],
+        variable: [{ name }],
+      }),
       "application/json",
     );
-    expect(await statValue("Tags")).toBe("1");
+    expect(await statValue("Tags")).toBe("2");
+    await waitFor(() => expect(findingHeadings()).toContain("Duplicate names (1)"));
   });
 });
