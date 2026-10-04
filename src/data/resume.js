@@ -1,3 +1,7 @@
+import { CAREER_START_YEAR, yearsOfExperience } from "./years.js";
+
+const YEARS = yearsOfExperience();
+
 // Single source of truth for portfolio content — the page (src/pages/index.astro)
 // and the PDF export (scripts/generate-pdf.mjs) both read from this file, so the
 // two can't drift apart. Sourced from the approved Phase 2 portfolio copy
@@ -5,25 +9,23 @@
 
 export const meta = {
   title: "Faysal Ahmed — VP of SEO & Organic Growth",
-  description:
-    "22 years turning organic search into a growth engine — technical SEO, marketing analytics, and embedded product leadership, in-house and agency.",
+  description: `${YEARS} years turning organic search into a growth engine — technical SEO, marketing analytics, and embedded product leadership, in-house and agency.`,
 };
 
 export const summary = {
   name: "Faysal Ahmed",
   headline: "VP of SEO & Organic Growth",
-  subhead:
-    "22 years turning organic search into a growth engine — technical SEO, marketing analytics, and embedded product leadership, in-house and agency.",
+  subhead: `${YEARS} years turning organic search into a growth engine — technical SEO, marketing analytics, and embedded product leadership, in-house and agency.`,
   // Off by default so the build never references a file that doesn't exist yet.
   // To add a real photo (Phase 9): drop it at public/headshot.jpg — square-ish
   // crop, at least 480x480, shoulders-up — then flip enabled to true.
   headshot: { enabled: false, src: "/headshot.jpg", alt: "Faysal Ahmed" },
   body: [
-    "Digital marketing and SEO professional with 22 years of experience driving organic growth at scale. Career spans independent consulting, agency work at Cardinal Path and Merkle Cardinal Path, regulated-industry marketing at Klick Health, and in-house Director-level leadership at Canada's largest automotive marketplace, AutoTrader.ca.",
+    `Digital marketing and SEO professional with ${YEARS} years of experience driving organic growth at scale. Career spans independent consulting, agency work at Cardinal Path and Merkle Cardinal Path, regulated-industry marketing at Klick Health, and in-house Director-level leadership at Canada's largest automotive marketplace, AutoTrader.ca.`,
     "Distinctive combination of deep technical SEO expertise, marketing analytics fluency, and hands-on product management for engineering teams. Currently targeting VP of SEO, PM/SEO Growth, Director of Digital Marketing, or Director of Marketing Analytics roles — open to in-house and agency, with a preference for SaaS, technology, and marketplace environments.",
   ],
   stats: [
-    "22 years since 2004",
+    `${YEARS} years since ${CAREER_START_YEAR}`,
     "10M+ monthly sessions owned",
     "~$400K annual budget managed",
     "Top-3 rankings, >90% of Canadian markets",
