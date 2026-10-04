@@ -18,6 +18,7 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 - `src/styles/`: `orchis.tokens.css` (vendored, never hand-edit, pinned by `orchis.tokens.manifest.json`), `site.tokens.css` (semantic aliases and the only other place raw colors may live), `base.css`, `layout.css` (`.page`), `resume.css` (index page), `components/*.css` (BEM component styles, imported through `components.css`).
 - `scripts/tokens/`: vendoring and drift check for the Orchis tokens.
 - `scripts/deploy-release.sh`: atomic release deploy and rollback (has a `--dry-run`). `scripts/csp-hashes.mjs`: CSP hashes for Astro's inline code.
+- `docs/monitoring.md`: Uptime Kuma checks per URL, www embedding, copy-not-share policy.
 - `docs/rollback.md`, `docs/caddy/Caddyfile.proposed.md`: recovery, and the proposed Caddy block with the one-time host migration.
 - `scripts/generate-pdf.mjs` and `scripts/pdf/ResumePdfBuilder.mjs`: build the resume PDF from `resume.js`. The PDF is generated, not tracked.
 - `tests/unit/`: Vitest + Testing Library (`tests/unit/lib/` for the lib modules). `tests/e2e/`: Playwright + axe. `tests/fixtures/`: shared fixtures, including the hand-verified attribution golden files.
