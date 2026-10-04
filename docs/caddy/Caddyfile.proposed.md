@@ -1,46 +1,82 @@
-# Proposed Caddy site block for portfolio.faysalahmed.ca
+# Proposed Caddy config for portfolio.faysalahmed.ca
 
-**Status: proposed, not applied.** This repository cannot see the host's Caddyfile. Lines marked `[verify]` are assumptions to confirm on the host before you change anything. Nothing in this file changes production until you edit the host's Caddyfile yourself.
+Status: **proposal, not applied.** This file holds the complete `/etc/caddy/Caddyfile` for the static host plus the exact host-side steps. The Phase 5 PR that carries it must not be merged until step 6 is done.
 
-**The Phase 5 pull request must not be merged until steps 1 to 4 below are done.** The new deploy job writes to `releases/<id>/` and refuses to run against a host that has no `current` symlink, so merging early makes every deploy fail (the live site keeps serving, nothing breaks, but deploys stop until you finish the migration).
+## What the host looks like (verified 2026-10-04)
 
-## Complete site block
+- The static host is the LXC **`lxc-staticweb`** (container 105 on `srv-saraswati`, LAN `192.168.2.120`, Tailscale `100.66.244.127`). The Cloudflare Tunnel routes both `www.faysalahmed.ca` and `portfolio.faysalahmed.ca` to `http://192.168.2.120:80`. Vinayaki runs the tunnel but does not serve these sites; its own `/opt/static-web` copy is stale and unused for them.
+- Caddy runs there as a **systemd service** (`caddy.service`, config `/etc/caddy/Caddyfile`, owned by root). It is not in Docker. The admin API is on (`127.0.0.1:2019`), so `systemctl reload caddy` works.
+- One `:80` site with host matchers (`@www`, `@portfolio`) and roots `/opt/static-web/sites/www` and `/opt/static-web/sites/portfolio`. The site files are owned by uid 1001.
+- Enter the host from `srv-saraswati` with `pct enter 105`. You are root there, so no `sudo` is needed in the steps below.
+
+## The complete Caddyfile
+
+The `www` block is included so the file is complete and drop-in. Its policy is maintained in the fa-www repo; if its hashes change there, update this copy to match. Tabs are used for indentation.
 
 ```caddyfile
-# portfolio.faysalahmed.ca: resume and client-side tools. Stateless, rebuilt from git on every deploy.
-# [verify] Keep the site address form the current block uses (for example `http://portfolio.faysalahmed.ca`
-# when Cloudflare Tunnel terminates TLS in front of Caddy).
-http://portfolio.faysalahmed.ca {
-	# Atomic releases: the deploy script switches this symlink. [verify] the base path matches DEPLOY_PATH.
-	root * /opt/static-web/sites/portfolio/current
-	encode zstd gzip
-	file_server
+# /etc/caddy/Caddyfile on lxc-staticweb (192.168.2.120). Both sites share one listener.
+# Cloudflare Tunnel terminates TLS and forwards plain HTTP to :80, so there is no TLS config here.
+:80 {
+	@portfolio host portfolio.faysalahmed.ca
+	handle @portfolio {
+		root * /opt/static-web/sites/portfolio/current
+		encode zstd gzip
 
-	header {
-		# Enforced now. This is the only part of the policy that cannot break the page: it limits who may
-		# embed it. www.faysalahmed.ca embeds the tools in an iframe, so it must stay allowed.
-		Content-Security-Policy "frame-ancestors https://www.faysalahmed.ca"
+		header {
+			-Server
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			X-Robots-Tag "noindex, nofollow"
 
-		# Report-only first: the full policy, with hashes for Astro's inline island code. Browsers log violations
-		# to the console without blocking anything. Promote it (rename the header) after a clean review.
-		Content-Security-Policy-Report-Only "default-src 'none'; script-src 'self' 'sha256-Q2BPg90ZMplYY+FSdApNErhpWafg2hcRRbndmvxuL/Q=' 'sha256-Ya0pUYrC7nM5Cn/056TyVuEiz6dFGrzmkWzgON0pF0U='; style-src 'self' 'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-ancestors https://www.faysalahmed.ca"
+			# Enforced now. Limits who may embed the page; www.faysalahmed.ca embeds the tools, so it stays allowed.
+			Content-Security-Policy "frame-ancestors https://www.faysalahmed.ca"
 
-		X-Content-Type-Options nosniff
-		Referrer-Policy strict-origin-when-cross-origin
-		X-Robots-Tag "noindex, nofollow"
-		-Server
+			# Report-only first: the full policy with hashes for Astro's inline island code. Promote it (rename the
+			# header and drop the frame-ancestors-only line above) after a clean review.
+			Content-Security-Policy-Report-Only "default-src 'none'; script-src 'self' 'sha256-Q2BPg90ZMplYY+FSdApNErhpWafg2hcRRbndmvxuL/Q=' 'sha256-Ya0pUYrC7nM5Cn/056TyVuEiz6dFGrzmkWzgON0pF0U='; style-src 'self' 'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-ancestors https://www.faysalahmed.ca"
+		}
+
+		# Fingerprinted build output never changes, so it can be cached for a year. HTML must revalidate.
+		@portfolio_assets path /_astro/*
+		header @portfolio_assets Cache-Control "public, max-age=31536000, immutable"
+		@portfolio_pages not path /_astro/*
+		header @portfolio_pages Cache-Control "no-cache"
+
+		file_server
 	}
 
-	# Fingerprinted build output never changes, so it can be cached for a year. HTML must revalidate so a new
-	# release shows up right after the symlink switch.
-	@assets path /_astro/*
-	header @assets Cache-Control "public, max-age=31536000, immutable"
-	@pages not path /_astro/*
-	header @pages Cache-Control "no-cache"
+	@www host www.faysalahmed.ca
+	handle @www {
+		root * /opt/static-web/sites/www/current
+		encode zstd gzip
+
+		header {
+			-Server
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			X-Robots-Tag "noindex, nofollow"
+			X-Frame-Options "DENY"
+			Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+			# Report-only first: violations show in the browser console as "[Report Only]" and nothing is blocked.
+			# After a clean week, comment this line out and uncomment the enforcing line below it.
+			Content-Security-Policy-Report-Only "default-src 'none'; script-src 'self' 'sha256-Ya0pUYrC7nM5Cn/056TyVuEiz6dFGrzmkWzgON0pF0U=' 'sha256-eIXWvAmxkr251LJZkjniEK5LcPF3NkapbJepohwYRIc='; style-src 'self' 'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='; img-src 'self' data:; font-src 'self' data:; connect-src https://contact-api.jrflab.dev; frame-src https://portfolio.faysalahmed.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'"
+			# Content-Security-Policy "default-src 'none'; script-src 'self' 'sha256-Ya0pUYrC7nM5Cn/056TyVuEiz6dFGrzmkWzgON0pF0U=' 'sha256-eIXWvAmxkr251LJZkjniEK5LcPF3NkapbJepohwYRIc='; style-src 'self' 'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='; img-src 'self' data:; font-src 'self' data:; connect-src https://contact-api.jrflab.dev; frame-src https://portfolio.faysalahmed.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'"
+		}
+
+		# Hashed build output never changes under the same name.
+		@www_assets path /_astro/*
+		header @www_assets Cache-Control "public, max-age=31536000, immutable"
+		# Everything else must revalidate, so switching `current` is visible on the next request.
+		@www_pages not path /_astro/*
+		header @www_pages Cache-Control "no-cache"
+
+		file_server
+	}
 }
 ```
 
-Notes on the policy:
+## Notes on the policy
 
 - `frame-ancestors` is enforced by itself so the iframe rule is live from day one. It supersedes `X-Frame-Options`; do not add that header, because `ALLOW-FROM` is obsolete and `SAMEORIGIN` would block www.
 - The two script hashes are Astro's island bootstrap and hydration scripts; the style hash is Astro's one-line `astro-island { display: contents }` rule. All other CSS and JS is same-origin (`astro.config.mjs` sets `inlineStylesheets: "never"`). The page itself has no inline `style` attributes (an e2e test enforces it).
@@ -48,82 +84,85 @@ Notes on the policy:
 - `connect-src 'self'`, `form-action 'none'` and `default-src 'none'` encode the privacy statement: nothing a visitor enters can be sent to another origin.
 - The matching `frame-src https://portfolio.faysalahmed.ca` belongs in www's own Caddy block. That is the other repository; this document does not change it.
 
-## One-time host migration (do this before merging the Phase 5 PR)
+## Host migration (do these in order, before merging the PR)
 
-All commands run **on the static host** (`[verify]` which machine serves `/opt/static-web`), unless a step says otherwise.
+Run everything **on `lxc-staticweb`** as root (`pct enter 105` from `srv-saraswati`). Steps 1 to 4 are designed so the live site never changes while you work, because `current` starts out pointing at an exact copy of the live files.
 
-### 0. Record the current state
-
-```bash
-cd /opt/static-web/sites/portfolio
-ls -la | head
-sudo cp /path/to/Caddyfile "/path/to/Caddyfile.bak-$(date -u +%Y%m%d%H%M%S)"   # [verify] real Caddyfile path
-```
-
-### 1. Create the releases layout and seed it from the live files
-
-The live site is a flat directory today. Seed the first release from it so the cutover serves identical content.
+**0. Find the deploy owner and back up the Caddyfile.**
 
 ```bash
 cd /opt/static-web/sites/portfolio
-test -s index.html && test ! -e current              # flat layout, not migrated yet
-SEED="$(date -u +%Y%m%d%H%M%S)-seed"
-mkdir -p releases "releases/$SEED"
-rsync -a --exclude releases --exclude current --exclude current.new ./ "releases/$SEED/"
-test -s "releases/$SEED/index.html" && test -s "releases/$SEED/faysal-ahmed-resume.pdf"
-ln -s "releases/$SEED" current
-readlink current                                     # prints releases/<SEED>
+stat -c 'owner uid:gid %u:%g' index.html          # the owner CI writes as (expect 1001:1001)
+awk -F: '$3==1001 {print $1}' /etc/passwd        # its user name, if it has one
+cp /etc/caddy/Caddyfile "/etc/caddy/Caddyfile.bak-$(date +%F)"
 ```
 
-The deploy user must own `releases/` and be able to create files in `/opt/static-web/sites/portfolio` (the script creates and renames `current.new`). `[verify]`: `ls -ld . releases` and `id <deploy user>`.
-
-### 2. Create the pinned host key secret
-
-The deploy no longer runs `ssh-keyscan` (which trusts whatever key answers first). Build the `known_hosts` line from the host's own key, on the host:
+**1. Create the release layout, keeping the live files serving.**
 
 ```bash
-printf '%s %s\n' '<value of the SSH_HOST secret, exactly>' "$(cut -d' ' -f1,2 /etc/ssh/ssh_host_ed25519_key.pub)"
+cd /opt/static-web/sites/portfolio
+test -s index.html && test ! -e current && echo "flat layout, ready"
+mkdir -p releases/legacy
+rsync -a --exclude='/releases/' --exclude='/current' ./ releases/legacy/
+test -s releases/legacy/index.html && echo "legacy copy ok"
+ln -s releases/legacy current
+readlink current                                    # expect: releases/legacy
+chown -R 1001:1001 releases                          # use the uid:gid printed in step 0
+chown -h 1001:1001 current
 ```
 
-Copy the one line it prints. In the GitHub repository (Settings, Secrets and variables, Actions) create the secret `SSH_KNOWN_HOSTS` with that line, or from a machine with `gh` logged in:
+The deploy user must also be able to create and rename entries directly inside `/opt/static-web/sites/portfolio` (the deploy switches `current` there). It already owns the files, so check that the directory itself is owned by it: `ls -ld /opt/static-web/sites/portfolio`. If it is root-owned, run `chown 1001:1001 /opt/static-web/sites/portfolio`.
+
+**2. Create the `SSH_KNOWN_HOSTS` repository secret.** Build the line from the host's own key, so nothing depends on trusting the network. It lists the host name, the Tailscale IP, and the MagicDNS name, so it matches whichever form your `SSH_HOST` secret uses:
 
 ```bash
-gh secret set SSH_KNOWN_HOSTS --repo learningtofail/fa-portfolio     # paste the line, then Ctrl-D
+FQDN="$(tailscale status --json 2>/dev/null | sed -n 's/.*"DNSName": *"\([^"]*\)\.".*/\1/p' | head -n 1)"
+printf '%s %s\n' "lxc-staticweb,100.66.244.127${FQDN:+,$FQDN}" "$(cut -d' ' -f1,2 /etc/ssh/ssh_host_ed25519_key.pub)"
 ```
 
-The name in the line must match the `SSH_HOST` secret exactly (the Tailscale name or IP the runner connects to). Also create the `production` environment (Settings, Environments) if it does not exist; add required reviewers if you want a manual approval before each deploy.
+Copy the single line it prints. In GitHub open `fa-portfolio`, Settings, Secrets and variables, Actions, New repository secret, name `SSH_KNOWN_HOSTS`, and paste the line. Also create the `production` environment (Settings, Environments) if it does not exist. The secret must exist before the first deploy; without it the deploy job stops with "SSH_KNOWN_HOSTS is empty" and never connects.
 
-### 3. Point Caddy at `current` and add the headers
+If `/etc/ssh/ssh_host_ed25519_key.pub` does not exist, the host key type differs: run `ls /etc/ssh/ssh_host_*_key.pub` and use that file and its key type instead.
 
-Edit the existing `portfolio.faysalahmed.ca` block to match the site block above, then validate and reload:
+**3. Apply the new Caddyfile.** Replace the whole file with the block above (keep the backup from step 0), validate, then reload:
 
 ```bash
-caddy validate --config /path/to/Caddyfile --adapter caddyfile      # [verify] real path
-sudo systemctl reload caddy || sudo systemctl restart caddy
+nano /etc/caddy/Caddyfile
+caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+systemctl reload caddy
+systemctl is-active caddy                           # expect: active
 ```
 
-If the global options set `admin off`, `reload` cannot work and you need the `restart` (a brief blip). `[verify]` whether that applies here.
+I could not run `caddy validate` where this file was written. Treat that command as required: if it prints an error, do not reload, and restore the backup (`cp /etc/caddy/Caddyfile.bak-<date> /etc/caddy/Caddyfile`).
 
-RISK: a wrong `root` path serves 404 until you revert that line, and a bad `Content-Security-Policy` blanks the page. The policy is report-only except for `frame-ancestors`, so the realistic failure is the `root` path. Roll back by restoring the backup from step 0 and reloading (or restarting) Caddy.
+RISK: a wrong `root` serves 404 for that site until you restore the backup and reload, and a bad CSP could blank the page. The CSP is report-only (plus the `frame-ancestors` rule on the portfolio), so the realistic failure is the `root` path or a Caddyfile syntax error, which `caddy validate` catches before the reload.
 
-### 4. Verify, from any machine
+**4. Verify the host serves the symlinked copy with the new headers.** On the host:
 
 ```bash
-curl -sI https://portfolio.faysalahmed.ca/ | grep -iE '^(HTTP|content-security|x-content-type|referrer-policy|x-robots)'
-curl -s https://portfolio.faysalahmed.ca/ | grep -c 'Faysal Ahmed'
-curl -s https://portfolio.faysalahmed.ca/tools/utm-auditor/ | grep -c 'UTM Governance Auditor'
-curl -sI https://portfolio.faysalahmed.ca/faysal-ahmed-resume.pdf | grep -i 'content-type'
+readlink /opt/static-web/sites/www/current /opt/static-web/sites/portfolio/current
+curl -sI -H 'Host: portfolio.faysalahmed.ca' http://127.0.0.1/ | grep -iE '^(HTTP|content-security|x-content-type|referrer-policy|x-robots|cache-control)'
 ```
 
-On the host: `readlink /opt/static-web/sites/portfolio/current` must show the seed release. In a browser, open the home page and each tool, and open `https://www.faysalahmed.ca` to confirm the Tools window still loads the tools inside its iframe. The console must show no `Content-Security-Policy-Report-Only` violations.
+From any machine on the internet:
 
-### 5. Add the health check
+```bash
+curl -sI https://portfolio.faysalahmed.ca/ | grep -iE '^(HTTP|content-security|x-content-type|referrer-policy|x-robots|cache-control)'
+```
 
-In Uptime Kuma add an HTTP(s) Keyword monitor per hostname: `https://portfolio.faysalahmed.ca/` with keyword `Faysal Ahmed`, interval 5 minutes, alert on keyword missing. Phase 6 adds one per tool URL (`docs/monitoring.md`).
+Open the site in a browser with DevTools and confirm the console shows no `[Report Only]` violations. Open `https://www.faysalahmed.ca` and confirm the Tools window still loads the tools in their iframes (the portfolio's `frame-ancestors` rule must allow it). Add the Uptime Kuma keyword check from `docs/rollback.md` now.
 
-### 6. Merge the Phase 5 PR
+**5. Migrate the other site the same way** (its repo has the matching doc). Both sites share this Caddyfile, so if you applied the whole file above, only its `current` symlink and secret remain for the other site. Do not merge either Phase 5 PR until its own site has `releases/legacy`, `current`, and the `SSH_KNOWN_HOSTS` secret.
 
-Only now. The first deploy creates `releases/<timestamp>-<sha>/` and switches `current`. Check with the commands in step 4. The old flat files left in `/opt/static-web/sites/portfolio/` are no longer served; remove them after a week of clean deploys:
+**6. Merge the Phase 5 PR.** The deploy job writes `releases/<id>/`, switches `current`, and keeps the last five. Skip the local dry run: it needs a bash checkout, and a failed first deploy is harmless because it stops before switching `current`. Watch the Deploy job, then:
+
+```bash
+ls -la /opt/static-web/sites/portfolio/releases
+readlink /opt/static-web/sites/portfolio/current
+curl -sI https://portfolio.faysalahmed.ca/ | head -n 1
+```
+
+**7. After the first deploys.** The old flat files left in `/opt/static-web/sites/portfolio/` are no longer served. Remove them after a week of clean deploys:
 
 ```bash
 cd /opt/static-web/sites/portfolio
@@ -132,7 +171,7 @@ find . -maxdepth 1 ! -name . ! -name releases ! -name current          # review 
 find . -maxdepth 1 ! -name . ! -name releases ! -name current -exec rm -rf -- {} +
 ```
 
-RISK: that `rm` is irreversible. The previous releases are the backup; both sites are stateless and rebuild from git.
+RISK: that `rm` is irreversible. The previous releases are the backup, and the site is stateless and rebuilds from git.
 
 ## Promoting the CSP from report-only to enforced
 
