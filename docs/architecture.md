@@ -17,7 +17,7 @@
 
 ## Tools
 
-Each tool is one component in `src/components/` holding parsing, audit logic and UI together: `UtmAuditor`, `GtmAuditor`, `AttributionTool`, `DisclosureChecker`, `CacCalculator`. Charts are `BarChart`, `GroupedBarChart`, `PaybackChart` (D3). Phase 4 of the refactor plan extracts the logic into pure modules.
+Each tool is one component in `src/components/` holding parsing, audit logic and UI together: `UtmAuditor`, `GtmAuditor`, `AttributionTool`, `DisclosureChecker`, `CacCalculator`. Charts are `BarChart`, `GroupedBarChart`, `PaybackChart` (D3); they redraw through the `useChartWidth` ResizeObserver hook. Phase 4 of the refactor plan extracts the logic into pure modules.
 
 ## Build
 
@@ -25,7 +25,7 @@ Each tool is one component in `src/components/` holding parsing, audit logic and
 
 ## Quality gates
 
-ESLint 9 with pinned rules, Prettier, `tsc --noEmit` with `checkJs`, Vitest unit tests, Playwright e2e plus axe (all pages pass with no violations). Known defects are pinned by `it.fails` (unit) and `test.fail()` (e2e) and carry review IDs (D1, D2, D11).
+ESLint 9 with pinned rules, Prettier, `tsc --noEmit` with `checkJs`, Vitest unit tests, Playwright e2e plus axe (all pages pass with no violations). Known defects are pinned by `it.fails` (unit) and `test.fail()` (e2e) with their review ID; none are open. Open decisions (D8, D9) are in `docs/open-decisions.md`.
 
 ## Delivery
 
