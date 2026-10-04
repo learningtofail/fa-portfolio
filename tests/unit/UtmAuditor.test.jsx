@@ -38,4 +38,17 @@ describe("UtmAuditor (current behavior)", () => {
     );
     expect(await statValue("Rows with issues")).toBe("1");
   });
+
+  it.each(["constructor", "__proto__", "toString", "hasOwnProperty"])(
+    "audits a value named %s without throwing (D2)",
+    async (name) => {
+      const { container } = render(<UtmAuditor />);
+      await uploadFile(
+        container,
+        "proto.csv",
+        `utm_source,utm_medium,utm_campaign\n${name},cpc,spring\n${name.toUpperCase()},cpc,spring\n`,
+      );
+      expect(await statValue("Rows with issues")).toBe("2");
+    },
+  );
 });

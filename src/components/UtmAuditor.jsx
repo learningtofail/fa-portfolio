@@ -56,7 +56,9 @@ function detectSeparatorStyle(value) {
 
 function auditRows(rows) {
   const issues = []; // { rowIndex, field, type, detail }
-  const casingGroups = {}; // field -> lowercase value -> Set of original casings
+  // Keyed by user data, so Map/Set only: a plain object would collide with "constructor" and "__proto__" (D2).
+  /** @type {Map<string, Map<string, Set<string>>>} field -> lowercase value -> original casings */
+  const casingGroups = new Map();
 
   // Pass 1: build casing groups
   rows.forEach((row) => {
@@ -64,9 +66,10 @@ function auditRows(rows) {
       const val = row[field];
       if (!val) return;
       const key = val.toLowerCase();
-      casingGroups[field] = casingGroups[field] || {};
-      casingGroups[field][key] = casingGroups[field][key] || new Set();
-      casingGroups[field][key].add(val);
+      if (!casingGroups.has(field)) casingGroups.set(field, new Map());
+      const byValue = casingGroups.get(field);
+      if (!byValue.has(key)) byValue.set(key, new Set());
+      byValue.get(key).add(val);
     });
   });
 
@@ -81,12 +84,13 @@ function auditRows(rows) {
   const majorityStyle = Object.entries(separatorCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
 
   // Pass 3: duplicate tuple detection (same source+medium+campaign, different url)
-  const tupleToUrls = {};
+  /** @type {Map<string, Set<string>>} */
+  const tupleToUrls = new Map();
   rows.forEach((row) => {
     if (!row.source || !row.medium || !row.campaign) return;
     const tuple = `${row.source.toLowerCase()}|${row.medium.toLowerCase()}|${row.campaign.toLowerCase()}`;
-    tupleToUrls[tuple] = tupleToUrls[tuple] || new Set();
-    if (row.url) tupleToUrls[tuple].add(row.url);
+    if (!tupleToUrls.has(tuple)) tupleToUrls.set(tuple, new Set());
+    if (row.url) tupleToUrls.get(tuple).add(row.url);
   });
 
   rows.forEach((row, rowIndex) => {
@@ -119,7 +123,7 @@ function auditRows(rows) {
       const val = row[field];
       if (!val) return;
       const key = val.toLowerCase();
-      const variants = casingGroups[field]?.[key];
+      const variants = casingGroups.get(field)?.get(key);
       if (variants && variants.size > 1) {
         issues.push({
           rowIndex,
@@ -146,7 +150,7 @@ function auditRows(rows) {
     // Duplicate tuple, different destination
     if (row.source && row.medium && row.campaign) {
       const tuple = `${row.source.toLowerCase()}|${row.medium.toLowerCase()}|${row.campaign.toLowerCase()}`;
-      const urls = tupleToUrls[tuple];
+      const urls = tupleToUrls.get(tuple);
       if (urls && urls.size > 1) {
         issues.push({
           rowIndex,

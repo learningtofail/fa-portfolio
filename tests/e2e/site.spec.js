@@ -86,11 +86,8 @@ test.describe("tool pages", () => {
   });
 });
 
-// Known defect (review D2). A user value of `constructor` collides with Object.prototype and throws
-// inside the Papa Parse callback. test.fail() passes while the bug exists and fails once it is fixed.
-test.describe("known defects (D2)", () => {
+test.describe("prototype-colliding user data (D2)", () => {
   test("utm-auditor survives a utm_source of 'constructor'", async ({ page }) => {
-    test.fail();
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/tools/utm-auditor/");
