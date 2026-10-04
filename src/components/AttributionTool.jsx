@@ -24,6 +24,35 @@ function normalizeRow(row, fallbackIndex) {
   };
 }
 
+/**
+ * Flags revenue input that the credit math cannot interpret safely (D9). It only reports; the math is unchanged.
+ * Two signals: a journey whose rows all repeat one identical revenue figure (likely the conversion value copied
+ * onto every touchpoint, so the sum counts it n times), and a mix of journeys with and without revenue (dollar
+ * values and the count-based fallback of 1 end up in the same totals).
+ * @param {Map<string, {revenue: number|null}[]>} journeyMap Touchpoints grouped by journey id.
+ * @returns {{repeatedRevenueJourneys: number, journeysWithRevenue: number, journeysWithoutRevenue: number, mixedUnits: boolean}}
+ */
+export function detectRevenueIssues(journeyMap) {
+  let repeatedRevenueJourneys = 0;
+  let journeysWithRevenue = 0;
+  let journeysWithoutRevenue = 0;
+  journeyMap.forEach((touches) => {
+    const amounts = touches.map((t) => t.revenue || 0).filter((r) => r > 0);
+    if (amounts.length === 0) {
+      journeysWithoutRevenue += 1;
+      return;
+    }
+    journeysWithRevenue += 1;
+    if (amounts.length > 1 && amounts.every((a) => a === amounts[0])) repeatedRevenueJourneys += 1;
+  });
+  return {
+    repeatedRevenueJourneys,
+    journeysWithRevenue,
+    journeysWithoutRevenue,
+    mixedUnits: journeysWithRevenue > 0 && journeysWithoutRevenue > 0,
+  };
+}
+
 function computeAttribution(journeyMap) {
   // Channel names come from user data, so credit is keyed with Map, never a plain object (D2).
   /** @type {Map<string, Map<string, number>>} model -> channel -> credit */
@@ -75,7 +104,24 @@ function computeAttribution(journeyMap) {
     totalValue,
     touchpointCount,
     journeyCount: journeyMap.size,
+    revenueIssues: detectRevenueIssues(journeyMap),
   };
+}
+
+/** Human-readable warnings for the D9 revenue checks. */
+function revenueWarnings(issues) {
+  const out = [];
+  if (issues.repeatedRevenueJourneys > 0) {
+    out.push(
+      `${issues.repeatedRevenueJourneys} journey(s) repeat the same revenue on several rows. Revenue is summed across a journey's rows, so a conversion value copied onto every touchpoint is counted once per row.`,
+    );
+  }
+  if (issues.mixedUnits) {
+    out.push(
+      `${issues.journeysWithRevenue} journey(s) have revenue and ${issues.journeysWithoutRevenue} do not. Journeys without revenue count as 1 next to revenue amounts from other journeys, so the totals mix units.`,
+    );
+  }
+  return out;
 }
 
 /** Credit a model gave a channel, or 0. */
@@ -150,6 +196,8 @@ export default function AttributionTool() {
       }))
     : null;
 
+  const warnings = result ? revenueWarnings(result.revenueIssues) : [];
+
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 960 }}>
       <div
@@ -216,6 +264,16 @@ export default function AttributionTool() {
               " Some rows had no parseable timestamp — those journeys are ordered by row order in the file instead."}{" "}
             Time-decay uses a {HALF_LIFE_DAYS}-day half-life.
           </p>
+
+          {warnings.length > 0 && (
+            <div role="status" aria-label="Revenue data warnings">
+              {warnings.map((w) => (
+                <p key={w}>
+                  <strong>Warning:</strong> {w}
+                </p>
+              ))}
+            </div>
+          )}
 
           <h2>Credit by channel, across models</h2>
           {chartData && <GroupedBarChart data={chartData} seriesKeys={MODELS} />}

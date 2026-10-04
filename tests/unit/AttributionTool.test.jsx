@@ -68,3 +68,42 @@ describe("AttributionTool (current behavior)", () => {
     expect(matrix().email["Last-touch"]).toMatch(/^1(\.00?)?$/);
   });
 });
+
+describe("AttributionTool revenue warnings (D9)", () => {
+  const warnings = () => screen.queryByRole("status", { name: "Revenue data warnings" });
+
+  it("warns when a journey repeats the same revenue on every row, and leaves the credit math alone", async () => {
+    const { container } = render(<AttributionTool />);
+    await uploadFile(
+      container,
+      "repeat.csv",
+      "journey_id,channel,timestamp,revenue\nj1,email,2026-01-01,100\nj1,paid,2026-01-02,100\n",
+    );
+    await waitFor(() => expect(warnings()).toBeTruthy());
+    expect(warnings().textContent).toMatch(/repeat the same revenue/);
+    // Unchanged behavior: 100 + 100 is still summed to 200.
+    expect(matrix().paid["Last-touch"]).toMatch(/^200(\.00?)?$/);
+  });
+
+  it("warns when journeys with and without revenue are mixed", async () => {
+    const { container } = render(<AttributionTool />);
+    await uploadFile(
+      container,
+      "mixed.csv",
+      "journey_id,channel,timestamp,revenue\nj1,email,2026-01-01,100\nj2,paid,2026-01-02,\n",
+    );
+    await waitFor(() => expect(warnings()).toBeTruthy());
+    expect(warnings().textContent).toMatch(/1 journey\(s\) have revenue and 1 do not/);
+  });
+
+  it("shows no warning for one revenue figure per journey, or for no revenue at all", async () => {
+    const { container } = render(<AttributionTool />);
+    await uploadFile(
+      container,
+      "clean.csv",
+      "journey_id,channel,timestamp,revenue\nj1,email,2026-01-01,\nj1,paid,2026-01-02,100\nj2,paid,2026-01-02,50\n",
+    );
+    await waitFor(() => expect(screen.getByRole("table")).toBeTruthy());
+    expect(warnings()).toBeNull();
+  });
+});
