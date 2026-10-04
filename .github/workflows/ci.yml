@@ -24,8 +24,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm run lint:css
       - run: npm run format:check
       - run: npm run typecheck
+      # Diffs the vendored Orchis tokens against the pinned design-system commit. CI must reach GitHub.
+      - run: npm run tokens:check
+        env:
+          TOKENS_CHECK_REQUIRE_NETWORK: "1"
 
   unit:
     name: Unit tests

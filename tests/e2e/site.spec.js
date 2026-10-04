@@ -117,3 +117,67 @@ test.describe("accessibility", () => {
     });
   }
 });
+
+test.describe("styling rules (Phase 3)", () => {
+  const ALL_PATHS = ["/", "/tools/", ...TOOL_PAGES.map((t) => `/tools/${t.slug}/`)];
+
+  for (const path of ALL_PATHS) {
+    test(`${path} has no inline style attributes`, async ({ page }) => {
+      await page.goto(path);
+      if (path.startsWith("/tools/") && path !== "/tools/") await hydrated(page);
+      expect(await page.locator("[style]").count()).toBe(0);
+    });
+  }
+
+  test("charts render without inline styles or hex attributes", async ({ page }) => {
+    await page.goto("/tools/attribution/");
+    await hydrated(page);
+    await page.setInputFiles('input[type="file"]', fixture("attribution.csv"));
+    await expect(page.getByRole("table")).toBeVisible();
+    expect(await page.locator("[style]").count()).toBe(0);
+    expect(await page.locator('svg [fill^="#"], svg [stroke^="#"]').count()).toBe(0);
+    // Series colors resolve from the site tokens through classes.
+    const fill = await page
+      .locator("svg .chart__series--1")
+      .first()
+      .evaluate((el) => getComputedStyle(el).fill);
+    expect(fill).toBe("rgb(58, 90, 155)");
+  });
+
+  test("hover transition is removed under prefers-reduced-motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const duration = await page
+      .locator("a.tool-card")
+      .first()
+      .evaluate((el) => getComputedStyle(el).transitionDuration);
+    expect(duration).toBe("0s");
+  });
+});
+
+test.describe("accessibility with results on screen", () => {
+  const CASES = [
+    ["utm-auditor", "utm.csv"],
+    ["gtm-auditor", "gtm.json"],
+    ["attribution", "attribution.csv"],
+  ];
+  for (const [slug, file] of CASES) {
+    test(`/tools/${slug}/ has no axe violations after an upload`, async ({ page }) => {
+      await page.goto(`/tools/${slug}/`);
+      await hydrated(page);
+      await page.setInputFiles('input[type="file"]', fixture(file));
+      await expect(page.locator(".stat-card").first()).toBeVisible();
+      const results = await new AxeBuilder({ page: /** @type {any} */ (page) }).analyze();
+      expect(results.violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+    });
+  }
+
+  test("disclosure-check results table has no axe violations", async ({ page }) => {
+    await page.goto("/tools/disclosure-check/");
+    await hydrated(page);
+    await page.getByPlaceholder("One piece of copy per line...").fill("Great blender #ad\nPlain copy");
+    await expect(page.getByRole("cell", { name: "Missing disclosure" })).toBeVisible();
+    const results = await new AxeBuilder({ page: /** @type {any} */ (page) }).analyze();
+    expect(results.violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+  });
+});

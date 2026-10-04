@@ -1,0 +1,8 @@
+journey_id,channel,timestamp,revenue
+j1,email,2026-01-01,
+j1,paid search,2026-01-08,120
+j2,paid search,2026-01-02,60
+j2,organic,2026-01-05,
+j3,organic,2026-01-03,40
+j3,email,2026-01-04,
+j3,social,2026-01-06,
