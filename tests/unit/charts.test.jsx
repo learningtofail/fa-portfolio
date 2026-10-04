@@ -1,7 +1,7 @@
 import { act, render } from "@testing-library/react";
-import BarChart from "../../src/components/BarChart.jsx";
-import GroupedBarChart from "../../src/components/GroupedBarChart.jsx";
-import PaybackChart from "../../src/components/PaybackChart.jsx";
+import BarChart from "../../src/components/charts/BarChart.jsx";
+import GroupedBarChart from "../../src/components/charts/GroupedBarChart.jsx";
+import PaybackChart from "../../src/components/charts/PaybackChart.jsx";
 
 /** @type {Array<(entries: any[]) => void>} */
 let observerCallbacks = [];

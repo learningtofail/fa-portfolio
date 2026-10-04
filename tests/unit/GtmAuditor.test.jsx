@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import GtmAuditor from "../../src/components/GtmAuditor.jsx";
+import GtmAuditor from "../../src/components/tools/GtmAuditor.jsx";
 import { statValue, uploadFile } from "./helpers.js";
 
 const container = (overrides = {}) =>

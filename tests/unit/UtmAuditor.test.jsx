@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import UtmAuditor from "../../src/components/UtmAuditor.jsx";
+import UtmAuditor from "../../src/components/tools/UtmAuditor.jsx";
 import { statValue, uploadFile } from "./helpers.js";
 
 describe("UtmAuditor (current behavior)", () => {
