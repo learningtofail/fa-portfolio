@@ -79,3 +79,53 @@ describe("GtmAuditor names that collide with Object.prototype (D2)", () => {
     await waitFor(() => expect(findingHeadings()).toContain("Duplicate names (1)"));
   });
 });
+
+// Review D8, CHARACTERIZATION ONLY. The fixture below is SYNTHETIC: it is hand-written from memory of the
+// GTM export schema (setupTag/teardownTag on tags, a TRIGGER_GROUP trigger listing trigger ids) and has NOT
+// been checked against a real export. The assertions pin what the auditor does today, not what it should do.
+// A tag that only runs as a setup or teardown tag has no firing trigger by design, and a trigger used only
+// inside a Trigger Group is in use, so both findings below are probable false positives. Do not change the
+// auditor's behavior until a real container export confirms the schema; then flip these assertions.
+describe("GtmAuditor D8 characterization (synthetic fixture, unverified schema)", () => {
+  const syntheticExport = () =>
+    container({
+      tag: [
+        { name: "Main Tag", firingTriggerId: ["1"], setupTag: [{ tagName: "Setup Tag" }] },
+        { name: "Setup Tag" },
+        { name: "Grouped Tag", firingTriggerId: ["9"] },
+      ],
+      trigger: [
+        { name: "All Pages", triggerId: "1" },
+        { name: "Click A", triggerId: "7" },
+        { name: "Click B", triggerId: "8" },
+        {
+          name: "Both Clicks",
+          triggerId: "9",
+          type: "TRIGGER_GROUP",
+          parameter: [
+            {
+              type: "LIST",
+              key: "triggerIds",
+              list: [
+                { type: "TRIGGER_REFERENCE", value: "7" },
+                { type: "TRIGGER_REFERENCE", value: "8" },
+              ],
+            },
+          ],
+        },
+      ],
+      variable: [],
+    });
+
+  it("currently flags a setup-only tag as having no firing trigger", async () => {
+    const { container: c } = render(<GtmAuditor />);
+    await uploadFile(c, "synthetic.json", syntheticExport(), "application/json");
+    await waitFor(() => expect(findingHeadings()).toContain("Tags with no firing trigger (1)"));
+  });
+
+  it("currently flags triggers that are only members of a Trigger Group as unused", async () => {
+    const { container: c } = render(<GtmAuditor />);
+    await uploadFile(c, "synthetic.json", syntheticExport(), "application/json");
+    await waitFor(() => expect(findingHeadings()).toContain("Unused triggers (2)"));
+  });
+});
