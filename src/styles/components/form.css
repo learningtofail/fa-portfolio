@@ -1,0 +1,48 @@
+.field {
+  margin-bottom: 1rem;
+}
+
+.field__label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.25rem;
+}
+
+.field__input,
+.field__select,
+.field__textarea {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-input);
+}
+
+.field__input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.field__select {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.field__textarea {
+  width: 100%;
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.choice-group {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+}

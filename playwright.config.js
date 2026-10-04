@@ -3,7 +3,8 @@ import { defineConfig } from "@playwright/test";
 // PW_CHROMIUM_PATH lets a sandbox without downloaded browsers point at an
 // installed Chromium. CI leaves it unset and uses `playwright install`.
 const executablePath = process.env.PW_CHROMIUM_PATH || undefined;
-const PORT = 4321;
+// PW_PORT lets two repos run previews side by side on one machine.
+const PORT = Number(process.env.PW_PORT || 4321);
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -17,7 +18,9 @@ export default defineConfig({
     launchOptions: { executablePath },
   },
   webServer: {
-    command: `npm run preview -- --host 127.0.0.1 --port ${PORT}`,
+    // Astro 7 detaches `preview` into a background daemon in some environments, which
+    // Playwright reads as an early exit. --ignore-lock keeps it in the foreground.
+    command: `npm run preview -- --host 127.0.0.1 --port ${PORT} --ignore-lock`,
     url: `http://127.0.0.1:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

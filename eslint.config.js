@@ -24,7 +24,7 @@ export default [
       globals: { ...globals.browser, ...globals.node },
     },
     plugins: { react, "react-hooks": reactHooks, "jsx-a11y": jsxA11y },
-    settings: { react: { version: "18.3" } },
+    settings: { react: { version: "19.3" } },
     rules: {
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,

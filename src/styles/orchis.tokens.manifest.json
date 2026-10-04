@@ -1,0 +1,14 @@
+{
+  "source": "learningtofail/Orchis-Desktop-Design-System",
+  "sha": "a31b8d297e2754d9c02142509da81db04a642b76",
+  "upstreamSha256": {
+    "tokens/fonts.css": "7e683f5bbf3ad8fa4f26a3cd67a46ecf427bcc9b82d29bacfb3ea54dba0a6ca6",
+    "tokens/colors.css": "e39eca0842bbec371835c5d0d09d5a166f2755d8f0b468b5b128080e5ce90528",
+    "tokens/typography.css": "9669b9eeda684b12714c659dae16773b9955ac23d71e819de16beb7e0d5d3679",
+    "tokens/spacing.css": "4dae6bab8e91bda2e07b4fe28b0e3e9a69a239e1bd005f0ad4a555dfcde2a1e4",
+    "tokens/radius.css": "d636c9b80bed99f018c929e0c80f71c9a9d8ca49cd6166edee2fae7e684ad01d",
+    "tokens/elevation.css": "895f558dfb70dbdeeaeab974ba30aa860e1a3995c8922f434535fd4a894467fb",
+    "tokens/motion.css": "ff63f3f319421d1b20bfd781643a4e813b6bd5e2b90f297a644227e65223d747"
+  },
+  "vendoredSha256": "4722231c3f558fb483292bc60e4f1e3f98c19933109dbe091f24200d487f1f62"
+}

@@ -1,0 +1,97 @@
+/* D3 charts. Colors come from site tokens through these classes; the chart code only sets class names. */
+.chart {
+  width: 100%;
+  font-family: var(--font-body);
+}
+
+.chart__legend {
+  margin-bottom: 0.5rem;
+}
+
+.chart__legend-item {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 1rem;
+  font-size: 0.8rem;
+}
+
+.chart__swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 0.35rem;
+}
+
+.chart__label,
+.chart__value {
+  font-size: 0.8rem;
+}
+
+.chart__axis {
+  font-size: 0.75rem;
+}
+
+.chart__bar {
+  fill: var(--chart-1);
+}
+
+.chart__bar--zero {
+  fill: var(--chart-zero);
+}
+
+.chart__reference {
+  stroke: var(--danger);
+  stroke-dasharray: 4, 4;
+}
+
+.chart__reference-label {
+  fill: var(--danger);
+  font-size: 0.75rem;
+}
+
+.chart__payback {
+  stroke: var(--success);
+  stroke-dasharray: 3, 3;
+}
+
+.chart__payback-label {
+  fill: var(--success);
+  font-size: 0.75rem;
+}
+
+.chart__line {
+  fill: none;
+  stroke: var(--chart-1);
+  stroke-width: 2;
+}
+
+.chart__area {
+  fill: var(--chart-1);
+  opacity: 0.15;
+}
+
+.chart__series--1 {
+  fill: var(--chart-1);
+  background: var(--chart-1);
+}
+
+.chart__series--2 {
+  fill: var(--chart-2);
+  background: var(--chart-2);
+}
+
+.chart__series--3 {
+  fill: var(--chart-3);
+  background: var(--chart-3);
+}
+
+.chart__series--4 {
+  fill: var(--chart-4);
+  background: var(--chart-4);
+}
+
+.chart__series--5 {
+  fill: var(--chart-5);
+  background: var(--chart-5);
+}

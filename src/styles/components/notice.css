@@ -1,0 +1,27 @@
+.notice {
+  margin-block: 1em;
+}
+
+.notice--error {
+  color: var(--danger);
+}
+
+.notice--warning {
+  font-size: 0.85rem;
+  color: var(--warning);
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.fineprint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 1.5rem;
+}
+
+.fineprint--narrow {
+  max-width: 640px;
+}

@@ -1,0 +1,258 @@
+/* The resume page (index.astro). Mobile first. Headings carry their own classes so specificity stays flat. */
+.resume__title {
+  font-size: 1.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.resume__heading {
+  font-size: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.role__company {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.bullet-group__title {
+  font-size: 0.95rem;
+  margin: 0 0 0.4rem;
+}
+
+.skill-card__title,
+.tool-card__title {
+  font-size: 0.95rem;
+  margin: 0 0 0.4rem;
+}
+
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface-nav);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+
+.topnav__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+}
+
+.topnav__brand {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.topnav__links {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+}
+
+.topnav__link {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.topnav__link:hover {
+  color: var(--accent);
+}
+
+.topnav__link--cta {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.8rem;
+}
+
+.resume__section {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.resume__section:last-child {
+  border-bottom: none;
+}
+
+.resume__header {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.resume__headshot {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+}
+
+.resume__subhead {
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin-bottom: 1.25rem;
+}
+
+.stat-strip {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0;
+  margin-top: 1.5rem;
+}
+
+.stat-strip__item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.role {
+  margin-bottom: 2.5rem;
+}
+
+.role:last-child {
+  margin-bottom: 0;
+}
+
+.role__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.role__title {
+  margin: 0.1rem 0 0;
+  color: var(--muted);
+}
+
+.role__meta {
+  text-align: right;
+  min-width: 0;
+}
+
+.role__dates {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.role__location {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.role__intro {
+  color: var(--ink);
+}
+
+.role__closing {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: 0.75rem;
+}
+
+.bullet-group {
+  margin-top: 0.75rem;
+}
+
+.bullet-group__list {
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.bullet-group__item {
+  margin-bottom: 0.35rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.card-grid--spaced {
+  margin-top: 1rem;
+}
+
+.skill-card__text {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.tool-card {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 1rem;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color var(--duration-longer);
+}
+
+.tool-card:hover {
+  border-color: var(--accent);
+}
+
+.tool-card__text {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.contact__name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tool-card {
+    transition: none;
+  }
+}
+
+@media (min-width: 481px) {
+  .resume__title {
+    font-size: 2rem;
+  }
+
+  .topnav__links {
+    gap: 1.1rem;
+    font-size: inherit;
+  }
+}
+
+@media (min-width: 561px) {
+  .resume__header {
+    flex-direction: row;
+  }
+
+  .resume__headshot {
+    width: 128px;
+    height: 128px;
+  }
+}

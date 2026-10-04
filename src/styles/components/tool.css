@@ -1,0 +1,21 @@
+/* Wrapper for a tool island and the small helpers its result sections share. */
+.tool {
+  font-family: var(--font-body);
+  max-width: var(--tool-max);
+}
+
+.tool--wide {
+  max-width: var(--tool-max-wide);
+}
+
+.heading--spaced {
+  margin-top: 2rem;
+}
+
+.finding {
+  margin-top: 1.5rem;
+}
+
+.finding__title {
+  margin-bottom: 0.4rem;
+}

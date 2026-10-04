@@ -6,3 +6,5 @@ playwright-report/
 test-results/
 coverage/
 public/
+src/styles/orchis.tokens.css
+src/styles/orchis.tokens.manifest.json

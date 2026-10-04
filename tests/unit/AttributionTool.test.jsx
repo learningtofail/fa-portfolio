@@ -1,5 +1,5 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
-import AttributionTool from "../../src/components/AttributionTool.jsx";
+import AttributionTool from "../../src/components/tools/AttributionTool.jsx";
 import { statValue, uploadFile } from "./helpers.js";
 
 /** Reads the "Full matrix" table into { channel: { model: value } }. */
@@ -53,5 +53,57 @@ describe("AttributionTool (current behavior)", () => {
     const { container } = render(<AttributionTool />);
     await uploadFile(container, "bad.csv", "channel,timestamp\nemail,2026-01-01\n");
     expect((await screen.findByRole("alert")).textContent).toMatch(/journey_id/);
+  });
+
+  it.each(["constructor", "__proto__", "toString"])("handles a channel and a journey named %s (D2)", async (name) => {
+    const { container } = render(<AttributionTool />);
+    await uploadFile(
+      container,
+      "proto.csv",
+      `journey_id,channel,timestamp\n${name},${name},2026-01-01\n${name},email,2026-01-03\n`,
+    );
+    await waitFor(() => expect(screen.getByRole("table")).toBeTruthy());
+    expect(await statValue("Journeys")).toBe("1");
+    expect(matrix()[name]["First-touch"]).toMatch(/^1(\.00?)?$/);
+    expect(matrix().email["Last-touch"]).toMatch(/^1(\.00?)?$/);
+  });
+});
+
+describe("AttributionTool revenue warnings (D9)", () => {
+  const warnings = () => screen.queryByRole("status", { name: "Revenue data warnings" });
+
+  it("warns when a journey repeats the same revenue on every row, and leaves the credit math alone", async () => {
+    const { container } = render(<AttributionTool />);
+    await uploadFile(
+      container,
+      "repeat.csv",
+      "journey_id,channel,timestamp,revenue\nj1,email,2026-01-01,100\nj1,paid,2026-01-02,100\n",
+    );
+    await waitFor(() => expect(warnings()).toBeTruthy());
+    expect(warnings().textContent).toMatch(/repeat the same revenue/);
+    // Unchanged behavior: 100 + 100 is still summed to 200.
+    expect(matrix().paid["Last-touch"]).toMatch(/^200(\.00?)?$/);
+  });
+
+  it("warns when journeys with and without revenue are mixed", async () => {
+    const { container } = render(<AttributionTool />);
+    await uploadFile(
+      container,
+      "mixed.csv",
+      "journey_id,channel,timestamp,revenue\nj1,email,2026-01-01,100\nj2,paid,2026-01-02,\n",
+    );
+    await waitFor(() => expect(warnings()).toBeTruthy());
+    expect(warnings().textContent).toMatch(/1 journey\(s\) have revenue and 1 do not/);
+  });
+
+  it("shows no warning for one revenue figure per journey, or for no revenue at all", async () => {
+    const { container } = render(<AttributionTool />);
+    await uploadFile(
+      container,
+      "clean.csv",
+      "journey_id,channel,timestamp,revenue\nj1,email,2026-01-01,\nj1,paid,2026-01-02,100\nj2,paid,2026-01-02,50\n",
+    );
+    await waitFor(() => expect(screen.getByRole("table")).toBeTruthy());
+    expect(warnings()).toBeNull();
   });
 });

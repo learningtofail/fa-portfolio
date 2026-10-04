@@ -1,19 +1,18 @@
 import { useRef, useEffect } from "react";
 import * as d3 from "d3";
+import { useChartWidth } from "./useChartWidth.js";
 
 /**
  * Cumulative gross-profit-recovered line chart with a CAC reference line
- * and a marker at the payback month. Brand-neutral placeholder colors —
- * swap for the site palette in Phase 7.
+ * and a marker at the payback month. Colors and type come from CSS classes (chart.css).
  */
 export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, horizonMonths }) {
   const svgRef = useRef(null);
-  const containerRef = useRef(null);
+  const [containerRef, width] = useChartWidth(640);
 
   useEffect(() => {
     if (!monthlyGrossProfit || monthlyGrossProfit <= 0) return;
 
-    const width = containerRef.current?.clientWidth || 640;
     const height = 320;
     const margin = { top: 20, right: 30, bottom: 40, left: 60 };
     const innerW = width - margin.left - margin.right;
@@ -44,7 +43,7 @@ export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, h
           .ticks(Math.min(horizonMonths, 12))
           .tickFormat((d) => `${d}mo`),
       )
-      .attr("font-size", "0.75rem");
+      .attr("class", "chart__axis");
 
     g.append("g")
       .call(
@@ -53,7 +52,7 @@ export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, h
           .ticks(5)
           .tickFormat((d) => `$${d3.format(",.0f")(d)}`),
       )
-      .attr("font-size", "0.75rem");
+      .attr("class", "chart__axis");
 
     // CAC reference line
     g.append("line")
@@ -61,15 +60,13 @@ export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, h
       .attr("x2", innerW)
       .attr("y1", y(cac))
       .attr("y2", y(cac))
-      .attr("stroke", "#b00020")
-      .attr("stroke-dasharray", "4,4");
+      .attr("class", "chart__reference");
 
     g.append("text")
       .attr("x", innerW)
       .attr("y", y(cac) - 6)
       .attr("text-anchor", "end")
-      .attr("font-size", "0.75rem")
-      .attr("fill", "#b00020")
+      .attr("class", "chart__reference-label")
       .text(`CAC: $${d3.format(",.0f")(cac)}`);
 
     // Cumulative gross profit line + area
@@ -83,8 +80,8 @@ export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, h
       .y0(innerH)
       .y1((d) => y(d.cumulative));
 
-    g.append("path").datum(data).attr("fill", "#3a5a9b").attr("opacity", 0.15).attr("d", area);
-    g.append("path").datum(data).attr("fill", "none").attr("stroke", "#3a5a9b").attr("stroke-width", 2).attr("d", line);
+    g.append("path").datum(data).attr("class", "chart__area").attr("d", area);
+    g.append("path").datum(data).attr("class", "chart__line").attr("d", line);
 
     // Payback marker
     if (paybackMonths != null && paybackMonths <= horizonMonths) {
@@ -93,21 +90,19 @@ export default function PaybackChart({ monthlyGrossProfit, cac, paybackMonths, h
         .attr("x2", x(paybackMonths))
         .attr("y1", 0)
         .attr("y2", innerH)
-        .attr("stroke", "#216e3b")
-        .attr("stroke-dasharray", "3,3");
+        .attr("class", "chart__payback");
 
       g.append("text")
         .attr("x", x(paybackMonths) + 6)
         .attr("y", 14)
-        .attr("font-size", "0.75rem")
-        .attr("fill", "#216e3b")
+        .attr("class", "chart__payback-label")
         .text(`Payback: ${paybackMonths.toFixed(1)}mo`);
     }
-  }, [monthlyGrossProfit, cac, paybackMonths, horizonMonths]);
+  }, [monthlyGrossProfit, cac, paybackMonths, horizonMonths, width, containerRef]);
 
   return (
     // Decorative — CAC and payback period are both already in the StatCard row above.
-    <div ref={containerRef} style={{ width: "100%" }} aria-hidden="true">
+    <div ref={containerRef} className="chart" aria-hidden="true">
       <svg ref={svgRef}></svg>
     </div>
   );

@@ -1,0 +1,37 @@
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.data-table__scroll {
+  overflow-x: auto;
+}
+
+.data-table th {
+  text-align: left;
+  border-bottom: 2px solid var(--line-strong);
+  padding: 0.4rem 0.6rem;
+}
+
+.data-table td {
+  border-bottom: 1px solid var(--line-faint);
+  padding: 0.4rem 0.6rem;
+}
+
+.data-table__cell--wrap {
+  max-width: 420px;
+}
+
+.data-table__cell--pass,
+.data-table__cell--fail {
+  font-weight: 600;
+}
+
+.data-table__cell--pass {
+  color: var(--success);
+}
+
+.data-table__cell--fail {
+  color: var(--danger);
+}

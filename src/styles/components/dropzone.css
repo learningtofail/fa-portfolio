@@ -1,0 +1,26 @@
+.dropzone {
+  border: 2px dashed var(--dropzone-border);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+}
+
+.dropzone--flush {
+  margin-bottom: 0;
+}
+
+.dropzone__title {
+  margin: 0;
+}
+
+.dropzone__hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.dropzone__input {
+  display: none;
+}
