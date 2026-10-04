@@ -27,8 +27,8 @@ const RULESETS = {
   cannabis: {
     label: "Cannabis / Age-Restricted (generic)",
     patterns: [
-      { label: "19+", re: /\b19\+\b/ },
-      { label: "21+", re: /\b21\+\b/ },
+      { label: "19+", re: /(?<!\w)19\+/ },
+      { label: "21+", re: /(?<!\w)21\+/ },
       { label: '"legal age"', re: /legal age/i },
       { label: '"keep out of reach of children"', re: /keep out of reach of children/i },
       { label: '"for use only by adults"', re: /for use only by adults/i },

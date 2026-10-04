@@ -60,21 +60,78 @@ describe("DisclosureChecker (current behavior)", () => {
   });
 });
 
-// Known defect (review D1). `\b` after `+` needs a word character next, so ordinary age text never matches.
-describe("DisclosureChecker known defects (D1)", () => {
-  it.fails("recognizes '19+' in ordinary text under the cannabis ruleset", async () => {
-    const user = userEvent.setup();
-    render(<DisclosureChecker />);
-    await user.selectOptions(screen.getByLabelText("Ruleset"), "cannabis");
-    await paste(user, "Must be 19+ to enter");
-    expect(resultRows()[0][1]).toMatch(/19\+/);
-  });
+/** [text, expected matched label or null] per ruleset. A null label means "Missing disclosure". */
+const RULESET_CASES = {
+  affiliate: [
+    ["Loving this blender #ad", "#ad"],
+    ["#Ad because they sent it", "#ad"],
+    ["Great pan #sponsored", "#sponsored"],
+    ["This post has an affiliate link inside", '"affiliate link"'],
+    ["A paid partnership with Acme", '"paid partnership"'],
+    ["Sponsored by Acme Foods", '"sponsored by"'],
+    ["Made in partnership with Acme", '"in partnership with"'],
+    ["Loving this blender", null],
+    ["Reading the ad copy again", null],
+    ["#address is not a tag", null],
+    ["Check out our newsletter", null],
+    ["Sponsor of the year", null],
+  ],
+  regulatedHealth: [
+    ["See full prescribing information", '"full prescribing information"'],
+    ["See the full prescribing information.", '"full prescribing information"'],
+    ["Important Safety Information follows", '"important safety information"'],
+    ["Ask your doctor if this is right for you", '"ask your doctor"'],
+    ["Talk to your healthcare provider first", '"talk to your doctor/healthcare provider"'],
+    ["Talk to your doctor before use", '"talk to your doctor/healthcare provider"'],
+    ["Read the full risk information", '"full risk information"'],
+    ["Consult your physician", '"consult your physician/doctor"'],
+    ["Consult your doctor", '"consult your physician/doctor"'],
+    ["Feel better today", null],
+    ["Doctors recommend water", null],
+    ["Safety first", null],
+  ],
+  cannabis: [
+    ["Must be 19+ to enter", "19+"],
+    ["19+ only", "19+"],
+    ["(19+)", "19+"],
+    ["Ages 19+, please", "19+"],
+    ["You must be 21+ to enter.", "21+"],
+    ["21+", "21+"],
+    ["Strictly 21+!", "21+"],
+    ["Must be of legal age", '"legal age"'],
+    ["Keep out of reach of children", '"keep out of reach of children"'],
+    ["For use only by adults", '"for use only by adults"'],
+    ["Now 119+ flavours", null],
+    ["Over 219+ stores", null],
+    ["Call 19 times", null],
+    ["Fresh new strains", null],
+  ],
+  financial: [
+    ["Past performance is no guarantee", '"past performance"'],
+    ["This is not financial advice", '"not financial/investment advice"'],
+    ["Not investment advice", '"not financial/investment advice"'],
+    ["Results may vary", '"results may vary"'],
+    ["There is a risk of loss", '"risk of loss"'],
+    ["Your capital at risk", '"capital at risk"'],
+    ["Consult a financial advisor", '"consult a financial advisor"'],
+    ["Great returns every year", null],
+    ["Invest today", null],
+    ["Performance review notes", null],
+    ["Advice for savers", null],
+    ["Risk free trial", null],
+  ],
+};
 
-  it.fails("recognizes '21+' at the end of a sentence", async () => {
+describe.each(Object.entries(RULESET_CASES))("DisclosureChecker ruleset %s (D1)", (rulesetKey, cases) => {
+  it("matches the expected disclosure label for every phrase", async () => {
     const user = userEvent.setup();
     render(<DisclosureChecker />);
-    await user.selectOptions(screen.getByLabelText("Ruleset"), "cannabis");
-    await paste(user, "You must be 21+ to enter.");
-    expect(resultRows()[0][1]).toMatch(/21\+/);
+    await user.selectOptions(screen.getByLabelText("Ruleset"), rulesetKey);
+    await paste(user, cases.map(([text]) => text).join("\n"));
+    const rows = resultRows();
+    expect(rows).toHaveLength(cases.length);
+    cases.forEach(([, label], i) => {
+      expect(rows[i]).toEqual(label ? ["Pass", label] : ["Missing disclosure", "—"]);
+    });
   });
 });
