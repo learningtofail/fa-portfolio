@@ -18,6 +18,7 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 - `src/styles/`: `orchis.tokens.css` (vendored, never hand-edit, pinned by `orchis.tokens.manifest.json`), `site.tokens.css` (semantic aliases and the only other place raw colors may live), `base.css`, `layout.css` (`.page`), `resume.css` (index page), `components/*.css` (BEM component styles, imported through `components.css`).
 - `scripts/tokens/`: vendoring and drift check for the Orchis tokens.
 - `scripts/deploy-release.sh`: atomic release deploy and rollback (has a `--dry-run`). `scripts/csp-hashes.mjs`: CSP hashes for Astro's inline code.
+- `docs/decisions/`: decision records (robots, privacy, CSP, adding a tool, inline styles, brand guard).
 - `docs/monitoring.md`: Uptime Kuma checks per URL, www embedding, copy-not-share policy.
 - `docs/rollback.md`, `docs/caddy/Caddyfile.proposed.md`: recovery, and the proposed Caddy block with the one-time host migration.
 - `scripts/generate-pdf.mjs` and `scripts/pdf/ResumePdfBuilder.mjs`: build the resume PDF from `resume.js`. The PDF is generated, not tracked.
@@ -29,6 +30,16 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 2. Add a thin component in `src/components/tools/` built from the kit (`ToolShell`, `FileDropzone`, `useFileAnalysis`, `StatRow`, `DataTable`). It should stay well under 150 lines.
 3. Add an entry to `src/data/tools.js` (slug, name, title, description, intro, metaDescription) and one line in `src/pages/tools/[slug].astro`.
 4. Add the tool's e2e and axe cases to `tests/e2e/site.spec.js`.
+
+## Adding the A/B experiment analyzer
+
+This is the planned sixth tool. Follow "Adding a tool" with these specifics:
+
+- Lib module `src/lib/experiment/analyze.js`: pure functions taking per-variant visitors and conversions (from a CSV parsed by `src/lib/csv.js`) and returning rate, relative lift, a two-proportion z-test p-value and confidence interval, and a plain warning list (sample too small, unequal split). Use `Map` for variant names, since they are user data.
+- Tests in `tests/unit/lib/experiment.test.js` with hand-checked values and edge cases (zero visitors, one variant, identical rates). Keep `src/lib` coverage at 90 percent.
+- Component `src/components/tools/ExperimentAnalyzer.jsx` from the kit (`ToolShell`, `FileDropzone`, `useFileAnalysis`, `StatRow`, `DataTable`).
+- Catalog entry in `src/data/tools.js` with `live: true`, one line in `src/pages/tools/[slug].astro`, e2e and axe cases, and a row in `docs/monitoring.md`. Mirror the catalog entry in fa-www by hand.
+- Client-side only (`docs/decisions/0002-client-side-tools-privacy.md`).
 
 ## Conventions
 

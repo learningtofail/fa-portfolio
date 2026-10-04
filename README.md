@@ -14,4 +14,6 @@ Requires Node >= 22.12 (`.nvmrc`). Merging to `main` deploys to production throu
 
 - Contributor and agent guide: [CLAUDE.md](CLAUDE.md)
 - Current architecture: [docs/architecture.md](docs/architecture.md)
+- Why things are the way they are: [docs/decisions/](docs/decisions/README.md)
+- Making the repo private (runbook): [docs/make-private.md](docs/make-private.md)
 - How the site was built, phase by phase: [docs/history.md](docs/history.md)
