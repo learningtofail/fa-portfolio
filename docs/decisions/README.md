@@ -8,3 +8,4 @@ Short records of choices that are expensive to rediscover. Each states the decis
 - [0004 a new tool is one lib module and one thin component](0004-adding-a-tool.md)
 - [0005 no inline styles](0005-no-inline-styles.md)
 - [0006 brand separation guard](0006-brand-separation.md)
+- [0007 vendored marketing tools under /marketing/](0007-vendored-marketing-tools.md)

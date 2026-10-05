@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Affiliate Revenue Concentration Risk Analyzer | Marketing Tools</title>
+<meta name="description" content="Upload an affiliate platform report and measure concentration with the Herfindahl-Hirschman Index, Pareto distribution and top-partner dependency, plus what happens if your biggest partners leave.">
+<style>/* Signal & Serif tokens, shared by every tool */
+:root{
+  color-scheme: light;
+  --paper:#F7F8FA; --surface:#FFFFFF; --surface-2:#F0F2F5; --ink:#0B0D10; --ink-secondary:#565B66; --ink-muted:#6C7080;
+  --border:rgba(11,13,16,0.10); --border-strong:#7B7E85;
+  --accent:#2A78D6; --accent-strong:#1B5FB8; --accent-wash:rgba(42,120,214,0.09); --accent-ink:#FFFFFF;
+  --good:#0A7A0A; --good-graphic:#0CA30C; --good-wash:rgba(10,122,10,0.09);
+  --warn:#8A5A00; --warn-graphic:#EDA100; --warn-wash:rgba(201,133,0,0.13);
+  --critical:#D03B3B; --critical-wash:rgba(208,59,59,0.09);
+  --series-1:#2A78D6; --series-2:#D95926; --series-3:#199E70; --series-4:#C98500; --series-5:#D55181; --series-6:#008300; --series-7:#4A3AA7; --series-8:#E34948;
+  --seq-100:#cde2fb; --seq-250:#86b6ef; --seq-400:#3987e5; --seq-550:#1c5cab; --seq-700:#0d366b;
+  --shadow:0 1px 2px rgba(11,13,16,0.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0B0D10; --surface:#15171C; --surface-2:#1B1E24; --ink:#F5F6F7; --ink-secondary:#A8ACB4; --ink-muted:#9296A3;
+    --border:rgba(255,255,255,0.10); --border-strong:#6B6F78;
+    --accent:#3987E5; --accent-strong:#3987E5; --accent-wash:rgba(57,135,229,0.14); --accent-ink:#0B0D10;
+    --good:#0CA30C; --good-wash:rgba(12,163,12,0.14); --warn:#EDA100; --warn-wash:rgba(237,161,0,0.16);
+    --critical:#E66767; --critical-wash:rgba(230,103,103,0.16);
+    --series-1:#3987E5; --series-2:#EB6834; --series-3:#1BAF7A; --series-4:#EDA100; --series-5:#E87BA4; --series-6:#0CA30C; --series-7:#9085E9; --series-8:#E66767;
+    --shadow:0 1px 2px rgba(0,0,0,0.4);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0B0D10; --surface:#15171C; --surface-2:#1B1E24; --ink:#F5F6F7; --ink-secondary:#A8ACB4; --ink-muted:#9296A3;
+  --border:rgba(255,255,255,0.10); --border-strong:#6B6F78;
+  --accent:#3987E5; --accent-strong:#3987E5; --accent-wash:rgba(57,135,229,0.14); --accent-ink:#0B0D10;
+  --good:#0CA30C; --good-wash:rgba(12,163,12,0.14); --warn:#EDA100; --warn-wash:rgba(237,161,0,0.16);
+  --critical:#E66767; --critical-wash:rgba(230,103,103,0.16);
+  --series-1:#3987E5; --series-2:#EB6834; --series-3:#1BAF7A; --series-4:#EDA100; --series-5:#E87BA4; --series-6:#0CA30C; --series-7:#9085E9; --series-8:#E66767;
+  --shadow:0 1px 2px rgba(0,0,0,0.4);
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{ margin:0; background:var(--paper); color:var(--ink); font-family:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+h1,h2,h3,h4,p,ul,ol{ margin:0; }
+a{ color:var(--accent-strong); }
+.serif{ font-family:"Instrument Serif",Georgia,serif; font-weight:400; letter-spacing:-0.01em; }
+.mono{ font-family:"JetBrains Mono",ui-monospace,Menlo,monospace; }
+.tabular{ font-variant-numeric:tabular-nums; }
+svg{ max-width:100%; }
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+@media (prefers-reduced-motion:reduce){ *{ animation-duration:.001ms!important; transition-duration:.001ms!important; } }
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* page chrome */
+.topbar{ display:flex; align-items:center; gap:1rem; padding:0.8rem 1.25rem; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:20; }
+.topbar .brand{ font-size:1.05rem; text-decoration:none; color:var(--ink); }
+.topbar .crumb{ font-family:"JetBrains Mono",monospace; font-size:0.6875rem; letter-spacing:.05em; color:var(--ink-muted); text-transform:uppercase; }
+.topbar .spacer{ flex:1; }
+.theme-btn{ background:var(--surface); border:1px solid var(--border-strong); color:var(--ink); font-family:"JetBrains Mono",monospace; font-size:0.6875rem; letter-spacing:.06em; text-transform:uppercase; padding:0.45rem 0.7rem; border-radius:3px; cursor:pointer; }
+.theme-btn:hover{ border-color:var(--accent); }
+main.wrap{ max-width:1180px; margin:0 auto; padding:2rem 1.25rem 5rem; }
+.hero{ max-width:74ch; margin-bottom:2rem; }
+.hero h1{ font-size:clamp(1.9rem,1.4rem+2vw,2.8rem); line-height:1.08; margin-bottom:0.75rem; }
+.hero p{ color:var(--ink-secondary); font-size:1.03rem; }
+.privacy{ display:inline-flex; align-items:center; gap:0.5rem; margin-top:1rem; font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--ink-muted); }
+.privacy .dot{ width:7px; height:7px; border-radius:999px; background:var(--good-graphic); }
+
+/* cards + grids */
+.card{ background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:1.25rem 1.4rem; margin-bottom:1rem; box-shadow:var(--shadow); }
+.card > h2,.card > h3{ font-size:1.05rem; font-weight:700; margin-bottom:0.25rem; }
+.card > .sub{ color:var(--ink-secondary); font-size:0.85rem; margin-bottom:1rem; max-width:80ch; }
+.grid{ display:grid; gap:1rem; }
+.g2{ grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); }
+.g3{ grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); }
+.g4{ grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr)); }
+.split{ display:grid; gap:1rem; grid-template-columns:minmax(0,380px) minmax(0,1fr); align-items:start; }
+@media(max-width:900px){ .split{ grid-template-columns:1fr; } }
+
+/* fields */
+.field{ display:flex; flex-direction:column; gap:0.35rem; margin-bottom:0.75rem; }
+.field label,.lbl{ font-size:0.75rem; color:var(--ink-secondary); }
+.field .hint{ font-size:0.72rem; color:var(--ink-muted); }
+input[type=text],input[type=number],input[type=date],input[type=search],select,textarea{
+  width:100%; padding:0.5rem 0.65rem; border:1px solid var(--border-strong); border-radius:3px; background:var(--surface); color:var(--ink);
+  font-family:"Hanken Grotesk",sans-serif; font-size:0.875rem; }
+textarea{ resize:vertical; min-height:110px; font-family:"JetBrains Mono",monospace; font-size:0.78rem; line-height:1.5; }
+input:hover,select:hover,textarea:hover{ border-color:var(--accent); }
+input[type=checkbox],input[type=radio]{ accent-color:var(--accent-strong); }
+.inline{ display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; }
+.checks{ display:flex; flex-wrap:wrap; gap:0.35rem 1rem; font-size:0.82rem; }
+.checks label{ display:inline-flex; align-items:center; gap:0.35rem; cursor:pointer; }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+.row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; }
+@media(max-width:520px){ .row3{ grid-template-columns:1fr 1fr; } }
+.drop{ border:1.5px dashed var(--border-strong); border-radius:4px; padding:1rem; text-align:center; font-size:0.82rem; color:var(--ink-secondary); background:var(--surface-2); cursor:pointer; }
+.drop.over{ border-color:var(--accent); background:var(--accent-wash); }
+
+/* buttons */
+.btn{ display:inline-flex; align-items:center; gap:0.5rem; font-family:"Hanken Grotesk",sans-serif; font-weight:600; font-size:0.875rem; padding:0.6rem 1.1rem; border-radius:3px; border:1px solid transparent; cursor:pointer; text-decoration:none; }
+.btn:active:not([disabled]){ transform:translateY(1px); }
+.btn-primary{ background:var(--accent-strong); color:var(--accent-ink); }
+.btn-primary:hover:not([disabled]){ background:var(--accent); }
+.btn-secondary{ background:transparent; color:var(--ink); border-color:var(--border-strong); }
+.btn-secondary:hover:not([disabled]){ border-color:var(--accent); color:var(--accent-strong); }
+.btn-ghost{ background:transparent; color:var(--ink-secondary); padding-left:.25rem; padding-right:.25rem; }
+.btn-ghost:hover{ color:var(--accent-strong); }
+.btn-sm{ padding:0.4rem 0.8rem; font-size:0.78rem; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; }
+.actions{ display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center; margin-top:0.5rem; }
+
+/* tags, badges, stats */
+.tag{ display:inline-flex; align-items:center; gap:0.35rem; font-family:"JetBrains Mono",monospace; font-size:0.68rem; padding:0.2rem 0.55rem; border:1px solid var(--border-strong); border-radius:999px; color:var(--ink-secondary); background:var(--surface); white-space:nowrap; }
+.tag-accent{ border-color:transparent; background:var(--accent-wash); color:var(--accent-strong); }
+.tag-good{ border-color:transparent; background:var(--good-wash); color:var(--good); }
+.tag-warn{ border-color:transparent; background:var(--warn-wash); color:var(--warn); }
+.tag-bad{ border-color:transparent; background:var(--critical-wash); color:var(--critical); }
+.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:4px; overflow:hidden; margin-bottom:1rem; }
+.stat-tile{ background:var(--surface); padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.3rem; }
+.stat-value{ font-size:1.7rem; font-weight:700; line-height:1.05; font-variant-numeric:tabular-nums; }
+.stat-label{ font-size:0.78rem; color:var(--ink-secondary); }
+.stat-sub{ font-size:0.72rem; color:var(--ink-muted); }
+.good{ color:var(--good); } .bad{ color:var(--critical); } .warn{ color:var(--warn); } .muted{ color:var(--ink-muted); }
+
+/* verdict banner */
+.verdict{ display:flex; gap:1rem; align-items:flex-start; padding:1.1rem 1.3rem; border-radius:4px; border:1px solid var(--border-strong); border-left-width:6px; background:var(--surface); margin-bottom:1rem; }
+.verdict .ico{ font-size:1.5rem; line-height:1; }
+.verdict h2{ font-size:1.25rem; margin-bottom:0.2rem; }
+.verdict p{ color:var(--ink-secondary); font-size:0.9rem; }
+.verdict.pos{ border-left-color:var(--good-graphic); background:var(--good-wash); }
+.verdict.neg{ border-left-color:var(--critical); background:var(--critical-wash); }
+.verdict.neu{ border-left-color:var(--warn-graphic); background:var(--warn-wash); }
+.verdict.info{ border-left-color:var(--accent); background:var(--accent-wash); }
+
+/* tables */
+.table-wrap{ overflow-x:auto; margin-bottom:1rem; }
+table.t{ width:100%; border-collapse:collapse; font-size:0.8125rem; }
+table.t th{ text-align:left; font-family:"JetBrains Mono",monospace; font-size:0.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted); padding:0.5rem 0.65rem; border-bottom:1px solid var(--border-strong); white-space:nowrap; }
+table.t td{ padding:0.5rem 0.65rem; border-bottom:1px solid var(--border); vertical-align:top; }
+table.t tr:hover td{ background:var(--surface-2); }
+table.t td.num,table.t th.num{ text-align:right; font-variant-numeric:tabular-nums; }
+table.t input{ padding:0.35rem 0.5rem; font-size:0.8rem; }
+.heat td.c{ text-align:center; font-variant-numeric:tabular-nums; }
+
+/* notes and steps */
+.note{ font-size:0.82rem; color:var(--ink-secondary); border-left:3px solid var(--border-strong); padding:0.4rem 0.8rem; margin:0.75rem 0; background:var(--surface-2); }
+.note.warn{ border-left-color:var(--warn-graphic); background:var(--warn-wash); color:var(--ink); }
+.note.bad{ border-left-color:var(--critical); background:var(--critical-wash); color:var(--ink); }
+.note.good{ border-left-color:var(--good-graphic); background:var(--good-wash); color:var(--ink); }
+.path{ display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; margin:0.5rem 0 1rem; font-size:0.8rem; }
+.path .node{ padding:0.3rem 0.6rem; border:1px solid var(--border-strong); border-radius:3px; background:var(--surface); }
+.path .node.pick{ background:var(--accent-wash); border-color:var(--accent); color:var(--accent-strong); font-weight:700; }
+.path .arr{ color:var(--ink-muted); }
+.radio-cards{ display:grid; gap:0.6rem; grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr)); margin-bottom:1rem; }
+.radio-cards label{ border:1px solid var(--border-strong); border-radius:4px; padding:0.8rem 0.9rem; cursor:pointer; background:var(--surface); display:block; }
+.radio-cards label:hover{ border-color:var(--accent); }
+.radio-cards input{ position:absolute; opacity:0; pointer-events:none; }
+.radio-cards label:has(input:checked){ border-color:var(--accent); background:var(--accent-wash); box-shadow:inset 0 0 0 1px var(--accent); }
+.radio-cards label:has(input:focus-visible){ outline:2px solid var(--accent); outline-offset:2px; }
+.radio-cards b{ display:block; font-size:0.9rem; }
+.radio-cards span{ font-size:0.76rem; color:var(--ink-secondary); }
+details{ margin-bottom:0.75rem; }
+summary{ cursor:pointer; font-weight:600; font-size:0.88rem; padding:0.3rem 0; }
+.out{ min-height:1rem; }
+.code{ font-family:"JetBrains Mono",monospace; font-size:0.75rem; background:var(--surface-2); border:1px solid var(--border); border-radius:3px; padding:0.75rem; white-space:pre-wrap; word-break:break-word; max-height:340px; overflow:auto; }
+mark.hl-high{ background:var(--critical-wash); color:inherit; border-bottom:2px solid var(--critical); }
+mark.hl-med{ background:var(--warn-wash); color:inherit; border-bottom:2px solid var(--warn-graphic); }
+mark.hl-low{ background:var(--accent-wash); color:inherit; border-bottom:2px solid var(--accent); }
+mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid var(--good-graphic); }
+.prose{ line-height:1.75; white-space:pre-wrap; font-size:0.9rem; background:var(--surface-2); padding:0.9rem; border-radius:3px; border:1px solid var(--border); }
+
+/* charts */
+.chart{ position:relative; margin:0.5rem 0 1rem; }
+.chart svg{ width:100%; height:auto; display:block; overflow:visible; }
+.chart .ttl{ font-size:0.8rem; font-weight:700; margin-bottom:0.25rem; }
+.chart .ax text{ fill:var(--ink-muted); font-size:10.5px; font-family:"JetBrains Mono",monospace; }
+.chart .grid line{ stroke:var(--border); }
+.chart .axis line,.chart .axis path{ stroke:var(--border-strong); }
+.chart .lbl{ fill:var(--ink-secondary); font-size:11px; }
+.legend{ display:flex; gap:0.9rem; flex-wrap:wrap; font-size:0.75rem; color:var(--ink-secondary); margin:0.25rem 0; }
+.legend i{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:0.35rem; vertical-align:-1px; }
+.tip{ position:absolute; pointer-events:none; background:var(--ink); color:var(--paper); font-size:0.72rem; padding:0.4rem 0.6rem; border-radius:3px; white-space:nowrap; z-index:10; box-shadow:0 2px 8px rgba(0,0,0,.25); display:none; font-variant-numeric:tabular-nums; }
+.foot{ margin-top:3rem; padding-top:1.25rem; border-top:1px solid var(--border); font-size:0.78rem; color:var(--ink-muted); }
+.err{ color:var(--critical); font-size:0.82rem; margin:0.4rem 0; }
+
+/* index */
+.tool-grid{ display:grid; gap:12px; background:transparent; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); }
+.tool-card{ background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:1.1rem 1.2rem; text-decoration:none; color:var(--ink); display:flex; flex-direction:column; gap:0.35rem; }
+.tool-card:hover{ background:var(--surface-2); }
+.tool-card h3{ font-size:0.98rem; }
+.tool-card p{ font-size:0.8rem; color:var(--ink-secondary); flex:1; }
+.grp{ font-family:"JetBrains Mono",monospace; font-size:0.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-muted); margin:2rem 0 0.6rem; }
+
+/* toolbar, guide, print */
+.toolbar{ display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin:-.5rem 0 1.2rem; }
+.toolbar .saved-note{ font-size:.75rem; color:var(--ink-muted); margin-left:auto; }
+.kbd{ font-family:"JetBrains Mono",monospace; font-size:.7rem; border:1px solid var(--border); border-radius:3px; padding:0 .3rem; color:var(--ink-muted); }
+.guide{ margin-top:2rem; }
+.guide h2{ font-size:1.15rem; margin:1.4rem 0 .5rem; }
+.guide h2:first-of-type{ margin-top:.2rem; }
+.guide p, .guide li{ font-size:.9rem; line-height:1.6; color:var(--ink-secondary); max-width:78ch; }
+.guide ul, .guide ol{ padding-left:1.2rem; margin:.4rem 0 .8rem; }
+.guide li{ margin:.2rem 0; }
+.guide strong{ color:var(--ink); }
+.guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
+.guide .table-wrap{ margin:.6rem 0 1rem; }
+@media print{
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  body{ background:#fff; } .wrap{ max-width:none; padding:0; }
+  .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
+  textarea{ display:none !important; }
+}
+.guide p{ margin:.5rem 0; }
+#guide{ scroll-margin-top:72px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand serif">Marketing Tools</span>
+  <span class="crumb">Unit Economics &amp; Planning</span>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button">Dark mode</button>
+</header>
+<main class="wrap">
+  <div class="hero">
+    <h1 class="serif">Affiliate Revenue Concentration Risk Analyzer</h1>
+    <p>Upload an affiliate platform report and measure concentration with the Herfindahl-Hirschman Index, Pareto distribution and top-partner dependency, plus what happens if your biggest partners leave.</p>
+    <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
+  </div>
+  <div class="toolbar">
+    <a class="btn btn-secondary btn-sm" href="#guide">How it works</a>
+    <button class="btn btn-secondary btn-sm" type="button" data-act="template">CSV template</button>
+    <button class="btn btn-secondary btn-sm" type="button" data-act="print">Print or save PDF</button>
+    <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
+    <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
+  </div>
+
+<div class="card">
+  <h3>Affiliate report</h3>
+  <p class="sub">CSV with one row per partner or per sale. Needs a partner column and a revenue column. Payout and orders columns are optional. Rows for the same partner are summed.</p>
+  <div id="drop"></div>
+  <div class="field" style="margin-top:.6rem"><label for="paste">Or paste CSV</label><textarea id="paste" placeholder="partner,revenue,payout&#10;CouponSite,52000,5200"></textarea></div>
+  <div class="row3"><div class="field"><label for="cp">Partner column</label><select id="cp"></select></div><div class="field"><label for="cr">Revenue column</label><select id="cr"></select></div><div class="field"><label for="cy">Payout column (optional)</label><select id="cy"></select></div></div>
+  <div class="actions"><button class="btn btn-primary" id="go" type="button">Analyze</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div>
+  <div class="err" id="err"></div>
+</div>
+<div id="out"></div>
+
+  <section class="card guide" id="guide">
+    <h2 class="serif" style="font-size:1.5rem">How this tool works</h2>
+<h2>What it answers</h2>
+<p>How dependent is your affiliate program on a handful of partners, and how much revenue walks out the door if your biggest partner leaves or gets penalized by Google?</p>
+<h2>When to use it</h2>
+<p>Quarterly program reviews, planning for risk, or before a large partner renegotiates terms.</p>
+<h2>What you need</h2>
+<p>An affiliate network or platform export with a partner column and a revenue column. A payout column is optional and enables payout-efficiency checks. Multiple rows per partner (for example, by month) are summed.</p>
+<h2>How it works</h2>
+<ul>
+<li><strong>Revenue share</strong> for each partner = partner revenue divided by total revenue</li>
+<li><strong>HHI (Herfindahl-Hirschman Index)</strong> = the sum of squared percentage shares, from near 0 (fully spread) to 10,000 (one partner)</li>
+<li><strong>Effective number of partners</strong> = 10,000 divided by HHI, meaning how many equal-sized partners would produce the same concentration</li>
+<li><strong>Pareto counts:</strong> how many partners produce 50% and 80% of revenue</li>
+<li><strong>Gini coefficient</strong> from the Lorenz curve of partner revenue</li>
+<li><strong>Loss scenarios:</strong> revenue at risk if the top 1, 3 or 5 partners leave</li>
+<li><strong>Payout outliers:</strong> partners whose payout per revenue dollar far exceeds the program average</li>
+</ul>
+<p>Risk is <strong>red</strong> when HHI exceeds 2,500 or one partner holds more than 30%, and <strong>amber</strong> when HHI exceeds 1,500, one partner holds more than 20%, or the top 3 hold more than 60%.</p>
+<h2>Reading the results</h2>
+<p>Focus on the effective number of partners and the top-partner loss scenario. A program with 400 active partners but an effective count of 4 carries the same risk as a program with 4 partners.</p>
+<h2>Limits and cautions</h2>
+<ul>
+<li>HHI thresholds come from antitrust practice and serve as convention, not law, for affiliate programs.</li>
+<li>Concentration is not automatically bad when a large partner is contractually secure and incremental. Pair this with the margin calculator.</li>
+</ul><h2>Input template</h2><p>Your file needs these columns. Extra columns are ignored, and column names can differ because you map them in the tool.</p><pre class="code">partner,revenue,payout
+Partner A,120000,9600
+Partner B,45000,3600
+Partner C,8000,720</pre><div class="actions"><button class="btn btn-secondary btn-sm" type="button" data-act="template">Download CSV template</button></div>
+  </section>
+  <div class="foot">Static tool. No account, no tracking, no server. Estimates depend on the inputs you provide and are decision aids, not guarantees.</div>
+</main>
+<script>/* Marketing Tools shared library. No dependencies, runs offline. */
+(function (g) {
+'use strict';
+const MT = {};
+g.MT = MT;
+
+/* ---------- DOM + formatting ---------- */
+MT.$ = (s, r) => (r || document).querySelector(s);
+MT.$$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+MT.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = x => typeof x === 'number' && isFinite(x);
+MT.isNum = isNum;
+MT.fmt = {
+  n(x, d = 2) { if (!isNum(x)) return '—'; const a = Math.abs(x); if (a >= 1e9) return (x / 1e9).toFixed(2) + 'B'; return x.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); },
+  int(x) { return isNum(x) ? Math.round(x).toLocaleString('en-US') : '—'; },
+  pct(x, d = 1) { return isNum(x) ? (x * 100).toFixed(d) + '%' : '—'; },
+  spct(x, d = 1) { return isNum(x) ? (x >= 0 ? '+' : '') + (x * 100).toFixed(d) + '%' : '—'; },
+  money(x, d = 0) { if (!isNum(x)) return '—'; return (x < 0 ? '-$' : '$') + Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); },
+  p(x) { if (!isNum(x)) return '—'; if (x < 0.0001) return '<0.0001'; return x < 0.01 ? x.toFixed(4) : x.toFixed(3); },
+  sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
+  date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
+};
+MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
+MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+MT.parseDate = s => {
+  if (s == null) return NaN; s = String(s).trim(); let m;
+  if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
+  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
+};
+MT.tbl = (heads, rows, opt) => {
+  opt = opt || {}; const nc = new Set(opt.num || []);
+  const cell = (c, i, tag) => { const raw = c && typeof c === 'object' && 'h' in c; const v = raw ? c.h : MT.esc(c); const cls = (nc.has(i) ? 'num ' : '') + ((c && c.cls) || ''); return `<${tag}${cls ? ` class="${cls.trim()}"` : ''}>${v}</${tag}>`; };
+  return `<div class="table-wrap"><table class="t ${opt.cls || ''}"><thead><tr>${heads.map((h, i) => cell(h, i, 'th')).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => cell(c, i, 'td')).join('')}</tr>`).join('')}</tbody></table></div>`;
+};
+MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
+MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
+MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
+
+/* ---------- CSV ---------- */
+MT.parseCSV = (text, delim) => {
+  text = String(text).replace(/^﻿/, '');
+  if (!delim) { const first = text.split(/\r?\n/).find(l => l.trim()) || ''; const c = { ',': 0, '\t': 0, ';': 0, '|': 0 }; let q = false; for (const ch of first) { if (ch === '"') q = !q; else if (!q && ch in c) c[ch]++; } delim = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; if (!c[delim]) delim = ','; }
+  const rows = []; let row = [], f = '', q = false, i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === delim) { row.push(f); f = ''; }
+    else if (ch === '\n') { row.push(f); rows.push(row); row = []; f = ''; }
+    else if (ch === '\r') { /* skip */ }
+    else f += ch;
+    i++;
+  }
+  if (f !== '' || row.length) { row.push(f); rows.push(row); }
+  return rows.filter(r => r.some(c => String(c).trim() !== ''));
+};
+/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
+MT.readTable = (text, headerMatch) => {
+  let raw = MT.parseCSV(text);
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  if (!raw.length) return { cols: [], rows: [], raw };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
+  return { cols, rows, raw };
+};
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
+MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+MT.fillSelect = (sel, cols, guessRe, opts) => {
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+};
+MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
+MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
+MT.dropzone = (el, onText, label) => {
+  el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
+  el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
+  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
+  inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
+  ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.remove('over'); }));
+  el.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) read(f); });
+};
+MT.initTheme = () => {
+  const btn = MT.$('.theme-btn'); if (!btn) return;
+  const cur = () => document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const label = () => btn.textContent = cur() === 'dark' ? 'Light mode' : 'Dark mode';
+  label(); btn.addEventListener('click', () => { const nt = cur() === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); MT.store.set('mt:theme', nt); label(); MT.$$('[data-rerender]').forEach(e => e.dispatchEvent(new Event('rerender'))); });
+};
+document.addEventListener('DOMContentLoaded', MT.initTheme);
+
+/* ---------- special functions ---------- */
+const LG = [57.1562356658629235, -59.5979603554754912, 14.1360979747417471, -0.491913816097620199, 0.339946499848118887e-4, 0.465236289270485756e-4, -0.983744753048795646e-4, 0.158088703224912494e-3, -0.210264441724104883e-3, 0.217439618115212643e-3, -0.164318106536763890e-3, 0.844182239838527433e-4, -0.261908384015814087e-4, 0.368991826595316234e-5];
+function lgamma(x) { let y = x, t = x + 5.24218750000000000; t = (x + 0.5) * Math.log(t) - t; let s = 0.999999999999997092; for (let j = 0; j < 14; j++) s += LG[j] / ++y; return t + Math.log(2.5066282746310005 * s / x); }
+function gammaPQ(a, x) {
+  if (x <= 0) return [0, 1];
+  const gln = lgamma(a);
+  if (x < a + 1) { let ap = a, sum = 1 / a, del = sum; for (let n = 0; n < 2000; n++) { ap++; del *= x / ap; sum += del; if (Math.abs(del) < Math.abs(sum) * 1e-16) break; } const P = sum * Math.exp(-x + a * Math.log(x) - gln); return [P, 1 - P]; }
+  let b = x + 1 - a, c = 1e300, d = 1 / b, h = d;
+  for (let i = 1; i < 2000; i++) { const an = -i * (i - a); b += 2; d = an * d + b; if (Math.abs(d) < 1e-300) d = 1e-300; c = b + an / c; if (Math.abs(c) < 1e-300) c = 1e-300; d = 1 / d; const del = d * c; h *= del; if (Math.abs(del - 1) < 1e-16) break; }
+  const Q = Math.exp(-x + a * Math.log(x) - gln) * h; return [1 - Q, Q];
+}
+function betacf(a, b, x) {
+  const FP = 1e-300; let qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap; if (Math.abs(d) < FP) d = FP; d = 1 / d; let h = d;
+  for (let m = 1; m <= 3000; m++) { const m2 = 2 * m; let aa = m * (b - m) * x / ((qam + m2) * (a + m2)); d = 1 + aa * d; if (Math.abs(d) < FP) d = FP; c = 1 + aa / c; if (Math.abs(c) < FP) c = FP; d = 1 / d; h *= d * c; aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2)); d = 1 + aa * d; if (Math.abs(d) < FP) d = FP; c = 1 + aa / c; if (Math.abs(c) < FP) c = FP; d = 1 / d; const del = d * c; h *= del; if (Math.abs(del - 1) < 1e-15) break; }
+  return h;
+}
+function ibeta(x, a, b) { if (x <= 0) return 0; if (x >= 1) return 1; const bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x)); return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b; }
+const S = {};
+MT.stat = S;
+S.lgamma = lgamma; S.ibeta = ibeta; S.gammaPQ = gammaPQ;
+S.normSf2 = z => gammaPQ(0.5, z * z / 2)[1];                     // two-sided p for |z|
+S.normCdf = z => z >= 0 ? 1 - 0.5 * gammaPQ(0.5, z * z / 2)[1] : 0.5 * gammaPQ(0.5, z * z / 2)[1];
+S.normInv = p => {
+  if (p <= 0) return -Infinity; if (p >= 1) return Infinity;
+  const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00], b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01], c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00], d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+  let x, q, r; const pl = 0.02425;
+  if (p < pl) { q = Math.sqrt(-2 * Math.log(p)); x = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  else if (p <= 1 - pl) { q = p - 0.5; r = q * q; x = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1); }
+  else { q = Math.sqrt(-2 * Math.log(1 - p)); x = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  for (let i = 0; i < 2; i++) { const e = S.normCdf(x) - p, u = e * Math.sqrt(2 * Math.PI) * Math.exp(x * x / 2); x = x - u / (1 + x * u / 2); }
+  return x;
+};
+S.tSf2 = (t, df) => ibeta(df / (df + t * t), df / 2, 0.5);      // two-sided p
+S.tCdf = (t, df) => { const p2 = S.tSf2(t, df); return t >= 0 ? 1 - p2 / 2 : p2 / 2; };
+S.tCrit = (alpha, df) => { if (df > 1e6) return S.normInv(1 - alpha / 2); let lo = 0, hi = 1000; for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (S.tSf2(m, df) > alpha) lo = m; else hi = m; } return (lo + hi) / 2; };
+S.chi2Sf = (x, k) => x <= 0 ? 1 : gammaPQ(k / 2, x / 2)[1];
+S.fSf = (f, d1, d2) => f <= 0 ? 1 : ibeta(d2 / (d2 + d1 * f), d2 / 2, d1 / 2);
+S.zCrit = alpha => S.normInv(1 - alpha / 2);
+
+/* ---------- descriptive ---------- */
+const sum = a => { let s = 0; for (const x of a) s += x; return s; };
+S.sum = sum;
+S.mean = a => a.length ? sum(a) / a.length : NaN;
+S.variance = a => { const n = a.length; if (n < 2) return NaN; const m = S.mean(a); let s = 0; for (const x of a) s += (x - m) * (x - m); return s / (n - 1); };
+S.sd = a => Math.sqrt(S.variance(a));
+S.quantile = (a, q) => { const s = a.slice().sort((x, y) => x - y); if (!s.length) return NaN; const p = (s.length - 1) * q, lo = Math.floor(p), hi = Math.ceil(p); return s[lo] + (s[hi] - s[lo]) * (p - lo); };
+S.median = a => S.quantile(a, 0.5);
+S.skew = a => { const n = a.length, m = S.mean(a), s = S.sd(a); if (n < 3 || !s) return 0; let t = 0; for (const x of a) t += ((x - m) / s) ** 3; return t * n / ((n - 1) * (n - 2)); };
+S.corr = (a, b) => { const n = Math.min(a.length, b.length); if (n < 3) return NaN; const ma = S.mean(a.slice(0, n)), mb = S.mean(b.slice(0, n)); let sab = 0, saa = 0, sbb = 0; for (let i = 0; i < n; i++) { sab += (a[i] - ma) * (b[i] - mb); saa += (a[i] - ma) ** 2; sbb += (b[i] - mb) ** 2; } return sab / Math.sqrt(saa * sbb); };
+S.ranks = a => { const idx = a.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]); const r = new Array(a.length); let i = 0; while (i < idx.length) { let j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++; const rk = (i + j) / 2 + 1; for (let k = i; k <= j; k++) r[idx[k][1]] = rk; i = j + 1; } return r; };
+
+/* ---------- RNG ---------- */
+MT.rng = seed => { let a = (seed >>> 0) || 1; const u = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; let spare = null;
+  const n = () => { if (spare !== null) { const s = spare; spare = null; return s; } let x, y, r; do { x = 2 * u() - 1; y = 2 * u() - 1; r = x * x + y * y; } while (r >= 1 || r === 0); const f = Math.sqrt(-2 * Math.log(r) / r); spare = y * f; return x * f; };
+  const gam = k => { if (k < 1) return gam(k + 1) * Math.pow(u(), 1 / k); const d = k - 1 / 3, c = 1 / Math.sqrt(9 * d); for (;;) { let x, v; do { x = n(); v = 1 + c * x; } while (v <= 0); v = v * v * v; const uu = u(); if (uu < 1 - 0.0331 * x * x * x * x || Math.log(uu) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v; } };
+  return { u, n, gamma: gam, beta: (a1, b1) => { const x = gam(a1), y = gam(b1); return x / (x + y); }, int: m => Math.floor(u() * m) }; };
+
+/* ---------- linear algebra ---------- */
+const M = {};
+MT.mat = M;
+M.T = A => A[0].map((_, j) => A.map(r => r[j]));
+M.mul = (A, B) => A.map(r => B[0].map((_, j) => { let s = 0; for (let k = 0; k < r.length; k++) s += r[k] * B[k][j]; return s; }));
+M.mulv = (A, v) => A.map(r => { let s = 0; for (let k = 0; k < r.length; k++) s += r[k] * v[k]; return s; });
+M.inv = A0 => {
+  const n = A0.length, A = A0.map((r, i) => r.concat(Array.from({ length: n }, (_, j) => i === j ? 1 : 0)));
+  for (let c = 0; c < n; c++) {
+    let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    if (Math.abs(A[p][c]) < 1e-13) { A[p][c] = 1e-13; }
+    [A[c], A[p]] = [A[p], A[c]]; const d = A[c][c]; for (let j = 0; j < 2 * n; j++) A[c][j] /= d;
+    for (let r = 0; r < n; r++) if (r !== c) { const f = A[r][c]; if (f) for (let j = 0; j < 2 * n; j++) A[r][j] -= f * A[c][j]; }
+  }
+  return A.map(r => r.slice(n));
+};
+M.solve = (A, b) => M.mulv(M.inv(A), b);
+
+/* OLS. opts.se: 'ols' | 'hc3' | number (Newey-West lag) */
+S.ols = (X, y, opts) => {
+  opts = opts || {}; const n = X.length, k = X[0].length, Xt = M.T(X), XtXi = M.inv(M.mul(Xt, X));
+  const beta = M.mulv(XtXi, M.mulv(Xt, y)), fit = M.mulv(X, beta), e = y.map((v, i) => v - fit[i]);
+  let V; const se = opts.se == null ? 'ols' : opts.se;
+  if (se === 'hc3') {
+    const h = X.map(r => { const t = M.mulv(XtXi, r); let s = 0; for (let j = 0; j < k; j++) s += r[j] * t[j]; return s; });
+    const meat = Array.from({ length: k }, () => new Array(k).fill(0));
+    for (let i = 0; i < n; i++) { const w = e[i] * e[i] / Math.pow(1 - Math.min(h[i], 0.999), 2); for (let a = 0; a < k; a++) for (let b = 0; b < k; b++) meat[a][b] += w * X[i][a] * X[i][b]; }
+    V = M.mul(M.mul(XtXi, meat), XtXi);
+  } else if (typeof se === 'number') {
+    const L = Math.min(se, n - 2), meat = Array.from({ length: k }, () => new Array(k).fill(0));
+    for (let l = 0; l <= L; l++) { const w = l === 0 ? 1 : 1 - l / (L + 1); for (let t = l; t < n; t++) { const g = e[t] * e[t - l]; for (let a = 0; a < k; a++) for (let b = 0; b < k; b++) { const v = w * g * (X[t][a] * X[t - l][b] + (l ? X[t - l][a] * X[t][b] : 0)); meat[a][b] += l === 0 ? w * g * X[t][a] * X[t][b] : v; } } }
+    const sc = n / Math.max(1, n - k); V = M.mul(M.mul(XtXi, meat), XtXi).map(r => r.map(v => v * sc));
+  } else { let ss = 0; for (const v of e) ss += v * v; const s2 = ss / Math.max(1, n - k); V = XtXi.map(r => r.map(v => v * s2)); }
+  const df = Math.max(1, n - k), sem = beta.map((_, j) => Math.sqrt(Math.max(V[j][j], 0))), t = beta.map((b, j) => b / sem[j]), p = t.map(v => isFinite(v) ? S.tSf2(v, df) : NaN);
+  const my = S.mean(y); let sst = 0, sse = 0; for (let i = 0; i < n; i++) { sst += (y[i] - my) ** 2; sse += e[i] ** 2; }
+  return { beta, se: sem, t, p, df, resid: e, fitted: fit, cov: V, r2: sst ? 1 - sse / sst : NaN, sse, n, k };
+};
+S.nwLag = n => Math.max(1, Math.floor(4 * Math.pow(n / 100, 2 / 9)));
+/* Logistic regression (grouped binomial). rows: X (n x k), s successes, m trials */
+S.logit = (X, s, m) => {
+  const n = X.length, k = X[0].length; let beta = new Array(k).fill(0); const tot = sum(s) / sum(m); beta[0] = Math.log(Math.min(0.999, Math.max(0.001, tot)) / (1 - Math.min(0.999, Math.max(0.001, tot))));
+  let XtWXi, ok = false, sep = false, ll = -Infinity;
+  for (let it = 0; it < 60; it++) {
+    const eta = M.mulv(X, beta), pr = eta.map(v => Math.min(1 - 1e-10, Math.max(1e-10, 1 / (1 + Math.exp(-v)))));
+    const W = pr.map((p, i) => m[i] * p * (1 - p) + 1e-12), z = eta.map((e, i) => e + (s[i] - m[i] * pr[i]) / W[i]);
+    const A = Array.from({ length: k }, () => new Array(k).fill(0)), b = new Array(k).fill(0);
+    for (let i = 0; i < n; i++) for (let a = 0; a < k; a++) { b[a] += X[i][a] * W[i] * z[i]; for (let c = 0; c < k; c++) A[a][c] += X[i][a] * X[i][c] * W[i]; }
+    XtWXi = M.inv(A); const nb = M.mulv(XtWXi, b); let d = 0; for (let j = 0; j < k; j++) d = Math.max(d, Math.abs(nb[j] - beta[j])); beta = nb;
+    if (d < 1e-9) { ok = true; break; }
+  }
+  const eta = M.mulv(X, beta), pr = eta.map(v => Math.min(1 - 1e-12, Math.max(1e-12, 1 / (1 + Math.exp(-v)))));
+  ll = 0; for (let i = 0; i < n; i++) ll += s[i] * Math.log(pr[i]) + (m[i] - s[i]) * Math.log(1 - pr[i]);
+  if (beta.some(b => Math.abs(b) > 14)) sep = true;
+  const se = beta.map((_, j) => Math.sqrt(Math.max(XtWXi[j][j], 0))), zs = beta.map((b, j) => b / se[j]), p = zs.map(v => isFinite(v) ? S.normSf2(v) : NaN);
+  return { beta, se, z: zs, p, ll, converged: ok, separation: sep, cov: XtWXi, fitted: pr };
+};
+
+/* ---------- classical tests ---------- */
+S.holm = ps => { const idx = ps.map((p, i) => [p, i]).sort((a, b) => a[0] - b[0]), m = ps.length, adj = new Array(m); let run = 0; idx.forEach(([p, i], r) => { run = Math.max(run, Math.min(1, (m - r) * p)); adj[i] = run; }); return adj; };
+S.twoProp = (x1, n1, x2, n2, alpha) => { // group 1 = treatment, group 2 = control
+  alpha = alpha || 0.05; const p1 = x1 / n1, p2 = x2 / n2, pp = (x1 + x2) / (n1 + n2), sep = Math.sqrt(pp * (1 - pp) * (1 / n1 + 1 / n2)), z = sep ? (p1 - p2) / sep : 0, p = sep ? S.normSf2(z) : 1;
+  const seu = Math.sqrt(p1 * (1 - p1) / n1 + p2 * (1 - p2) / n2), zc = S.zCrit(alpha), d = p1 - p2;
+  let rl = NaN, rlo = NaN, rhi = NaN; if (x1 > 0 && x2 > 0) { const lr = Math.log(p1 / p2), sl = Math.sqrt((1 - p1) / x1 + (1 - p2) / x2); rl = p1 / p2 - 1; rlo = Math.exp(lr - zc * sl) - 1; rhi = Math.exp(lr + zc * sl) - 1; }
+  return { p1, p2, diff: d, z, p, ciLo: d - zc * seu, ciHi: d + zc * seu, se: seu, rel: rl, relLo: rlo, relHi: rhi };
+};
+const lchoose = (n, k) => lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1);
+S.fisher = (a, b, c, d) => { const r1 = a + b, r2 = c + d, c1 = a + c, n = r1 + r2, lo = Math.max(0, c1 - r2), hi = Math.min(r1, c1); const lp = x => lchoose(r1, x) + lchoose(r2, c1 - x) - lchoose(n, c1); const po = lp(a); let p = 0; for (let x = lo; x <= hi; x++) { const v = lp(x); if (v <= po + 1e-9) p += Math.exp(v); } return Math.min(1, p); };
+S.chi2Table = tab => { const R = tab.length, C = tab[0].length, rs = tab.map(sum), cs = tab[0].map((_, j) => sum(tab.map(r => r[j]))), n = sum(rs); let x = 0, minE = Infinity; for (let i = 0; i < R; i++) for (let j = 0; j < C; j++) { const e = rs[i] * cs[j] / n; minE = Math.min(minE, e); if (e > 0) x += (tab[i][j] - e) ** 2 / e; } const df = (R - 1) * (C - 1); return { chi2: x, df, p: S.chi2Sf(x, df), minExpected: minE, cramersV: Math.sqrt(x / (n * Math.min(R - 1, C - 1))) }; };
+S.welch = (m1, s1, n1, m2, s2, n2, alpha) => { alpha = alpha || 0.05; const v1 = s1 * s1 / n1, v2 = s2 * s2 / n2, se = Math.sqrt(v1 + v2), d = m1 - m2, t = se ? d / se : 0, df = (v1 + v2) ** 2 / (v1 * v1 / (n1 - 1) + v2 * v2 / (n2 - 1)), p = se ? S.tSf2(t, df) : 1, tc = S.tCrit(alpha, df); return { diff: d, se, t, df, p, ciLo: d - tc * se, ciHi: d + tc * se, rel: m2 ? d / m2 : NaN, relLo: m2 ? (d - tc * se) / m2 : NaN, relHi: m2 ? (d + tc * se) / m2 : NaN }; };
+S.anova = groups => { // groups: [{n, mean, sd}]
+  const N = sum(groups.map(g => g.n)), k = groups.length, gm = sum(groups.map(g => g.n * g.mean)) / N; let ssb = 0, ssw = 0; for (const g of groups) { ssb += g.n * (g.mean - gm) ** 2; ssw += (g.n - 1) * g.sd * g.sd; } const df1 = k - 1, df2 = N - k, F = (ssb / df1) / (ssw / df2); return { F, df1, df2, p: S.fSf(F, df1, df2), etaSq: ssb / (ssb + ssw) };
+};
+S.mannWhitney = (x, y) => { const n1 = x.length, n2 = y.length, all = x.concat(y), r = S.ranks(all); let R1 = 0; for (let i = 0; i < n1; i++) R1 += r[i]; const U1 = R1 - n1 * (n1 + 1) / 2, mu = n1 * n2 / 2, N = n1 + n2, cnt = {}; for (const v of all) cnt[v] = (cnt[v] || 0) + 1; let tie = 0; for (const k in cnt) tie += cnt[k] ** 3 - cnt[k]; const sg = Math.sqrt(n1 * n2 / 12 * ((N + 1) - tie / (N * (N - 1)))); const z = sg ? (Math.abs(U1 - mu) - 0.5) / sg * Math.sign(U1 - mu) : 0; return { U: U1, z, p: sg ? S.normSf2(z) : 1, auc: U1 / (n1 * n2) }; };
+S.wilcoxon = d0 => { const d = d0.filter(v => v !== 0), n = d.length; if (n < 1) return { W: 0, z: 0, p: 1, n: 0 }; const r = S.ranks(d.map(Math.abs)); let Wp = 0; d.forEach((v, i) => { if (v > 0) Wp += r[i]; }); const mu = n * (n + 1) / 4, cnt = {}; for (const v of d) { const a = Math.abs(v); cnt[a] = (cnt[a] || 0) + 1; } let tc = 0; for (const k in cnt) tc += cnt[k] ** 3 - cnt[k]; const sg = Math.sqrt(n * (n + 1) * (2 * n + 1) / 24 - tc / 48), z = sg ? (Math.abs(Wp - mu) - 0.5) / sg * Math.sign(Wp - mu) : 0; return { W: Wp, z, p: sg ? S.normSf2(z) : 1, n }; };
+S.pairedT = d => { const n = d.length, m = S.mean(d), s = S.sd(d), t = m / (s / Math.sqrt(n)); return { mean: m, t, df: n - 1, p: s ? S.tSf2(t, n - 1) : 1 }; };
+/* Bayesian Beta-Binomial: P(treatment > control), expected loss, credible interval on relative lift */
+S.betaBinom = (x1, n1, x2, n2, draws, seed) => { const r = MT.rng(seed || 7); draws = draws || 40000; let win = 0, lossT = 0, lossC = 0; const rel = []; for (let i = 0; i < draws; i++) { const a = r.beta(x1 + 1, n1 - x1 + 1), b = r.beta(x2 + 1, n2 - x2 + 1); if (a > b) win++; lossT += Math.max(b - a, 0); lossC += Math.max(a - b, 0); rel.push(a / b - 1); } rel.sort((p, q) => p - q); return { pBeat: win / draws, expLossChoose: lossT / draws, expLossKeep: lossC / draws, relLo: rel[Math.floor(draws * 0.025)], relHi: rel[Math.floor(draws * 0.975)], relMed: rel[Math.floor(draws / 2)] }; };
+S.bootDiff = (x, y, B, seed, stat) => { const r = MT.rng(seed || 11); B = B || 3000; const f = stat || S.mean, out = []; for (let b = 0; b < B; b++) { const xs = new Array(x.length), ys = new Array(y.length); for (let i = 0; i < x.length; i++) xs[i] = x[r.int(x.length)]; for (let i = 0; i < y.length; i++) ys[i] = y[r.int(y.length)]; out.push(f(xs) - f(ys)); } out.sort((a, b) => a - b); return { lo: out[Math.floor(B * 0.025)], hi: out[Math.floor(B * 0.975)] }; };
+/* minimum detectable absolute effect for two-proportion test at given power */
+S.mdeProp = (p, n1, n2, alpha, power) => { const za = S.zCrit(alpha || 0.05), zb = S.normInv(power || 0.8); return (za + zb) * Math.sqrt(p * (1 - p) * (1 / n1 + 1 / n2)); };
+S.mdeMean = (sd, n1, n2, alpha, power) => { const za = S.zCrit(alpha || 0.05), zb = S.normInv(power || 0.8); return (za + zb) * sd * Math.sqrt(1 / n1 + 1 / n2); };
+S.sampleSizeProp = (p, relMde, alpha, power) => { const za = S.zCrit(alpha || 0.05), zb = S.normInv(power || 0.8), d = p * relMde; return Math.ceil(2 * p * (1 - p) * (za + zb) ** 2 / (d * d)); };
+
+/* ---------- time series ---------- */
+/* Holt linear trend, grid search on SSE. Returns forecast(h) */
+S.holt = y => { let best = null; for (let a = 0.05; a <= 0.96; a += 0.05) for (let b = 0.01; b <= 0.5; b += 0.05) { let L = y[0], T = y.length > 1 ? y[1] - y[0] : 0, sse = 0; for (let t = 1; t < y.length; t++) { const f = L + T; sse += (y[t] - f) ** 2; const Ln = a * y[t] + (1 - a) * (L + T); T = b * (Ln - L) + (1 - b) * T; L = Ln; } if (!best || sse < best.sse) best = { a, b, sse, L, T }; } best.forecast = h => best.L + h * best.T; best.rmse = Math.sqrt(best.sse / Math.max(1, y.length - 1)); return best; };
+S.ses = y => { let best = null; for (let a = 0.05; a <= 0.96; a += 0.05) { let L = y[0], sse = 0; for (let t = 1; t < y.length; t++) { sse += (y[t] - L) ** 2; L = a * y[t] + (1 - a) * L; } if (!best || sse < best.sse) best = { a, sse, L }; } best.forecast = () => best.L; best.rmse = Math.sqrt(best.sse / Math.max(1, y.length - 1)); return best; };
+S.simplexProject = v => { const n = v.length, u = v.slice().sort((a, b) => b - a); let css = 0, rho = 0, th = 0; for (let i = 0; i < n; i++) { css += u[i]; const t = (css - 1) / (i + 1); if (u[i] - t > 0) { rho = i; th = t; } } return v.map(x => Math.max(x - th, 0)); };
+/* Synthetic control weights: min ||y - X w||^2, w on simplex. X: T x J. FISTA. */
+S.scmWeights = (X, y, iters) => {
+  const T = X.length, J = X[0].length; iters = iters || 3000;
+  // Lipschitz via power iteration on X'X
+  const XtX = M.mul(M.T(X), X), Xty = M.mulv(M.T(X), y); let v = new Array(J).fill(1 / Math.sqrt(J)), lam = 1; for (let i = 0; i < 40; i++) { const w = M.mulv(XtX, v), nn = Math.sqrt(sum(w.map(a => a * a))) || 1; lam = nn; v = w.map(a => a / nn); }
+  const step = 1 / (2 * lam + 1e-12); let w = new Array(J).fill(1 / J), z = w.slice(), tk = 1;
+  for (let it = 0; it < iters; it++) { const grad = M.mulv(XtX, z).map((a, j) => 2 * (a - Xty[j])), wn = S.simplexProject(z.map((zj, j) => zj - step * grad[j])), tn = (1 + Math.sqrt(1 + 4 * tk * tk)) / 2; z = wn.map((a, j) => a + (tk - 1) / tn * (a - w[j])); w = wn; tk = tn; }
+  return w;
+};
+/* classical multiplicative seasonal indices given values and period m (centered moving average) */
+S.seasonalIdx = (y, m) => { const n = y.length, ma = new Array(n).fill(NaN), h = Math.floor(m / 2); for (let t = h; t < n - h; t++) { if (m % 2 === 0) { let s = 0.5 * y[t - h] + 0.5 * y[t + h]; for (let k = t - h + 1; k <= t + h - 1; k++) s += y[k]; ma[t] = s / m; } else { let s = 0; for (let k = t - h; k <= t + h; k++) s += y[k]; ma[t] = s / m; } } return { ma }; };
+
+/* ---------- charts ---------- */
+const C = {}; MT.chart = C;
+const NS = 'http://www.w3.org/2000/svg';
+const sv = (n, a, kids) => { const e = document.createElementNS(NS, n); for (const k in (a || {})) e.setAttribute(k, a[k]); (kids || []).forEach(c => e.appendChild(c)); return e; };
+const COLORS = i => `var(--series-${(i % 8) + 1})`;
+C.color = COLORS;
+function niceTicks(lo, hi, n) { if (lo === hi) { lo -= 1; hi += 1; } const span = hi - lo, step0 = span / (n || 5), mag = Math.pow(10, Math.floor(Math.log10(step0))), r = step0 / mag, step = (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag, a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step, t = []; for (let v = a; v <= b + step / 2; v += step) t.push(+v.toPrecision(12)); return { lo: a, hi: b, ticks: t }; }
+const compact = v => { const a = Math.abs(v); if (a >= 1e9) return +(v / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return +(v / 1e6).toFixed(2) + 'M'; if (a >= 1e4) return +(v / 1e3).toFixed(1) + 'K'; if (a >= 100) return Math.round(v).toString(); if (a >= 1) return +v.toFixed(2) + ''; return +v.toPrecision(2) + ''; };
+C.compact = compact;
+function shell(el, opts) {
+  el.innerHTML = ''; el.classList.add('chart');
+  if (opts.title) { const t = document.createElement('div'); t.className = 'ttl'; t.textContent = opts.title; el.appendChild(t); }
+  if (opts.series && opts.series.length > 1 || opts.legend) { const l = document.createElement('div'); l.className = 'legend'; l.innerHTML = (opts.legend || opts.series.map((s, i) => ({ name: s.name, color: s.color || COLORS(i) }))).map(s => `<span><i style="background:${s.color}"></i>${MT.esc(s.name)}</span>`).join(''); el.appendChild(l); }
+  const tip = document.createElement('div'); tip.className = 'tip'; el.style.position = 'relative'; return tip;
+}
+function hookTips(el, tip) {
+  el.addEventListener('mousemove', e => { const t = e.target.closest && e.target.closest('[data-tip]'); if (!t) { tip.style.display = 'none'; return; } tip.innerHTML = t.getAttribute('data-tip'); tip.style.display = 'block'; const r = el.getBoundingClientRect(); let x = e.clientX - r.left + 12, y = e.clientY - r.top - 8; tip.style.left = Math.min(x, r.width - tip.offsetWidth - 4) + 'px'; tip.style.top = Math.max(0, y - tip.offsetHeight) + 'px'; });
+  el.addEventListener('mouseleave', () => tip.style.display = 'none');
+}
+function dataTable(el, heads, rows, label) { if (!rows.length) return; const d = document.createElement('details'); d.innerHTML = `<summary>${label || 'View as table'}</summary>` + MT.tbl(heads, rows.slice(0, 500).map(r => r.map(v => isNum(v) ? MT.fmt.sig(v, 5) : v)), { num: heads.map((_, i) => i).slice(1) }); el.appendChild(d); }
+/* line chart. opts: {title, xs, series:[{name, values, color, dash, band:{lo,hi}, width}], vlines:[{x,label}], xFmt, yFmt, height, yLabel, zero} */
+C.line = (el, o) => {
+  const tip = shell(el, o), W = 760, H = o.height || 280, m = { l: 56, r: 14, t: 14, b: 30 }, xs = o.xs, xf = o.xFmt || (v => v), yf = o.yFmt || compact;
+  let lo = Infinity, hi = -Infinity; o.series.forEach(s => { s.values.forEach(v => { if (isNum(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }); if (s.band) { s.band.lo.forEach(v => isNum(v) && (lo = Math.min(lo, v))); s.band.hi.forEach(v => isNum(v) && (hi = Math.max(hi, v))); } });
+  if (o.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  const nt = niceTicks(lo, hi, 5), x0 = Math.min(...xs), x1 = Math.max(...xs), X = v => m.l + (x1 === x0 ? 0.5 : (v - x0) / (x1 - x0)) * (W - m.l - m.r), Y = v => H - m.b - (v - nt.lo) / (nt.hi - nt.lo) * (H - m.t - m.b);
+  const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'line chart' });
+  const g = sv('g', { class: 'grid' }), ax = sv('g', { class: 'ax' });
+  nt.ticks.forEach(v => { g.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v) })); const t = sv('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }); t.textContent = yf(v); ax.appendChild(t); });
+  const nx = Math.min(7, xs.length); for (let i = 0; i < nx; i++) { const v = x0 + (x1 - x0) * i / Math.max(1, nx - 1), t = sv('text', { x: X(v), y: H - 10, 'text-anchor': i === 0 ? 'start' : i === nx - 1 ? 'end' : 'middle' }); t.textContent = xf(v); ax.appendChild(t); }
+  svg.appendChild(g); svg.appendChild(ax);
+  if (o.yLabel) { const t = sv('text', { x: 4, y: 10, class: 'lbl' }); t.textContent = o.yLabel; svg.appendChild(t); }
+  (o.vlines || []).forEach(v => { svg.appendChild(sv('line', { x1: X(v.x), x2: X(v.x), y1: m.t, y2: H - m.b, stroke: 'var(--ink-muted)', 'stroke-dasharray': '4 3', 'stroke-width': 1.2 })); if (v.label) { const t = sv('text', { x: X(v.x) + 4, y: m.t + 9, class: 'lbl' }); t.textContent = v.label; svg.appendChild(t); } });
+  const path = (vals) => { let d = '', pen = false; vals.forEach((v, i) => { if (!isNum(v)) { pen = false; return; } d += (pen ? 'L' : 'M') + X(xs[i]).toFixed(1) + ' ' + Y(v).toFixed(1); pen = true; }); return d; };
+  o.series.forEach((s, i) => { const col = s.color || COLORS(i); if (s.band) { let d = ''; const idx = xs.map((_, k) => k).filter(k => isNum(s.band.lo[k]) && isNum(s.band.hi[k])); if (idx.length) { d = 'M' + idx.map(k => X(xs[k]).toFixed(1) + ' ' + Y(s.band.hi[k]).toFixed(1)).join('L') + 'L' + idx.slice().reverse().map(k => X(xs[k]).toFixed(1) + ' ' + Y(s.band.lo[k]).toFixed(1)).join('L') + 'Z'; svg.appendChild(sv('path', { d, fill: col, opacity: 0.16 })); } } svg.appendChild(sv('path', { d: path(s.values), fill: 'none', stroke: col, 'stroke-width': s.width || 2, 'stroke-dasharray': s.dash || '', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' })); });
+  const cross = sv('line', { y1: m.t, y2: H - m.b, stroke: 'var(--ink-muted)', 'stroke-width': 1, opacity: 0 }), dots = o.series.map((s, i) => sv('circle', { r: 4, fill: s.color || COLORS(i), stroke: 'var(--surface)', 'stroke-width': 2, opacity: 0 }));
+  svg.appendChild(cross); dots.forEach(d => svg.appendChild(d));
+  const ov = sv('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: 'transparent' }); svg.appendChild(ov);
+  ov.addEventListener('mousemove', e => { const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W, v = x0 + (px - m.l) / (W - m.l - m.r) * (x1 - x0); let bi = 0, bd = Infinity; xs.forEach((x, k) => { const d = Math.abs(x - v); if (d < bd) { bd = d; bi = k; } }); cross.setAttribute('x1', X(xs[bi])); cross.setAttribute('x2', X(xs[bi])); cross.setAttribute('opacity', 1); dots.forEach((d, i) => { const val = o.series[i].values[bi]; if (isNum(val)) { d.setAttribute('cx', X(xs[bi])); d.setAttribute('cy', Y(val)); d.setAttribute('opacity', 1); } else d.setAttribute('opacity', 0); }); tip.innerHTML = `<b>${MT.esc(xf(xs[bi]))}</b>` + o.series.map((s, i) => isNum(s.values[bi]) ? `<br><span style="color:${s.color || COLORS(i)}">■</span> ${MT.esc(s.name)}: ${MT.esc(yf(s.values[bi]))}` : '').join(''); tip.style.display = 'block'; const cr = el.getBoundingClientRect(); tip.style.left = Math.min(e.clientX - cr.left + 14, cr.width - tip.offsetWidth - 4) + 'px'; tip.style.top = Math.max(0, e.clientY - cr.top - tip.offsetHeight - 6) + 'px'; });
+  ov.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); dots.forEach(d => d.setAttribute('opacity', 0)); tip.style.display = 'none'; });
+  el.appendChild(svg); el.appendChild(tip);
+  if (o.table !== false) dataTable(el, ['x'].concat(o.series.map(s => s.name)), xs.map((x, k) => [xf(x)].concat(o.series.map(s => s.values[k]))));
+};
+/* vertical grouped bars. opts: {title, cats, series:[{name, values, color}], errors:[{lo,hi}] (first series), yFmt, height, ref} */
+C.bars = (el, o) => {
+  const tip = shell(el, o), W = 760, H = o.height || 260, m = { l: 56, r: 14, t: 14, b: 44 }, yf = o.yFmt || compact, ns = o.series.length;
+  let lo = 0, hi = -Infinity; o.series.forEach(s => s.values.forEach(v => isNum(v) && (hi = Math.max(hi, v), lo = Math.min(lo, v)))); if (o.errors) o.errors.forEach(e => { if (e) { hi = Math.max(hi, e.hi); lo = Math.min(lo, e.lo); } }); if (o.ref != null) { hi = Math.max(hi, o.ref); lo = Math.min(lo, o.ref); }
+  const nt = niceTicks(lo, hi, 5), Y = v => H - m.b - (v - nt.lo) / (nt.hi - nt.lo) * (H - m.t - m.b), cw = (W - m.l - m.r) / o.cats.length, bw = Math.min(46, cw * 0.72 / ns), svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'bar chart' }), g = sv('g', { class: 'grid' }), ax = sv('g', { class: 'ax' });
+  nt.ticks.forEach(v => { g.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v) })); const t = sv('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }); t.textContent = yf(v); ax.appendChild(t); });
+  svg.appendChild(g); svg.appendChild(ax);
+  o.cats.forEach((c, ci) => {
+    const cx = m.l + cw * ci + cw / 2; const t = sv('text', { x: cx, y: H - m.b + 15, 'text-anchor': 'middle', class: 'lbl' }); let lab = String(c); if (lab.length > 16 && o.cats.length > 5) lab = lab.slice(0, 15) + '…'; t.textContent = lab; svg.appendChild(t);
+    o.series.forEach((s, si) => { const v = s.values[ci]; if (!isNum(v)) return; const x = cx - (ns * bw + (ns - 1) * 2) / 2 + si * (bw + 2), y0 = Y(0), y1 = Y(v), top = Math.min(y0, y1), h = Math.max(1, Math.abs(y1 - y0)), r = Math.min(4, bw / 2, h);
+      const d = v >= 0 ? `M${x} ${top + h}V${top + r}Q${x} ${top} ${x + r} ${top}H${x + bw - r}Q${x + bw} ${top} ${x + bw} ${top + r}V${top + h}Z` : `M${x} ${top}V${top + h - r}Q${x} ${top + h} ${x + r} ${top + h}H${x + bw - r}Q${x + bw} ${top + h} ${x + bw} ${top + h - r}V${top}Z`;
+      svg.appendChild(sv('path', { d, fill: s.color || COLORS(si), 'data-tip': `<b>${MT.esc(c)}</b><br>${MT.esc(s.name)}: ${MT.esc(yf(v))}` }));
+      if (o.cats.length * ns <= 10) { const tv = sv('text', { x: x + bw / 2, y: v >= 0 ? top - 4 : top + h + 11, 'text-anchor': 'middle', class: 'lbl' }); tv.textContent = yf(v); svg.appendChild(tv); }
+      if (si === 0 && o.errors && o.errors[ci]) { const e = o.errors[ci], xc = x + bw / 2; svg.appendChild(sv('line', { x1: xc, x2: xc, y1: Y(e.lo), y2: Y(e.hi), stroke: 'var(--ink)', 'stroke-width': 1.5 })); [e.lo, e.hi].forEach(q => svg.appendChild(sv('line', { x1: xc - 4, x2: xc + 4, y1: Y(q), y2: Y(q), stroke: 'var(--ink)', 'stroke-width': 1.5 }))); } });
+  });
+  if (o.ref != null) svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(o.ref), y2: Y(o.ref), stroke: 'var(--ink-muted)', 'stroke-dasharray': '4 3' }));
+  svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), stroke: 'var(--border-strong)' }));
+  el.appendChild(svg); el.appendChild(tip); hookTips(el, tip);
+  if (o.table !== false) dataTable(el, ['Category'].concat(o.series.map(s => s.name)), o.cats.map((c, i) => [c].concat(o.series.map(s => s.values[i]))));
+};
+/* horizontal bars, single series: {title, cats, values, colors?, fmt, height} */
+C.hbars = (el, o) => {
+  const tip = shell(el, o), rowH = 24, n = o.cats.length, W = 760, m = { l: Math.min(230, 20 + 6.2 * Math.max(...o.cats.map(c => String(c).length), 4)), r: 60, t: 8, b: 20 }, H = m.t + m.b + rowH * n, f = o.fmt || compact, mx = Math.max(...o.values.filter(isNum), 1e-9), svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'bar chart' });
+  o.cats.forEach((c, i) => { const y = m.t + i * rowH, w = Math.max(1, (o.values[i] / mx) * (W - m.l - m.r)); const t = sv('text', { x: m.l - 8, y: y + rowH / 2 + 4, 'text-anchor': 'end', class: 'lbl' }); let lab = String(c); if (lab.length > 34) lab = lab.slice(0, 33) + '…'; t.textContent = lab; svg.appendChild(t); svg.appendChild(sv('path', { d: `M${m.l} ${y + 3}H${m.l + w - 4}Q${m.l + w} ${y + 3} ${m.l + w} ${y + 7}V${y + rowH - 7}Q${m.l + w} ${y + rowH - 3} ${m.l + w - 4} ${y + rowH - 3}H${m.l}Z`, fill: (o.colors && o.colors[i]) || COLORS(0), 'data-tip': `<b>${MT.esc(c)}</b><br>${MT.esc(f(o.values[i]))}` })); const v = sv('text', { x: m.l + w + 6, y: y + rowH / 2 + 4, class: 'lbl' }); v.textContent = f(o.values[i]); svg.appendChild(v); });
+  el.appendChild(svg); el.appendChild(tip); hookTips(el, tip);
+};
+/* forest plot: rows [{label, est, lo, hi, color}] */
+C.forest = (el, o) => {
+  const tip = shell(el, o), rowH = 30, n = o.rows.length, W = 760, m = { l: Math.min(220, 20 + 6.4 * Math.max(...o.rows.map(r => String(r.label).length), 4)), r: 20, t: 10, b: 28 }, H = m.t + m.b + rowH * n, f = o.fmt || compact;
+  let lo = Math.min(...o.rows.map(r => r.lo), o.ref == null ? 0 : o.ref), hi = Math.max(...o.rows.map(r => r.hi), o.ref == null ? 0 : o.ref); const nt = niceTicks(lo, hi, 5), X = v => m.l + (v - nt.lo) / (nt.hi - nt.lo) * (W - m.l - m.r), svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'forest plot' }), g = sv('g', { class: 'grid' }), ax = sv('g', { class: 'ax' });
+  nt.ticks.forEach(v => { g.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b })); const t = sv('text', { x: X(v), y: H - 10, 'text-anchor': 'middle' }); t.textContent = f(v); ax.appendChild(t); }); svg.appendChild(g); svg.appendChild(ax);
+  const rf = o.ref == null ? 0 : o.ref; svg.appendChild(sv('line', { x1: X(rf), x2: X(rf), y1: m.t, y2: H - m.b, stroke: 'var(--ink-muted)', 'stroke-dasharray': '4 3', 'stroke-width': 1.3 }));
+  o.rows.forEach((r, i) => { const y = m.t + i * rowH + rowH / 2, col = r.color || COLORS(0); const t = sv('text', { x: m.l - 10, y: y + 4, 'text-anchor': 'end', class: 'lbl' }); t.textContent = String(r.label).length > 32 ? String(r.label).slice(0, 31) + '…' : r.label; svg.appendChild(t); const tp = `<b>${MT.esc(r.label)}</b><br>${MT.esc(f(r.est))} [${MT.esc(f(r.lo))}, ${MT.esc(f(r.hi))}]`; svg.appendChild(sv('line', { x1: X(r.lo), x2: X(r.hi), y1: y, y2: y, stroke: col, 'stroke-width': 2.5, 'stroke-linecap': 'round' })); svg.appendChild(sv('circle', { cx: X(r.est), cy: y, r: 5, fill: col, stroke: 'var(--surface)', 'stroke-width': 2 })); svg.appendChild(sv('rect', { x: m.l, y: y - rowH / 2, width: W - m.l - m.r, height: rowH, fill: 'transparent', 'data-tip': tp })); });
+  el.appendChild(svg); el.appendChild(tip); hookTips(el, tip);
+};
+/* histogram with marker. opts: {title, values, marker, markerLabel, bins, xFmt} */
+C.hist = (el, o) => {
+  const tip = shell(el, o), W = 760, H = o.height || 200, m = { l: 40, r: 14, t: 16, b: 30 }, vals = o.values.filter(isNum), mk = o.marker;
+  let lo = Math.min(...vals, isNum(mk) ? mk : Infinity), hi = Math.max(...vals, isNum(mk) ? mk : -Infinity); if (lo === hi) { lo -= 1; hi += 1; } const nb = o.bins || Math.min(24, Math.max(6, Math.ceil(Math.sqrt(vals.length) * 1.5))), bw = (hi - lo) / nb, cnt = new Array(nb).fill(0); vals.forEach(v => cnt[Math.min(nb - 1, Math.floor((v - lo) / bw))]++);
+  const mc = Math.max(...cnt, 1), X = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r), Y = c => H - m.b - c / mc * (H - m.t - m.b), f = o.xFmt || compact, svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'histogram' });
+  cnt.forEach((c, i) => { if (!c) return; svg.appendChild(sv('rect', { x: X(lo + i * bw) + 1, y: Y(c), width: Math.max(1, X(lo + (i + 1) * bw) - X(lo + i * bw) - 2), height: H - m.b - Y(c), fill: 'var(--series-1)', opacity: 0.5, rx: 2, 'data-tip': `${MT.esc(f(lo + i * bw))} to ${MT.esc(f(lo + (i + 1) * bw))}: ${c} placebo run${c > 1 ? 's' : ''}` })); });
+  const ax = sv('g', { class: 'ax' }); for (let i = 0; i <= 5; i++) { const v = lo + (hi - lo) * i / 5, t = sv('text', { x: X(v), y: H - 10, 'text-anchor': i === 0 ? 'start' : i === 5 ? 'end' : 'middle' }); t.textContent = f(v); ax.appendChild(t); } svg.appendChild(ax); svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: 'var(--border-strong)' }));
+  if (isNum(mk)) { svg.appendChild(sv('line', { x1: X(mk), x2: X(mk), y1: m.t - 4, y2: H - m.b, stroke: 'var(--series-2)', 'stroke-width': 2.5, 'data-tip': `${MT.esc(o.markerLabel || 'Actual')}: ${MT.esc(f(mk))}` })); const t = sv('text', { x: Math.min(X(mk) + 5, W - 120), y: m.t + 6, class: 'lbl' }); t.textContent = o.markerLabel || 'Actual'; svg.appendChild(t); }
+  el.appendChild(svg); el.appendChild(tip); hookTips(el, tip);
+};
+
+/* ---------- misc text helpers ---------- */
+const STOP = new Set('a an the and or but if of to in on at for with by from as is are was were be been it its this that these those we you your our their they he she i not no can will just do does did has have had so than then them into out up down over under more most very also any all each per via about after before between during while which who whom how what when where why'.split(' '));
+MT.stop = STOP;
+MT.stem = w => w.length > 4 ? w.replace(/(ations?|ition|ments?|ness|ings?|ers?|ies|ied|ed|es|s|ly)$/, m => m === 'ies' || m === 'ied' ? 'y' : '') : w;
+MT.tokens = (t, keepStop) => (String(t).toLowerCase().match(/[a-z0-9à-ÿ][a-z0-9à-ÿ'\-]*/g) || []).map(w => w.replace(/^['-]+|['-]+$/g, '')).filter(w => w && (keepStop || !STOP.has(w)));
+MT.syllables = w => { w = w.toLowerCase().replace(/[^a-z]/g, ''); if (w.length <= 3) return 1; w = w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '').replace(/^y/, ''); const m = w.match(/[aeiouy]{1,2}/g); return m ? m.length : 1; };
+MT.fkGrade = t => { const s = (String(t).match(/[^.!?\n]+[.!?]*/g) || []).filter(x => /\w/.test(x)), w = MT.tokens(t, true); if (!s.length || !w.length) return NaN; const syl = w.reduce((a, x) => a + MT.syllables(x), 0); return 0.39 * (w.length / s.length) + 11.8 * (syl / w.length) - 15.59; };
+MT.debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms || 150); }; };
+MT.range = (n, s) => Array.from({ length: n }, (_, i) => i + (s || 0));
+
+/* ---------- form helpers ---------- */
+MT.val = id => { const el = document.getElementById(id); if (!el) return NaN; if (el.type === 'checkbox') return el.checked ? 1 : 0; return el.tagName === 'SELECT' ? (isNaN(parseFloat(el.value)) ? el.value : parseFloat(el.value)) : MT.num(el.value); };
+MT.live = (root, fn) => { const f = MT.debounce(fn, 60); root.addEventListener('input', f); root.addEventListener('change', f); fn(); };
+/* fields: [{id,label,value,step,min,max,hint,type:'number'|'text'|'select'|'textarea'|'check',options:[[v,l]],rows}] */
+MT.fields = (root, list, cls) => {
+  root.innerHTML = list.map(f => { const t = f.type || 'number', id = 'f_' + f.id; let inp;
+    if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
+    else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
+    else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
+    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
+  root.classList.add('grid'); root.classList.add(cls || 'g3');
+};
+MT.f = id => MT.val('f_' + id);
+MT.fset = (id, v) => { const el = document.getElementById('f_' + id); if (el) { if (el.type === 'checkbox') el.checked = !!v; else el.value = v; } };
+MT.sampleBtn = (container, label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-secondary btn-sm'; b.textContent = label; b.addEventListener('click', fn); container.appendChild(b); return b; };
+MT.tone = (v, good, warn, lowerBetter) => { if (!MT.isNum(v)) return ''; if (lowerBetter) return v <= good ? 'good' : v <= warn ? 'warn' : 'bad'; return v >= good ? 'good' : v >= warn ? 'warn' : 'bad'; };
+MT.cellTone = k => k === 'good' ? 'background:var(--good-wash)' : k === 'warn' ? 'background:var(--warn-wash)' : k === 'bad' ? 'background:var(--critical-wash)' : '';
+MT.rag = (level, title, reasons) => `<div class="verdict ${level === 'green' ? 'pos' : level === 'red' ? 'neg' : 'neu'}" role="status"><div class="ico" aria-hidden="true">${level === 'green' ? '▲' : level === 'red' ? '▼' : '●'}</div><div><h2>${MT.esc(title)}</h2><p>${reasons.map(MT.esc).join(' ')}</p></div></div>`;
+
+/* ---------- quality of life ---------- */
+MT.store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }, del(k) { try { localStorage.removeItem(k); } catch (e) { } } };
+(function () { const t = MT.store.get('mt:theme'); if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t); })();
+MT.persist = slug => {
+  const key = 'mt:v1:' + slug, MAX = 250000;
+  const els = () => MT.$$('main input[id], main select[id], main textarea[id]').filter(e => !['file', 'button', 'submit', 'range'].includes(e.type) || e.type === 'range');
+  let ran = false; const saveNow = () => { const o = { v: {}, r: {}, ran }; els().forEach(e => { if (e.type === 'radio') return; const val = e.type === 'checkbox' ? e.checked : e.value; if (typeof val === 'string' && val.length > MAX) return; o.v[e.id] = val; }); MT.$$('main input[type=radio][name]:checked').forEach(r => o.r[r.name] = r.value); MT.store.set(key, JSON.stringify(o)); }, save = MT.debounce(saveNow, 400);
+  let raw = MT.store.get(key), o = null; try { o = raw ? JSON.parse(raw) : null; } catch (e) { o = null; }
+  if (o) {
+    Object.keys(o.r || {}).forEach(n => { const r = MT.$(`main input[type=radio][name="${n}"][value="${o.r[n]}"]`); if (r && !r.checked) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); } });
+    const sels = [];
+    Object.keys(o.v || {}).forEach(id => { const e = document.getElementById(id); if (!e) return; if (e.tagName === 'SELECT') { sels.push([e, o.v[id]]); return; } if (e.type === 'checkbox') { if (e.checked !== !!o.v[id]) { e.checked = !!o.v[id]; e.dispatchEvent(new Event('change', { bubbles: true })); } return; } if (e.value !== o.v[id]) { e.value = o.v[id]; e.dispatchEvent(new Event('input', { bubbles: true })); } });
+    const applySel = () => sels.forEach(([e, v]) => { if (Array.from(e.options).some(op => op.value === v) && e.value !== v) { e.value = v; e.dispatchEvent(new Event('change', { bubbles: true })); } });
+    applySel(); setTimeout(applySel, 500); setTimeout(applySel, 1100);
+    const note = MT.$('.saved-note'); if (note) note.textContent = 'Restored your last inputs.';
+  }
+  if (o && o.ran) setTimeout(() => { const b = MT.$('#go') || MT.$('#run'); if (b && !b.disabled) b.click(); }, 1200);
+  document.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'go' || b.id === 'run') ran = true; if (b.id === 'smp' || b.dataset.s != null) ran = true; setTimeout(save, 600); }); setTimeout(() => { document.addEventListener('input', save); document.addEventListener('change', save); }, 1300);
+  ran = !!(o && o.ran);
+  window.addEventListener('pagehide', saveNow); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveNow(); });
+  return { clear() { MT.store.del(key); } };
+};
+MT.boot = (slug, template) => {
+  const p = MT.persist(slug);
+  const bar = MT.$('.toolbar'); if (!bar) return;
+  bar.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (!b) return; const a = b.dataset.act;
+    if (a === 'template' && template) MT.download(slug + '-template.csv', template.trim() + '\n', 'text/csv');
+    if (a === 'print') { const root = document.documentElement, prev = root.getAttribute('data-theme'); root.setAttribute('data-theme', 'light'); setTimeout(() => { window.print(); if (prev) root.setAttribute('data-theme', prev); else root.removeAttribute('data-theme'); }, 50); }
+    if (a === 'clear') { p.clear(); location.reload(); } });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { const b = MT.$('#go') || MT.$('#run'); if (b && !b.disabled) { e.preventDefault(); b.click(); } } });
+};
+})(window);
+</script>
+<script>
+(function () {
+const $ = MT.$, F = MT.fmt, S = MT.stat, C = MT.chart; let tab = null;
+function load(t) { tab = MT.readTable(t); const c = tab.cols; MT.fillSelect($('#cp'), c, /partner|affiliate|publisher|source|name|site/i); MT.fillSelect($('#cr'), c, /revenue|sales|sale amount|order value|gmv/i); MT.fillSelect($('#cy'), c, /payout|commission|earning|cost/i, { none: true }); }
+MT.dropzone($('#drop'), t => { $('#paste').value = t; load(t); }); $('#paste').addEventListener('input', MT.debounce(() => load($('#paste').value), 250));
+$('#smp').addEventListener('click', () => { const r = MT.rng(5), rows = [['partner', 'revenue', 'payout']]; const big = [['CouponHub', 61000], ['DealFinder', 24000], ['BlogAlpha', 12000], ['ReviewPro', 8000]]; big.forEach(b => rows.push([b[0], b[1], (b[1] * (b[0] === 'CouponHub' ? 0.14 : 0.09)).toFixed(0)])); for (let i = 0; i < 46; i++) { const rev = Math.round(60 + Math.exp(r.n() * 0.9 + 5.2)); rows.push(['Partner_' + String(i + 1).padStart(2, '0'), rev, (rev * 0.09).toFixed(0)]); } const t = MT.toCSV(rows); $('#paste').value = t; load(t); run(); });
+function run() {
+  $('#err').textContent = ''; if (!tab) { $('#err').textContent = 'Paste or upload a report first.'; return; }
+  const pc = $('#cp').value, rc = $('#cr').value, yc = $('#cy').value, m = new Map();
+  tab.rows.forEach(r => { const k = String(r[pc]).trim(); if (!k) return; const v = MT.num(r[rc]); if (!isFinite(v)) return; const o = m.get(k) || { rev: 0, pay: 0 }; o.rev += v; if (yc) { const p = MT.num(r[yc]); if (isFinite(p)) o.pay += p; } m.set(k, o); });
+  const list = Array.from(m, ([name, o]) => ({ name, rev: o.rev, pay: o.pay })).filter(x => x.rev > 0).sort((a, b) => b.rev - a.rev), n = list.length; if (n < 2) { $('#err').textContent = 'Need at least two partners with positive revenue.'; return; }
+  const tot = S.sum(list.map(x => x.rev)), sh = list.map(x => x.rev / tot), hhi = S.sum(sh.map(s => (s * 100) ** 2)), eff = 10000 / hhi, cum = []; sh.reduce((a, s, i) => (cum[i] = a + s, a + s), 0);
+  const top = k => S.sum(sh.slice(0, k)), n80 = cum.findIndex(c => c >= 0.8) + 1, n50 = cum.findIndex(c => c >= 0.5) + 1, hhiMin = 10000 / n;
+  const asc = sh.slice().reverse(); let lor = [0], acc = 0; asc.forEach(s => { acc += s; lor.push(acc); }); let area = 0; for (let i = 1; i < lor.length; i++) area += (lor[i] + lor[i - 1]) / 2 / n; const gini = 1 - 2 * area;
+  const level = hhi > 2500 || sh[0] > 0.3 ? 'red' : hhi > 1500 || sh[0] > 0.2 || top(3) > 0.6 ? 'yellow' : 'green';
+  const flags = []; if (sh[0] > 0.3) flags.push(`${list[0].name} alone provides ${F.pct(sh[0], 1)} of revenue.`); else if (sh[0] > 0.2) flags.push(`${list[0].name} provides ${F.pct(sh[0], 1)} of revenue.`); if (top(3) > 0.6) flags.push(`The top 3 partners provide ${F.pct(top(3), 0)}.`); if (hhi > 2500) flags.push('HHI is above 2,500, the conventional threshold for a highly concentrated market.'); else if (hhi > 1500) flags.push('HHI is in the moderately concentrated band (1,500 to 2,500).'); if (!flags.length) flags.push('Revenue is spread across many partners.');
+  let h = MT.rag(level, level === 'red' ? 'High concentration risk' : level === 'yellow' ? 'Moderate concentration risk' : 'Low concentration risk', flags);
+  h += MT.stats([['HHI', F.int(hhi), 'scale 0 to 10,000', level === 'red' ? 'bad' : level === 'yellow' ? 'warn' : 'good'], ['Effective number of partners', eff.toFixed(1), `of ${n} active (equal split: HHI ${F.int(hhiMin)})`], ['Top partner share', F.pct(sh[0], 1), list[0].name], ['Top 5 share', F.pct(top(5), 1), 'Top 10: ' + F.pct(top(10), 1)], [`Partners for 80% of revenue`, `${n80} (${F.pct(n80 / n, 0)})`, `50% needs ${n50}`], ['Gini coefficient', gini.toFixed(2), '0 = equal, 1 = one partner']]);
+  h += '<div class="card"><h3>Loss scenarios</h3>' + MT.tbl(['If you lose', 'Revenue at risk', 'Remaining revenue'], [1, 3, 5].filter(k => k < n).map(k => [k === 1 ? list[0].name : `Top ${k} partners`, F.money(S.sum(list.slice(0, k).map(x => x.rev)), 0) + ' (' + F.pct(top(k), 1) + ')', F.money(tot - S.sum(list.slice(0, k).map(x => x.rev)), 0)]), { num: [1, 2] }) + '</div>';
+  h += '<div class="card"><div id="c1"></div><div id="c2"></div></div>';
+  const rows = list.slice(0, 25).map((x, i) => { const r = [i + 1, x.name, F.money(x.rev, 0), F.pct(sh[i], 1), F.pct(cum[i], 1)]; if (yc) { const ps = x.pay / x.rev; r.push(F.pct(ps, 1)); } return r; });
+  h += '<div class="card"><h3>Top partners</h3>' + MT.tbl(['#', 'Partner', 'Revenue', 'Share', 'Cumulative', ...(yc ? ['Payout / revenue'] : [])], rows, { num: [0, 2, 3, 4, 5] }) + '</div>';
+  if (yc) { const avg = S.sum(list.map(x => x.pay)) / tot, hi = list.filter(x => x.rev > 0 && x.pay / x.rev > avg * 1.4).slice(0, 5); if (hi.length) h += MT.note('<b>Payout outliers.</b> These partners cost noticeably more per revenue dollar than the program average of ' + F.pct(avg, 1) + ': ' + hi.map(x => MT.esc(x.name) + ' (' + F.pct(x.pay / x.rev, 1) + ')').join(', ') + '.', 'warn'); }
+  h += MT.note('<b>Benchmarks.</b> HHI under 1,500 is unconcentrated, 1,500 to 2,500 moderate, above 2,500 high (US DOJ convention, applied here to revenue share). No single partner above 20% and top 3 under 50% is a common diversification target for affiliate programs.');
+  $('#out').innerHTML = h;
+  C.hbars($('#c1'), { title: 'Revenue share, top 15 partners', cats: list.slice(0, 15).map(x => x.name), values: sh.slice(0, 15).map(s => s * 100), fmt: v => v.toFixed(1) + '%' });
+  C.line($('#c2'), { title: 'Lorenz curve: cumulative revenue share vs cumulative partner share', xs: lor.map((_, i) => i / n * 100), xFmt: v => v.toFixed(0) + '%', yFmt: v => (v * 100).toFixed(0) + '%', series: [{ name: 'Actual', values: lor, color: 'var(--series-1)' }, { name: 'Perfect equality', values: lor.map((_, i) => i / n), color: 'var(--ink-muted)', dash: '4 3' }], table: false });
+}
+$('#go').addEventListener('click', run);
+})();
+</script>
+<script>MT.boot("affiliate-concentration-analyzer", "partner,revenue,payout\nPartner A,120000,9600\nPartner B,45000,3600\nPartner C,8000,720\n");</script>
+</body>
+</html>

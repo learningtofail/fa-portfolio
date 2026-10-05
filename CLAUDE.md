@@ -16,6 +16,7 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 - `src/components/`: `tools/` (one thin component per tool, roughly 60 to 100 lines), `kit/` (FileDropzone, StatCard, StatRow, DataTable, ToolShell, ErrorNotice, useFileInput, useFileAnalysis), `charts/` (D3 charts and `useChartWidth`).
 - `src/data/`: `resume.js` (page and PDF content), `tools.js` (tool catalog with title, intro and meta description), `years.js` (years of experience, computed from 2004 at build time).
 - `src/styles/`: `orchis.tokens.css` (vendored, never hand-edit, pinned by `orchis.tokens.manifest.json`), `site.tokens.css` (semantic aliases and the only other place raw colors may live), `base.css`, `layout.css` (`.page`), `resume.css` (index page), `components/*.css` (BEM component styles, imported through `components.css`).
+- `public/marketing/`: 21 vendored single-file marketing tools (built output from a separate project; never hand-edit, replace the file). Served under their own CSP (`docs/decisions/0007-vendored-marketing-tools.md`). They are not covered by the no-inline-styles rule or the token rules.
 - `scripts/tokens/`: vendoring and drift check for the Orchis tokens.
 - `scripts/deploy-release.sh`: atomic release deploy and rollback (has a `--dry-run`). `scripts/csp-hashes.mjs`: CSP hashes for Astro's inline code.
 - `docs/decisions/`: decision records (robots, privacy, CSP, adding a tool, inline styles, brand guard).
