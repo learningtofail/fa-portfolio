@@ -2,10 +2,7 @@
 import ToolLayout from "../../layouts/ToolLayout.astro";
 import { tools } from "../../data/tools.js";
 import AttributionTool from "../../components/tools/AttributionTool.jsx";
-import CacCalculator from "../../components/tools/CacCalculator.jsx";
 import DisclosureChecker from "../../components/tools/DisclosureChecker.jsx";
-import GtmAuditor from "../../components/tools/GtmAuditor.jsx";
-import UtmAuditor from "../../components/tools/UtmAuditor.jsx";
 
 // One page per live tool: /tools/<slug>/. Adding a tool is a catalog entry in data/tools.js, a lib module, a thin
 // component in components/tools/, and one line below. Astro cannot hydrate a component picked at runtime
@@ -18,9 +15,6 @@ const { tool } = Astro.props;
 ---
 
 <ToolLayout tool={tool}>
-  {tool.slug === "utm-auditor" && <UtmAuditor client:visible />}
-  {tool.slug === "gtm-auditor" && <GtmAuditor client:visible />}
-  {tool.slug === "cac-calculator" && <CacCalculator client:visible />}
   {tool.slug === "attribution" && <AttributionTool client:visible />}
   {tool.slug === "disclosure-check" && <DisclosureChecker client:visible />}
 </ToolLayout>
