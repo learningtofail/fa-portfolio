@@ -22,27 +22,44 @@ The `www` block is included so the file is complete and drop-in. Its policy is m
 		root * /opt/static-web/sites/portfolio/current
 		encode zstd gzip
 
-		header {
-			-Server
-			X-Content-Type-Options "nosniff"
-			Referrer-Policy "strict-origin-when-cross-origin"
-			X-Robots-Tag "noindex, nofollow"
-
-			# Enforced now. Limits who may embed the page; www.faysalahmed.ca embeds the tools, so it stays allowed.
-			Content-Security-Policy "frame-ancestors https://www.faysalahmed.ca"
-
-			# Report-only first: the full policy with hashes for Astro's inline island code. Promote it (rename the
-			# header and drop the frame-ancestors-only line above) after a clean review.
-			Content-Security-Policy-Report-Only "default-src 'none'; script-src 'self' 'sha256-Q2BPg90ZMplYY+FSdApNErhpWafg2hcRRbndmvxuL/Q=' 'sha256-Ya0pUYrC7nM5Cn/056TyVuEiz6dFGrzmkWzgON0pF0U='; style-src 'self' 'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-ancestors https://www.faysalahmed.ca"
+		# The marketing tools under /marketing/ are vendored single-file pages with inline scripts and styles, so they
+		# cannot run under the policy below. They get their own, enforced here: inline code is allowed, but
+		# connect-src 'none' and form-action 'none' mean nothing a visitor enters can leave the page.
+		handle /marketing/* {
+			header {
+				-Server
+				X-Content-Type-Options "nosniff"
+				Referrer-Policy "strict-origin-when-cross-origin"
+				X-Robots-Tag "noindex, nofollow"
+				Content-Security-Policy "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-ancestors https://www.faysalahmed.ca"
+				Cache-Control "no-cache"
+			}
+			file_server
 		}
 
-		# Fingerprinted build output never changes, so it can be cached for a year. HTML must revalidate.
-		@portfolio_assets path /_astro/*
-		header @portfolio_assets Cache-Control "public, max-age=31536000, immutable"
-		@portfolio_pages not path /_astro/*
-		header @portfolio_pages Cache-Control "no-cache"
+		handle {
+			header {
+				-Server
+				X-Content-Type-Options "nosniff"
+				Referrer-Policy "strict-origin-when-cross-origin"
+				X-Robots-Tag "noindex, nofollow"
 
-		file_server
+				# Enforced now. Limits who may embed the page; www.faysalahmed.ca embeds the tools, so it stays allowed.
+				Content-Security-Policy "frame-ancestors https://www.faysalahmed.ca"
+
+				# Report-only first: the full policy with hashes for Astro's inline island code. Promote it (rename the
+				# header and drop the frame-ancestors-only line above) after a clean review.
+				Content-Security-Policy-Report-Only "default-src 'none'; script-src 'self' 'sha256-Q2BPg90ZMplYY+FSdApNErhpWafg2hcRRbndmvxuL/Q=' 'sha256-Ya0pUYrC7nM5Cn/056TyVuEiz6dFGrzmkWzgON0pF0U='; style-src 'self' 'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-ancestors https://www.faysalahmed.ca"
+			}
+
+			# Fingerprinted build output never changes, so it can be cached for a year. HTML must revalidate.
+			@portfolio_assets path /_astro/*
+			header @portfolio_assets Cache-Control "public, max-age=31536000, immutable"
+			@portfolio_pages not path /_astro/*
+			header @portfolio_pages Cache-Control "no-cache"
+
+			file_server
+		}
 	}
 
 	@www host www.faysalahmed.ca
@@ -81,6 +98,7 @@ The `www` block is included so the file is complete and drop-in. Its policy is m
 - `frame-ancestors` is enforced by itself so the iframe rule is live from day one. It supersedes `X-Frame-Options`; do not add that header, because `ALLOW-FROM` is obsolete and `SAMEORIGIN` would block www.
 - The two script hashes are Astro's island bootstrap and hydration scripts; the style hash is Astro's one-line `astro-island { display: contents }` rule. All other CSS and JS is same-origin (`astro.config.mjs` sets `inlineStylesheets: "never"`). The page itself has no inline `style` attributes (an e2e test enforces it).
 - Hashes change when Astro changes those snippets. Run `npm run csp:hashes` after an Astro upgrade; CI warns when this file holds a stale hash (`npm run csp:check`). The e2e suite loads every page under this exact policy, enforced, and fails on any violation or on a tool that stops working.
+- `/marketing/*` has its own enforced policy (inline script and style allowed, `connect-src 'none'`, `form-action 'none'`, same `frame-ancestors`), because the 21 marketing tools are vendored single-file pages. `tests/e2e/marketing.spec.js` loads every one under exactly this policy. The `handle /marketing/*` block must stay above the general `handle`, since Caddy uses the first match.
 - `connect-src 'self'`, `form-action 'none'` and `default-src 'none'` encode the privacy statement: nothing a visitor enters can be sent to another origin.
 - The matching `frame-src https://portfolio.faysalahmed.ca` belongs in www's own Caddy block. That is the other repository; this document does not change it.
 

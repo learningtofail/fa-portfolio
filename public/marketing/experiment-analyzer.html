@@ -1,0 +1,1463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A/B, Multivariate &amp; Campaign Experiment Analyzer | Marketing Tools</title>
+<meta name="description" content="Test A/B, A/B/n, multivariate and non-randomized campaign results. The tool inspects your design and data, picks the statistically appropriate model, and tells you whether the change was significant and whether it helped or hurt.">
+<style>/* Signal & Serif tokens, shared by every tool */
+:root{
+  color-scheme: light;
+  --paper:#F7F8FA; --surface:#FFFFFF; --surface-2:#F0F2F5; --ink:#0B0D10; --ink-secondary:#565B66; --ink-muted:#6C7080;
+  --border:rgba(11,13,16,0.10); --border-strong:#7B7E85;
+  --accent:#2A78D6; --accent-strong:#1B5FB8; --accent-wash:rgba(42,120,214,0.09); --accent-ink:#FFFFFF;
+  --good:#0A7A0A; --good-graphic:#0CA30C; --good-wash:rgba(10,122,10,0.09);
+  --warn:#8A5A00; --warn-graphic:#EDA100; --warn-wash:rgba(201,133,0,0.13);
+  --critical:#D03B3B; --critical-wash:rgba(208,59,59,0.09);
+  --series-1:#2A78D6; --series-2:#D95926; --series-3:#199E70; --series-4:#C98500; --series-5:#D55181; --series-6:#008300; --series-7:#4A3AA7; --series-8:#E34948;
+  --seq-100:#cde2fb; --seq-250:#86b6ef; --seq-400:#3987e5; --seq-550:#1c5cab; --seq-700:#0d366b;
+  --shadow:0 1px 2px rgba(11,13,16,0.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0B0D10; --surface:#15171C; --surface-2:#1B1E24; --ink:#F5F6F7; --ink-secondary:#A8ACB4; --ink-muted:#9296A3;
+    --border:rgba(255,255,255,0.10); --border-strong:#6B6F78;
+    --accent:#3987E5; --accent-strong:#3987E5; --accent-wash:rgba(57,135,229,0.14); --accent-ink:#0B0D10;
+    --good:#0CA30C; --good-wash:rgba(12,163,12,0.14); --warn:#EDA100; --warn-wash:rgba(237,161,0,0.16);
+    --critical:#E66767; --critical-wash:rgba(230,103,103,0.16);
+    --series-1:#3987E5; --series-2:#EB6834; --series-3:#1BAF7A; --series-4:#EDA100; --series-5:#E87BA4; --series-6:#0CA30C; --series-7:#9085E9; --series-8:#E66767;
+    --shadow:0 1px 2px rgba(0,0,0,0.4);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0B0D10; --surface:#15171C; --surface-2:#1B1E24; --ink:#F5F6F7; --ink-secondary:#A8ACB4; --ink-muted:#9296A3;
+  --border:rgba(255,255,255,0.10); --border-strong:#6B6F78;
+  --accent:#3987E5; --accent-strong:#3987E5; --accent-wash:rgba(57,135,229,0.14); --accent-ink:#0B0D10;
+  --good:#0CA30C; --good-wash:rgba(12,163,12,0.14); --warn:#EDA100; --warn-wash:rgba(237,161,0,0.16);
+  --critical:#E66767; --critical-wash:rgba(230,103,103,0.16);
+  --series-1:#3987E5; --series-2:#EB6834; --series-3:#1BAF7A; --series-4:#EDA100; --series-5:#E87BA4; --series-6:#0CA30C; --series-7:#9085E9; --series-8:#E66767;
+  --shadow:0 1px 2px rgba(0,0,0,0.4);
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{ margin:0; background:var(--paper); color:var(--ink); font-family:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+h1,h2,h3,h4,p,ul,ol{ margin:0; }
+a{ color:var(--accent-strong); }
+.serif{ font-family:"Instrument Serif",Georgia,serif; font-weight:400; letter-spacing:-0.01em; }
+.mono{ font-family:"JetBrains Mono",ui-monospace,Menlo,monospace; }
+.tabular{ font-variant-numeric:tabular-nums; }
+svg{ max-width:100%; }
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+@media (prefers-reduced-motion:reduce){ *{ animation-duration:.001ms!important; transition-duration:.001ms!important; } }
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* page chrome */
+.topbar{ display:flex; align-items:center; gap:1rem; padding:0.8rem 1.25rem; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:20; }
+.topbar .brand{ font-size:1.05rem; text-decoration:none; color:var(--ink); }
+.topbar .crumb{ font-family:"JetBrains Mono",monospace; font-size:0.6875rem; letter-spacing:.05em; color:var(--ink-muted); text-transform:uppercase; }
+.topbar .spacer{ flex:1; }
+.theme-btn{ background:var(--surface); border:1px solid var(--border-strong); color:var(--ink); font-family:"JetBrains Mono",monospace; font-size:0.6875rem; letter-spacing:.06em; text-transform:uppercase; padding:0.45rem 0.7rem; border-radius:3px; cursor:pointer; }
+.theme-btn:hover{ border-color:var(--accent); }
+main.wrap{ max-width:1180px; margin:0 auto; padding:2rem 1.25rem 5rem; }
+.hero{ max-width:74ch; margin-bottom:2rem; }
+.hero h1{ font-size:clamp(1.9rem,1.4rem+2vw,2.8rem); line-height:1.08; margin-bottom:0.75rem; }
+.hero p{ color:var(--ink-secondary); font-size:1.03rem; }
+.privacy{ display:inline-flex; align-items:center; gap:0.5rem; margin-top:1rem; font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--ink-muted); }
+.privacy .dot{ width:7px; height:7px; border-radius:999px; background:var(--good-graphic); }
+
+/* cards + grids */
+.card{ background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:1.25rem 1.4rem; margin-bottom:1rem; box-shadow:var(--shadow); }
+.card > h2,.card > h3{ font-size:1.05rem; font-weight:700; margin-bottom:0.25rem; }
+.card > .sub{ color:var(--ink-secondary); font-size:0.85rem; margin-bottom:1rem; max-width:80ch; }
+.grid{ display:grid; gap:1rem; }
+.g2{ grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); }
+.g3{ grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); }
+.g4{ grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr)); }
+.split{ display:grid; gap:1rem; grid-template-columns:minmax(0,380px) minmax(0,1fr); align-items:start; }
+@media(max-width:900px){ .split{ grid-template-columns:1fr; } }
+
+/* fields */
+.field{ display:flex; flex-direction:column; gap:0.35rem; margin-bottom:0.75rem; }
+.field label,.lbl{ font-size:0.75rem; color:var(--ink-secondary); }
+.field .hint{ font-size:0.72rem; color:var(--ink-muted); }
+input[type=text],input[type=number],input[type=date],input[type=search],select,textarea{
+  width:100%; padding:0.5rem 0.65rem; border:1px solid var(--border-strong); border-radius:3px; background:var(--surface); color:var(--ink);
+  font-family:"Hanken Grotesk",sans-serif; font-size:0.875rem; }
+textarea{ resize:vertical; min-height:110px; font-family:"JetBrains Mono",monospace; font-size:0.78rem; line-height:1.5; }
+input:hover,select:hover,textarea:hover{ border-color:var(--accent); }
+input[type=checkbox],input[type=radio]{ accent-color:var(--accent-strong); }
+.inline{ display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; }
+.checks{ display:flex; flex-wrap:wrap; gap:0.35rem 1rem; font-size:0.82rem; }
+.checks label{ display:inline-flex; align-items:center; gap:0.35rem; cursor:pointer; }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+.row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; }
+@media(max-width:520px){ .row3{ grid-template-columns:1fr 1fr; } }
+.drop{ border:1.5px dashed var(--border-strong); border-radius:4px; padding:1rem; text-align:center; font-size:0.82rem; color:var(--ink-secondary); background:var(--surface-2); cursor:pointer; }
+.drop.over{ border-color:var(--accent); background:var(--accent-wash); }
+
+/* buttons */
+.btn{ display:inline-flex; align-items:center; gap:0.5rem; font-family:"Hanken Grotesk",sans-serif; font-weight:600; font-size:0.875rem; padding:0.6rem 1.1rem; border-radius:3px; border:1px solid transparent; cursor:pointer; text-decoration:none; }
+.btn:active:not([disabled]){ transform:translateY(1px); }
+.btn-primary{ background:var(--accent-strong); color:var(--accent-ink); }
+.btn-primary:hover:not([disabled]){ background:var(--accent); }
+.btn-secondary{ background:transparent; color:var(--ink); border-color:var(--border-strong); }
+.btn-secondary:hover:not([disabled]){ border-color:var(--accent); color:var(--accent-strong); }
+.btn-ghost{ background:transparent; color:var(--ink-secondary); padding-left:.25rem; padding-right:.25rem; }
+.btn-ghost:hover{ color:var(--accent-strong); }
+.btn-sm{ padding:0.4rem 0.8rem; font-size:0.78rem; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; }
+.actions{ display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center; margin-top:0.5rem; }
+
+/* tags, badges, stats */
+.tag{ display:inline-flex; align-items:center; gap:0.35rem; font-family:"JetBrains Mono",monospace; font-size:0.68rem; padding:0.2rem 0.55rem; border:1px solid var(--border-strong); border-radius:999px; color:var(--ink-secondary); background:var(--surface); white-space:nowrap; }
+.tag-accent{ border-color:transparent; background:var(--accent-wash); color:var(--accent-strong); }
+.tag-good{ border-color:transparent; background:var(--good-wash); color:var(--good); }
+.tag-warn{ border-color:transparent; background:var(--warn-wash); color:var(--warn); }
+.tag-bad{ border-color:transparent; background:var(--critical-wash); color:var(--critical); }
+.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:4px; overflow:hidden; margin-bottom:1rem; }
+.stat-tile{ background:var(--surface); padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.3rem; }
+.stat-value{ font-size:1.7rem; font-weight:700; line-height:1.05; font-variant-numeric:tabular-nums; }
+.stat-label{ font-size:0.78rem; color:var(--ink-secondary); }
+.stat-sub{ font-size:0.72rem; color:var(--ink-muted); }
+.good{ color:var(--good); } .bad{ color:var(--critical); } .warn{ color:var(--warn); } .muted{ color:var(--ink-muted); }
+
+/* verdict banner */
+.verdict{ display:flex; gap:1rem; align-items:flex-start; padding:1.1rem 1.3rem; border-radius:4px; border:1px solid var(--border-strong); border-left-width:6px; background:var(--surface); margin-bottom:1rem; }
+.verdict .ico{ font-size:1.5rem; line-height:1; }
+.verdict h2{ font-size:1.25rem; margin-bottom:0.2rem; }
+.verdict p{ color:var(--ink-secondary); font-size:0.9rem; }
+.verdict.pos{ border-left-color:var(--good-graphic); background:var(--good-wash); }
+.verdict.neg{ border-left-color:var(--critical); background:var(--critical-wash); }
+.verdict.neu{ border-left-color:var(--warn-graphic); background:var(--warn-wash); }
+.verdict.info{ border-left-color:var(--accent); background:var(--accent-wash); }
+
+/* tables */
+.table-wrap{ overflow-x:auto; margin-bottom:1rem; }
+table.t{ width:100%; border-collapse:collapse; font-size:0.8125rem; }
+table.t th{ text-align:left; font-family:"JetBrains Mono",monospace; font-size:0.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted); padding:0.5rem 0.65rem; border-bottom:1px solid var(--border-strong); white-space:nowrap; }
+table.t td{ padding:0.5rem 0.65rem; border-bottom:1px solid var(--border); vertical-align:top; }
+table.t tr:hover td{ background:var(--surface-2); }
+table.t td.num,table.t th.num{ text-align:right; font-variant-numeric:tabular-nums; }
+table.t input{ padding:0.35rem 0.5rem; font-size:0.8rem; }
+.heat td.c{ text-align:center; font-variant-numeric:tabular-nums; }
+
+/* notes and steps */
+.note{ font-size:0.82rem; color:var(--ink-secondary); border-left:3px solid var(--border-strong); padding:0.4rem 0.8rem; margin:0.75rem 0; background:var(--surface-2); }
+.note.warn{ border-left-color:var(--warn-graphic); background:var(--warn-wash); color:var(--ink); }
+.note.bad{ border-left-color:var(--critical); background:var(--critical-wash); color:var(--ink); }
+.note.good{ border-left-color:var(--good-graphic); background:var(--good-wash); color:var(--ink); }
+.path{ display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; margin:0.5rem 0 1rem; font-size:0.8rem; }
+.path .node{ padding:0.3rem 0.6rem; border:1px solid var(--border-strong); border-radius:3px; background:var(--surface); }
+.path .node.pick{ background:var(--accent-wash); border-color:var(--accent); color:var(--accent-strong); font-weight:700; }
+.path .arr{ color:var(--ink-muted); }
+.radio-cards{ display:grid; gap:0.6rem; grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr)); margin-bottom:1rem; }
+.radio-cards label{ border:1px solid var(--border-strong); border-radius:4px; padding:0.8rem 0.9rem; cursor:pointer; background:var(--surface); display:block; }
+.radio-cards label:hover{ border-color:var(--accent); }
+.radio-cards input{ position:absolute; opacity:0; pointer-events:none; }
+.radio-cards label:has(input:checked){ border-color:var(--accent); background:var(--accent-wash); box-shadow:inset 0 0 0 1px var(--accent); }
+.radio-cards label:has(input:focus-visible){ outline:2px solid var(--accent); outline-offset:2px; }
+.radio-cards b{ display:block; font-size:0.9rem; }
+.radio-cards span{ font-size:0.76rem; color:var(--ink-secondary); }
+details{ margin-bottom:0.75rem; }
+summary{ cursor:pointer; font-weight:600; font-size:0.88rem; padding:0.3rem 0; }
+.out{ min-height:1rem; }
+.code{ font-family:"JetBrains Mono",monospace; font-size:0.75rem; background:var(--surface-2); border:1px solid var(--border); border-radius:3px; padding:0.75rem; white-space:pre-wrap; word-break:break-word; max-height:340px; overflow:auto; }
+mark.hl-high{ background:var(--critical-wash); color:inherit; border-bottom:2px solid var(--critical); }
+mark.hl-med{ background:var(--warn-wash); color:inherit; border-bottom:2px solid var(--warn-graphic); }
+mark.hl-low{ background:var(--accent-wash); color:inherit; border-bottom:2px solid var(--accent); }
+mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid var(--good-graphic); }
+.prose{ line-height:1.75; white-space:pre-wrap; font-size:0.9rem; background:var(--surface-2); padding:0.9rem; border-radius:3px; border:1px solid var(--border); }
+
+/* charts */
+.chart{ position:relative; margin:0.5rem 0 1rem; }
+.chart svg{ width:100%; height:auto; display:block; overflow:visible; }
+.chart .ttl{ font-size:0.8rem; font-weight:700; margin-bottom:0.25rem; }
+.chart .ax text{ fill:var(--ink-muted); font-size:10.5px; font-family:"JetBrains Mono",monospace; }
+.chart .grid line{ stroke:var(--border); }
+.chart .axis line,.chart .axis path{ stroke:var(--border-strong); }
+.chart .lbl{ fill:var(--ink-secondary); font-size:11px; }
+.legend{ display:flex; gap:0.9rem; flex-wrap:wrap; font-size:0.75rem; color:var(--ink-secondary); margin:0.25rem 0; }
+.legend i{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:0.35rem; vertical-align:-1px; }
+.tip{ position:absolute; pointer-events:none; background:var(--ink); color:var(--paper); font-size:0.72rem; padding:0.4rem 0.6rem; border-radius:3px; white-space:nowrap; z-index:10; box-shadow:0 2px 8px rgba(0,0,0,.25); display:none; font-variant-numeric:tabular-nums; }
+.foot{ margin-top:3rem; padding-top:1.25rem; border-top:1px solid var(--border); font-size:0.78rem; color:var(--ink-muted); }
+.err{ color:var(--critical); font-size:0.82rem; margin:0.4rem 0; }
+
+/* index */
+.tool-grid{ display:grid; gap:12px; background:transparent; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); }
+.tool-card{ background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:1.1rem 1.2rem; text-decoration:none; color:var(--ink); display:flex; flex-direction:column; gap:0.35rem; }
+.tool-card:hover{ background:var(--surface-2); }
+.tool-card h3{ font-size:0.98rem; }
+.tool-card p{ font-size:0.8rem; color:var(--ink-secondary); flex:1; }
+.grp{ font-family:"JetBrains Mono",monospace; font-size:0.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-muted); margin:2rem 0 0.6rem; }
+
+/* toolbar, guide, print */
+.toolbar{ display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin:-.5rem 0 1.2rem; }
+.toolbar .saved-note{ font-size:.75rem; color:var(--ink-muted); margin-left:auto; }
+.kbd{ font-family:"JetBrains Mono",monospace; font-size:.7rem; border:1px solid var(--border); border-radius:3px; padding:0 .3rem; color:var(--ink-muted); }
+.guide{ margin-top:2rem; }
+.guide h2{ font-size:1.15rem; margin:1.4rem 0 .5rem; }
+.guide h2:first-of-type{ margin-top:.2rem; }
+.guide p, .guide li{ font-size:.9rem; line-height:1.6; color:var(--ink-secondary); max-width:78ch; }
+.guide ul, .guide ol{ padding-left:1.2rem; margin:.4rem 0 .8rem; }
+.guide li{ margin:.2rem 0; }
+.guide strong{ color:var(--ink); }
+.guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
+.guide .table-wrap{ margin:.6rem 0 1rem; }
+@media print{
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  body{ background:#fff; } .wrap{ max-width:none; padding:0; }
+  .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
+  textarea{ display:none !important; }
+}
+.guide p{ margin:.5rem 0; }
+#guide{ scroll-margin-top:72px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand serif">Marketing Tools</span>
+  <span class="crumb">Experimentation &amp; Measurement</span>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button">Dark mode</button>
+</header>
+<main class="wrap">
+  <div class="hero">
+    <h1 class="serif">A/B, Multivariate &amp; Campaign Experiment Analyzer</h1>
+    <p>Test A/B, A/B/n, multivariate and non-randomized campaign results. The tool inspects your design and data, picks the statistically appropriate model, and tells you whether the change was significant and whether it helped or hurt.</p>
+    <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
+  </div>
+  <div class="toolbar">
+    <a class="btn btn-secondary btn-sm" href="#guide">How it works</a>
+    <button class="btn btn-secondary btn-sm" type="button" data-act="template">CSV template</button>
+    <button class="btn btn-secondary btn-sm" type="button" data-act="print">Print or save PDF</button>
+    <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
+    <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
+  </div>
+
+<div class="card">
+  <h2>1. What kind of test is this?</h2>
+  <p class="sub">The design decides the model. Randomized splits can be compared directly. Without a random holdout, the tool builds a counterfactual from control series or history, following the decision tree in the causal inference guide.</p>
+  <div class="radio-cards" role="radiogroup" aria-label="Test design">
+    <label><input type="radio" name="mode" value="ab" checked><b>A/B or A/B/n test</b><span>Visitors were randomly split between a control and one or more variants of one thing.</span></label>
+    <label><input type="radio" name="mode" value="mv"><b>Multivariate (factorial) test</b><span>Several elements (headline, image, offer) were varied together across random combinations.</span></label>
+    <label><input type="radio" name="mode" value="qx"><b>No random holdout</b><span>Geo test, regional rollout, before/after launch, or a campaign with control markets or none.</span></label>
+  </div>
+  <div class="row3">
+    <div class="field"><label for="alpha">Significance level</label><select id="alpha"><option value="0.10">0.10 (90% confidence)</option><option value="0.05" selected>0.05 (95% confidence)</option><option value="0.01">0.01 (99% confidence)</option></select></div>
+    <div class="field"><label for="better">Which direction is good?</label><select id="better"><option value="high">Higher is better (conversions, revenue)</option><option value="low">Lower is better (cost, CPA, churn)</option></select></div>
+    <div class="field"><label for="minEff">Smallest effect worth acting on (optional)</label><input id="minEff" type="number" min="0" step="0.1" placeholder="Relative %, e.g. 2"><span class="hint">Significant effects below this are flagged as too small to matter.</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>2. Add your data</h2>
+
+  <div id="pAB">
+    <div class="row3">
+      <div class="field"><label for="abMetric">What is measured?</label><select id="abMetric"><option value="binary">Conversion (converted or not)</option><option value="continuous">Value per visitor (revenue, order value, time)</option></select></div>
+      <div class="field"><label for="abFmt">How is your data shaped?</label><select id="abFmt"><option value="table">Summary numbers per variant</option><option value="raw">Raw rows (one row per visitor)</option></select></div>
+      <div class="field"><label for="abSplit">Planned traffic split (optional)</label><input id="abSplit" type="text" placeholder="Equal. Or e.g. 50,25,25"><span class="hint">Used for the sample ratio mismatch check.</span></div>
+    </div>
+    <div id="abTableBox"><div id="abRows"></div><div class="actions"><button class="btn btn-secondary btn-sm" id="abAdd" type="button">Add variant</button><span class="hint muted">The first row is the control.</span></div></div>
+    <div id="abRawBox" hidden>
+      <div id="abDrop"></div>
+      <div class="field" style="margin-top:.6rem"><label for="abPaste">Or paste CSV</label><textarea id="abPaste" placeholder="variant,converted&#10;control,0&#10;new,1"></textarea></div>
+      <div class="row3">
+        <div class="field"><label for="abVar">Variant column</label><select id="abVar"></select></div>
+        <div class="field"><label for="abOut">Outcome column</label><select id="abOut"></select></div>
+        <div class="field"><label for="abCtrl">Control variant</label><select id="abCtrl"></select></div>
+      </div>
+    </div>
+    <div class="actions"><span class="lbl">Try a sample:</span><button class="btn btn-secondary btn-sm" data-s="ab2" type="button">A/B conversion</button><button class="btn btn-secondary btn-sm" data-s="abn" type="button">A/B/n conversion</button><button class="btn btn-secondary btn-sm" data-s="abcont" type="button">Revenue per visitor (raw)</button></div>
+  </div>
+
+  <div id="pMV" hidden>
+    <div id="mvDrop"></div>
+    <div class="field" style="margin-top:.6rem"><label for="mvPaste">Or paste CSV</label><textarea id="mvPaste" placeholder="headline,image,cta,visitors,conversions&#10;Original,Photo A,Buy now,3000,151"></textarea></div>
+    <div class="row3">
+      <div class="field"><label for="mvMetric">What is measured?</label><select id="mvMetric"><option value="binary">Conversion (converted or not)</option><option value="continuous">Value per visitor</option></select></div>
+      <div class="field"><label for="mvLayout">Rows are</label><select id="mvLayout"><option value="agg">One per combination (with visitor counts)</option><option value="raw">One per visitor</option></select></div>
+      <div class="field"><label>Include two-way interactions</label><div class="checks"><label><input type="checkbox" id="mvInter" checked> Test whether elements interact</label></div></div>
+    </div>
+    <div class="field"><label>Elements varied (factor columns)</label><div class="checks" id="mvFactors"></div></div>
+    <div class="row3">
+      <div class="field"><label for="mvOut" id="mvOutL">Conversions column</label><select id="mvOut"></select></div>
+      <div class="field" id="mvNBox"><label for="mvN">Visitors column</label><select id="mvN"></select></div>
+      <div class="field" id="mvSdBox" hidden><label for="mvSd">Standard deviation column</label><select id="mvSd"></select></div>
+    </div>
+    <div class="field"><label>Baseline (control) level of each element</label><div class="row3" id="mvBase"></div></div>
+    <div class="actions"><span class="lbl">Try a sample:</span><button class="btn btn-secondary btn-sm" data-s="mvb" type="button">3 elements, conversion</button><button class="btn btn-secondary btn-sm" data-s="mvc" type="button">2 elements, revenue (raw)</button></div>
+  </div>
+
+  <div id="pQX" hidden>
+    <div id="qxDrop"></div>
+    <div class="field" style="margin-top:.6rem"><label for="qxPaste">Or paste CSV</label><textarea id="qxPaste" placeholder="date,treated,control_1,control_2&#10;2026-01-01,1204,980,1105"></textarea></div>
+    <div class="row3">
+      <div class="field"><label for="qxFmt">Layout</label><select id="qxFmt"><option value="wide">Wide: one column per market or series</option><option value="long">Long: date, unit, value</option></select></div>
+      <div class="field"><label for="qxDate">Date column</label><select id="qxDate"></select></div>
+      <div class="field"><label for="qxEvent">Launch date (first day exposed)</label><input id="qxEvent" type="date"></div>
+    </div>
+    <div id="qxWide">
+      <div class="row2"><div class="field"><label for="qxTreated">Treated series (metric where the campaign ran)</label><select id="qxTreated"></select></div><div></div></div>
+      <div class="field"><label>Control series (unexposed markets or channels)</label><div class="checks" id="qxCtrls"></div><span class="hint">Leave none checked if you have no unexposed comparison.</span></div>
+      <div class="field"><label>Time-varying covariates (optional: promo calendar, category demand, non-test spend)</label><div class="checks" id="qxCovs"></div></div>
+    </div>
+    <div id="qxLong" hidden>
+      <div class="row3"><div class="field"><label for="qxUnit">Unit column (market)</label><select id="qxUnit"></select></div><div class="field"><label for="qxVal">Value column</label><select id="qxVal"></select></div><div class="field"><label for="qxTUnit">Treated unit</label><select id="qxTUnit"></select></div></div>
+    </div>
+    <details><summary>Advanced options</summary>
+      <div class="row3">
+        <div class="field"><label for="qxSeason">Seasonality</label><select id="qxSeason"><option value="auto">Auto (from date spacing)</option><option value="0">None</option><option value="7">Weekly (7)</option><option value="12">Monthly data, yearly (12)</option><option value="52">Weekly data, yearly (52)</option></select></div>
+        <div class="field"><label for="qxForce">Model</label><select id="qxForce"><option value="auto">Auto-select (recommended)</option><option value="its">Interrupted time series</option><option value="did">Difference-in-differences</option><option value="its_ctrl">ITS with control regressors</option><option value="scm">Synthetic control</option><option value="bsts">Bayesian structural time series</option><option value="prepost">Pre/post comparison</option></select></div>
+        <div class="field"><label for="qxDraws">Bayesian draws</label><select id="qxDraws"><option value="500">500 (fast)</option><option value="1000" selected>1000</option><option value="2500">2500 (precise)</option></select></div>
+      </div>
+      <div class="checks"><label><input type="checkbox" id="qxCross" checked> Also run a second model as a cross-check</label></div>
+    </details>
+    <div class="actions"><span class="lbl">Try a sample:</span><button class="btn btn-secondary btn-sm" data-s="geo" type="button">Geo test, 12 markets</button><button class="btn btn-secondary btn-sm" data-s="geocov" type="button">Geo test with covariate</button><button class="btn btn-secondary btn-sm" data-s="one" type="button">One control market</button><button class="btn btn-secondary btn-sm" data-s="none" type="button">No control, long history</button><button class="btn btn-secondary btn-sm" data-s="short" type="button">No control, short history</button></div>
+  </div>
+</div>
+
+<div class="actions"><button class="btn btn-primary" id="run" type="button">Analyze</button><span id="status" class="muted" role="status"></span></div>
+<div id="err" class="err" role="alert"></div>
+<div id="results"></div>
+
+
+  <section class="card guide" id="guide">
+    <h2 class="serif" style="font-size:1.5rem">How this tool works</h2>
+<h2>What it answers</h2>
+<p>Did the change work, is the result statistically real, and did it move the metric in the good or the bad direction? The tool picks the right statistical model from the shape of your data, so you do not have to know in advance which test applies.</p>
+<h2>When to use it</h2>
+<ul>
+<li><strong>A/B or A/B/n test:</strong> visitors were randomly split between two or more versions.</li>
+<li><strong>Multivariate (factorial) test:</strong> several page elements were varied at once, such as headline by image by button.</li>
+<li><strong>Campaign or rollout without randomization:</strong> a campaign ran in one market, channel or period, and you want its incremental effect. This is the quasi-experimental mode.</li>
+</ul>
+<h2>What you need</h2>
+<p><strong>A/B mode.</strong> Either summary numbers per variant (visitors and conversions, or visitors, mean and standard deviation for revenue-type metrics) or raw rows with one row per visitor and columns for variant and outcome. Mark the control variant. Optionally enter the planned traffic split so the tool can check for sample ratio mismatch.</p>
+<p><strong>Multivariate mode.</strong> One row per combination with a column for each element, the visitor count and the conversions (or mean and standard deviation), or raw rows with one row per visitor. Choose the baseline level of each element.</p>
+<p><strong>Quasi-experimental mode.</strong> A daily or weekly time series of the metric where the campaign ran, the launch date, and ideally one or more control series from markets or channels the campaign did not touch. Use wide format (one column per series) or long format (date, unit, value). Covariates such as a promo calendar or category demand are optional.</p>
+<p>Settings shared by all modes: significance level (default 0.05), which direction is good, and the smallest effect worth acting on.</p>
+<h2>How it works</h2>
+<p><strong>Randomized, two variants, conversion metric.</strong> Two-proportion z-test. When any expected cell count falls below 5, Fisher's exact test replaces it. A Bayesian Beta-Binomial model runs as a cross-check and reports the probability that the variant beats control and the expected loss of each choice.</p>
+<p><strong>Randomized, three or more variants.</strong> A chi-square omnibus test first, then pairwise comparisons against control with Holm correction for multiple comparisons.</p>
+<p><strong>Randomized, value metric.</strong> Welch's t-test with a bootstrap confidence interval. When groups are small (under 30) and heavily skewed, Mann-Whitney becomes the primary test. Three or more variants use ANOVA plus Holm-corrected pairwise tests.</p>
+<p><strong>Every randomized test</strong> runs a sample ratio mismatch check. A mismatch means the split itself is broken, so the result is untrustworthy regardless of the p-value.</p>
+<p><strong>Multivariate.</strong> Logistic regression for conversion data, or weighted least squares with robust standard errors for value data. The tool reports the average effect of each element level, joint tests per element, optional two-way interaction tests, Holm correction, and the best-performing combination the model predicts.</p>
+<p><strong>Quasi-experimental.</strong> The tool follows a decision tree from the Causal Inference Model Selection Guide:</p>
+<div class="table-wrap"><table class="t">
+<thead>
+<tr>
+<th>Data available</th>
+<th>Model chosen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No controls, 60 or more pre-launch periods</td>
+<td>Interrupted time series (segmented regression, Newey-West errors)</td>
+</tr>
+<tr>
+<td>No controls, 30 to 59 pre periods</td>
+<td>Interrupted time series with a low-power warning</td>
+</tr>
+<tr>
+<td>No controls, under 30 pre periods</td>
+<td>Pre/post comparison (Wilcoxon signed-rank), flagged as weak evidence</td>
+</tr>
+<tr>
+<td>One control that passes a parallel trends test</td>
+<td>Difference-in-differences</td>
+</tr>
+<tr>
+<td>One control that fails parallel trends</td>
+<td>Interrupted time series with the control as a regressor</td>
+</tr>
+<tr>
+<td>Two to four controls</td>
+<td>Difference-in-differences on the control average, or ITS with controls</td>
+</tr>
+<tr>
+<td>Five or more controls with a stable pre-period fit</td>
+<td>Synthetic control</td>
+</tr>
+<tr>
+<td>Five or more controls with a poor fit, or covariates supplied</td>
+<td>Bayesian structural time series</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each model is validated with an in-time placebo (a fake launch at the pre-period midpoint that should show no effect) and, where possible, an in-space placebo (the same model run on each control as if it were treated). A failed placebo downgrades the verdict.</p>
+<h2>Reading the results</h2>
+<p>The banner gives the verdict: a significant positive effect, a significant negative effect, or no detectable effect. It then shows the estimate, its confidence or credible interval, and the p-value. The model-selection path shows why the tool picked that model. The diagnostics panel lists every check that passed or failed. If you set a smallest effect worth acting on, the verdict also says whether the interval clears it.</p>
+<h2>Limits and cautions</h2>
+<ul>
+<li>Stopping a test the moment it looks significant inflates false positives. Decide the sample size before launch.</li>
+<li>Quasi-experimental results rely on the controls representing what would have happened without the campaign. No statistic can prove that. The placebos only make it more credible.</li>
+<li>Synthetic control needs about 19 donor series before its placebo test alone can reach significance at 0.05. With fewer, the Bayesian interval drives the decision.</li>
+<li>The Bayesian structural time series model is a lightweight in-browser sampler, not the full CausalImpact package. Use it for decisions, and rerun it in R or Python for a published result.</li>
+</ul><h2>Input template</h2><p>Your file needs these columns. Extra columns are ignored, and column names can differ because you map them in the tool.</p><pre class="code">variant,visitors,conversions
+Control,10000,420
+Variant B,10000,468</pre><div class="actions"><button class="btn btn-secondary btn-sm" type="button" data-act="template">Download CSV template</button></div>
+  </section>
+  <div class="foot">Static tool. No account, no tracking, no server. Estimates depend on the inputs you provide and are decision aids, not guarantees.</div>
+</main>
+<script>/* Marketing Tools shared library. No dependencies, runs offline. */
+(function (g) {
+'use strict';
+const MT = {};
+g.MT = MT;
+
+/* ---------- DOM + formatting ---------- */
+MT.$ = (s, r) => (r || document).querySelector(s);
+MT.$$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+MT.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = x => typeof x === 'number' && isFinite(x);
+MT.isNum = isNum;
+MT.fmt = {
+  n(x, d = 2) { if (!isNum(x)) return '—'; const a = Math.abs(x); if (a >= 1e9) return (x / 1e9).toFixed(2) + 'B'; return x.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); },
+  int(x) { return isNum(x) ? Math.round(x).toLocaleString('en-US') : '—'; },
+  pct(x, d = 1) { return isNum(x) ? (x * 100).toFixed(d) + '%' : '—'; },
+  spct(x, d = 1) { return isNum(x) ? (x >= 0 ? '+' : '') + (x * 100).toFixed(d) + '%' : '—'; },
+  money(x, d = 0) { if (!isNum(x)) return '—'; return (x < 0 ? '-$' : '$') + Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); },
+  p(x) { if (!isNum(x)) return '—'; if (x < 0.0001) return '<0.0001'; return x < 0.01 ? x.toFixed(4) : x.toFixed(3); },
+  sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
+  date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
+};
+MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
+MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+MT.parseDate = s => {
+  if (s == null) return NaN; s = String(s).trim(); let m;
+  if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
+  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
+};
+MT.tbl = (heads, rows, opt) => {
+  opt = opt || {}; const nc = new Set(opt.num || []);
+  const cell = (c, i, tag) => { const raw = c && typeof c === 'object' && 'h' in c; const v = raw ? c.h : MT.esc(c); const cls = (nc.has(i) ? 'num ' : '') + ((c && c.cls) || ''); return `<${tag}${cls ? ` class="${cls.trim()}"` : ''}>${v}</${tag}>`; };
+  return `<div class="table-wrap"><table class="t ${opt.cls || ''}"><thead><tr>${heads.map((h, i) => cell(h, i, 'th')).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => cell(c, i, 'td')).join('')}</tr>`).join('')}</tbody></table></div>`;
+};
+MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
+MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
+MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
+
+/* ---------- CSV ---------- */
+MT.parseCSV = (text, delim) => {
+  text = String(text).replace(/^﻿/, '');
+  if (!delim) { const first = text.split(/\r?\n/).find(l => l.trim()) || ''; const c = { ',': 0, '\t': 0, ';': 0, '|': 0 }; let q = false; for (const ch of first) { if (ch === '"') q = !q; else if (!q && ch in c) c[ch]++; } delim = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; if (!c[delim]) delim = ','; }
+  const rows = []; let row = [], f = '', q = false, i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === delim) { row.push(f); f = ''; }
+    else if (ch === '\n') { row.push(f); rows.push(row); row = []; f = ''; }
+    else if (ch === '\r') { /* skip */ }
+    else f += ch;
+    i++;
+  }
+  if (f !== '' || row.length) { row.push(f); rows.push(row); }
+  return rows.filter(r => r.some(c => String(c).trim() !== ''));
+};
+/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
+MT.readTable = (text, headerMatch) => {
+  let raw = MT.parseCSV(text);
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  if (!raw.length) return { cols: [], rows: [], raw };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
+  return { cols, rows, raw };
+};
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
+MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+MT.fillSelect = (sel, cols, guessRe, opts) => {
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+};
+MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
+MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
+MT.dropzone = (el, onText, label) => {
+  el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
+  el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
+  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
+  inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
+  ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.remove('over'); }));
+  el.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) read(f); });
+};
+MT.initTheme = () => {
+  const btn = MT.$('.theme-btn'); if (!btn) return;
+  const cur = () => document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const label = () => btn.textContent = cur() === 'dark' ? 'Light mode' : 'Dark mode';
+  label(); btn.addEventListener('click', () => { const nt = cur() === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); MT.store.set('mt:theme', nt); label(); MT.$$('[data-rerender]').forEach(e => e.dispatchEvent(new Event('rerender'))); });
+};
+document.addEventListener('DOMContentLoaded', MT.initTheme);
+
+/* ---------- special functions ---------- */
+const LG = [57.1562356658629235, -59.5979603554754912, 14.1360979747417471, -0.491913816097620199, 0.339946499848118887e-4, 0.465236289270485756e-4, -0.983744753048795646e-4, 0.158088703224912494e-3, -0.210264441724104883e-3, 0.217439618115212643e-3, -0.164318106536763890e-3, 0.844182239838527433e-4, -0.261908384015814087e-4, 0.368991826595316234e-5];
+function lgamma(x) { let y = x, t = x + 5.24218750000000000; t = (x + 0.5) * Math.log(t) - t; let s = 0.999999999999997092; for (let j = 0; j < 14; j++) s += LG[j] / ++y; return t + Math.log(2.5066282746310005 * s / x); }
+function gammaPQ(a, x) {
+  if (x <= 0) return [0, 1];
+  const gln = lgamma(a);
+  if (x < a + 1) { let ap = a, sum = 1 / a, del = sum; for (let n = 0; n < 2000; n++) { ap++; del *= x / ap; sum += del; if (Math.abs(del) < Math.abs(sum) * 1e-16) break; } const P = sum * Math.exp(-x + a * Math.log(x) - gln); return [P, 1 - P]; }
+  let b = x + 1 - a, c = 1e300, d = 1 / b, h = d;
+  for (let i = 1; i < 2000; i++) { const an = -i * (i - a); b += 2; d = an * d + b; if (Math.abs(d) < 1e-300) d = 1e-300; c = b + an / c; if (Math.abs(c) < 1e-300) c = 1e-300; d = 1 / d; const del = d * c; h *= del; if (Math.abs(del - 1) < 1e-16) break; }
+  const Q = Math.exp(-x + a * Math.log(x) - gln) * h; return [1 - Q, Q];
+}
+function betacf(a, b, x) {
+  const FP = 1e-300; let qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap; if (Math.abs(d) < FP) d = FP; d = 1 / d; let h = d;
+  for (let m = 1; m <= 3000; m++) { const m2 = 2 * m; let aa = m * (b - m) * x / ((qam + m2) * (a + m2)); d = 1 + aa * d; if (Math.abs(d) < FP) d = FP; c = 1 + aa / c; if (Math.abs(c) < FP) c = FP; d = 1 / d; h *= d * c; aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2)); d = 1 + aa * d; if (Math.abs(d) < FP) d = FP; c = 1 + aa / c; if (Math.abs(c) < FP) c = FP; d = 1 / d; const del = d * c; h *= del; if (Math.abs(del - 1) < 1e-15) break; }
+  return h;
+}
+function ibeta(x, a, b) { if (x <= 0) return 0; if (x >= 1) return 1; const bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x)); return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b; }
+const S = {};
+MT.stat = S;
+S.lgamma = lgamma; S.ibeta = ibeta; S.gammaPQ = gammaPQ;
+S.normSf2 = z => gammaPQ(0.5, z * z / 2)[1];                     // two-sided p for |z|
+S.normCdf = z => z >= 0 ? 1 - 0.5 * gammaPQ(0.5, z * z / 2)[1] : 0.5 * gammaPQ(0.5, z * z / 2)[1];
+S.normInv = p => {
+  if (p <= 0) return -Infinity; if (p >= 1) return Infinity;
+  const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00], b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01], c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00], d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+  let x, q, r; const pl = 0.02425;
+  if (p < pl) { q = Math.sqrt(-2 * Math.log(p)); x = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  else if (p <= 1 - pl) { q = p - 0.5; r = q * q; x = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1); }
+  else { q = Math.sqrt(-2 * Math.log(1 - p)); x = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  for (let i = 0; i < 2; i++) { const e = S.normCdf(x) - p, u = e * Math.sqrt(2 * Math.PI) * Math.exp(x * x / 2); x = x - u / (1 + x * u / 2); }
+  return x;
+};
+S.tSf2 = (t, df) => ibeta(df / (df + t * t), df / 2, 0.5);      // two-sided p
+S.tCdf = (t, df) => { const p2 = S.tSf2(t, df); return t >= 0 ? 1 - p2 / 2 : p2 / 2; };
+S.tCrit = (alpha, df) => { if (df > 1e6) return S.normInv(1 - alpha / 2); let lo = 0, hi = 1000; for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (S.tSf2(m, df) > alpha) lo = m; else hi = m; } return (lo + hi) / 2; };
+S.chi2Sf = (x, k) => x <= 0 ? 1 : gammaPQ(k / 2, x / 2)[1];
+S.fSf = (f, d1, d2) => f <= 0 ? 1 : ibeta(d2 / (d2 + d1 * f), d2 / 2, d1 / 2);
+S.zCrit = alpha => S.normInv(1 - alpha / 2);
+
+/* ---------- descriptive ---------- */
+const sum = a => { let s = 0; for (const x of a) s += x; return s; };
+S.sum = sum;
+S.mean = a => a.length ? sum(a) / a.length : NaN;
+S.variance = a => { const n = a.length; if (n < 2) return NaN; const m = S.mean(a); let s = 0; for (const x of a) s += (x - m) * (x - m); return s / (n - 1); };
+S.sd = a => Math.sqrt(S.variance(a));
+S.quantile = (a, q) => { const s = a.slice().sort((x, y) => x - y); if (!s.length) return NaN; const p = (s.length - 1) * q, lo = Math.floor(p), hi = Math.ceil(p); return s[lo] + (s[hi] - s[lo]) * (p - lo); };
+S.median = a => S.quantile(a, 0.5);
+S.skew = a => { const n = a.length, m = S.mean(a), s = S.sd(a); if (n < 3 || !s) return 0; let t = 0; for (const x of a) t += ((x - m) / s) ** 3; return t * n / ((n - 1) * (n - 2)); };
+S.corr = (a, b) => { const n = Math.min(a.length, b.length); if (n < 3) return NaN; const ma = S.mean(a.slice(0, n)), mb = S.mean(b.slice(0, n)); let sab = 0, saa = 0, sbb = 0; for (let i = 0; i < n; i++) { sab += (a[i] - ma) * (b[i] - mb); saa += (a[i] - ma) ** 2; sbb += (b[i] - mb) ** 2; } return sab / Math.sqrt(saa * sbb); };
+S.ranks = a => { const idx = a.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]); const r = new Array(a.length); let i = 0; while (i < idx.length) { let j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++; const rk = (i + j) / 2 + 1; for (let k = i; k <= j; k++) r[idx[k][1]] = rk; i = j + 1; } return r; };
+
+/* ---------- RNG ---------- */
+MT.rng = seed => { let a = (seed >>> 0) || 1; const u = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; let spare = null;
+  const n = () => { if (spare !== null) { const s = spare; spare = null; return s; } let x, y, r; do { x = 2 * u() - 1; y = 2 * u() - 1; r = x * x + y * y; } while (r >= 1 || r === 0); const f = Math.sqrt(-2 * Math.log(r) / r); spare = y * f; return x * f; };
+  const gam = k => { if (k < 1) return gam(k + 1) * Math.pow(u(), 1 / k); const d = k - 1 / 3, c = 1 / Math.sqrt(9 * d); for (;;) { let x, v; do { x = n(); v = 1 + c * x; } while (v <= 0); v = v * v * v; const uu = u(); if (uu < 1 - 0.0331 * x * x * x * x || Math.log(uu) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v; } };
+  return { u, n, gamma: gam, beta: (a1, b1) => { const x = gam(a1), y = gam(b1); return x / (x + y); }, int: m => Math.floor(u() * m) }; };
+
+/* ---------- linear algebra ---------- */
+const M = {};
+MT.mat = M;
+M.T = A => A[0].map((_, j) => A.map(r => r[j]));
+M.mul = (A, B) => A.map(r => B[0].map((_, j) => { let s = 0; for (let k = 0; k < r.length; k++) s += r[k] * B[k][j]; return s; }));
+M.mulv = (A, v) => A.map(r => { let s = 0; for (let k = 0; k < r.length; k++) s += r[k] * v[k]; return s; });
+M.inv = A0 => {
+  const n = A0.length, A = A0.map((r, i) => r.concat(Array.from({ length: n }, (_, j) => i === j ? 1 : 0)));
+  for (let c = 0; c < n; c++) {
+    let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    if (Math.abs(A[p][c]) < 1e-13) { A[p][c] = 1e-13; }
+    [A[c], A[p]] = [A[p], A[c]]; const d = A[c][c]; for (let j = 0; j < 2 * n; j++) A[c][j] /= d;
+    for (let r = 0; r < n; r++) if (r !== c) { const f = A[r][c]; if (f) for (let j = 0; j < 2 * n; j++) A[r][j] -= f * A[c][j]; }
+  }
+  return A.map(r => r.slice(n));
+};
+M.solve = (A, b) => M.mulv(M.inv(A), b);
+
+/* OLS. opts.se: 'ols' | 'hc3' | number (Newey-West lag) */
+S.ols = (X, y, opts) => {
+  opts = opts || {}; const n = X.length, k = X[0].length, Xt = M.T(X), XtXi = M.inv(M.mul(Xt, X));
+  const beta = M.mulv(XtXi, M.mulv(Xt, y)), fit = M.mulv(X, beta), e = y.map((v, i) => v - fit[i]);
+  let V; const se = opts.se == null ? 'ols' : opts.se;
+  if (se === 'hc3') {
+    const h = X.map(r => { const t = M.mulv(XtXi, r); let s = 0; for (let j = 0; j < k; j++) s += r[j] * t[j]; return s; });
+    const meat = Array.from({ length: k }, () => new Array(k).fill(0));
+    for (let i = 0; i < n; i++) { const w = e[i] * e[i] / Math.pow(1 - Math.min(h[i], 0.999), 2); for (let a = 0; a < k; a++) for (let b = 0; b < k; b++) meat[a][b] += w * X[i][a] * X[i][b]; }
+    V = M.mul(M.mul(XtXi, meat), XtXi);
+  } else if (typeof se === 'number') {
+    const L = Math.min(se, n - 2), meat = Array.from({ length: k }, () => new Array(k).fill(0));
+    for (let l = 0; l <= L; l++) { const w = l === 0 ? 1 : 1 - l / (L + 1); for (let t = l; t < n; t++) { const g = e[t] * e[t - l]; for (let a = 0; a < k; a++) for (let b = 0; b < k; b++) { const v = w * g * (X[t][a] * X[t - l][b] + (l ? X[t - l][a] * X[t][b] : 0)); meat[a][b] += l === 0 ? w * g * X[t][a] * X[t][b] : v; } } }
+    const sc = n / Math.max(1, n - k); V = M.mul(M.mul(XtXi, meat), XtXi).map(r => r.map(v => v * sc));
+  } else { let ss = 0; for (const v of e) ss += v * v; const s2 = ss / Math.max(1, n - k); V = XtXi.map(r => r.map(v => v * s2)); }
+  const df = Math.max(1, n - k), sem = beta.map((_, j) => Math.sqrt(Math.max(V[j][j], 0))), t = beta.map((b, j) => b / sem[j]), p = t.map(v => isFinite(v) ? S.tSf2(v, df) : NaN);
+  const my = S.mean(y); let sst = 0, sse = 0; for (let i = 0; i < n; i++) { sst += (y[i] - my) ** 2; sse += e[i] ** 2; }
+  return { beta, se: sem, t, p, df, resid: e, fitted: fit, cov: V, r2: sst ? 1 - sse / sst : NaN, sse, n, k };
+};
+S.nwLag = n => Math.max(1, Math.floor(4 * Math.pow(n / 100, 2 / 9)));
+/* Logistic regression (grouped binomial). rows: X (n x k), s successes, m trials */
+S.logit = (X, s, m) => {
+  const n = X.length, k = X[0].length; let beta = new Array(k).fill(0); const tot = sum(s) / sum(m); beta[0] = Math.log(Math.min(0.999, Math.max(0.001, tot)) / (1 - Math.min(0.999, Math.max(0.001, tot))));
+  let XtWXi, ok = false, sep = false, ll = -Infinity;
+  for (let it = 0; it < 60; it++) {
+    const eta = M.mulv(X, beta), pr = eta.map(v => Math.min(1 - 1e-10, Math.max(1e-10, 1 / (1 + Math.exp(-v)))));
+    const W = pr.map((p, i) => m[i] * p * (1 - p) + 1e-12), z = eta.map((e, i) => e + (s[i] - m[i] * pr[i]) / W[i]);
+    const A = Array.from({ length: k }, () => new Array(k).fill(0)), b = new Array(k).fill(0);
+    for (let i = 0; i < n; i++) for (let a = 0; a < k; a++) { b[a] += X[i][a] * W[i] * z[i]; for (let c = 0; c < k; c++) A[a][c] += X[i][a] * X[i][c] * W[i]; }
+    XtWXi = M.inv(A); const nb = M.mulv(XtWXi, b); let d = 0; for (let j = 0; j < k; j++) d = Math.max(d, Math.abs(nb[j] - beta[j])); beta = nb;
+    if (d < 1e-9) { ok = true; break; }
+  }
+  const eta = M.mulv(X, beta), pr = eta.map(v => Math.min(1 - 1e-12, Math.max(1e-12, 1 / (1 + Math.exp(-v)))));
+  ll = 0; for (let i = 0; i < n; i++) ll += s[i] * Math.log(pr[i]) + (m[i] - s[i]) * Math.log(1 - pr[i]);
+  if (beta.some(b => Math.abs(b) > 14)) sep = true;
+  const se = beta.map((_, j) => Math.sqrt(Math.max(XtWXi[j][j], 0))), zs = beta.map((b, j) => b / se[j]), p = zs.map(v => isFinite(v) ? S.normSf2(v) : NaN);
+  return { beta, se, z: zs, p, ll, converged: ok, separation: sep, cov: XtWXi, fitted: pr };
+};
+
+/* ---------- classical tests ---------- */
+S.holm = ps => { const idx = ps.map((p, i) => [p, i]).sort((a, b) => a[0] - b[0]), m = ps.length, adj = new Array(m); let run = 0; idx.forEach(([p, i], r) => { run = Math.max(run, Math.min(1, (m - r) * p)); adj[i] = run; }); return adj; };
+S.twoProp = (x1, n1, x2, n2, alpha) => { // group 1 = treatment, group 2 = control
+  alpha = alpha || 0.05; const p1 = x1 / n1, p2 = x2 / n2, pp = (x1 + x2) / (n1 + n2), sep = Math.sqrt(pp * (1 - pp) * (1 / n1 + 1 / n2)), z = sep ? (p1 - p2) / sep : 0, p = sep ? S.normSf2(z) : 1;
+  const seu = Math.sqrt(p1 * (1 - p1) / n1 + p2 * (1 - p2) / n2), zc = S.zCrit(alpha), d = p1 - p2;
+  let rl = NaN, rlo = NaN, rhi = NaN; if (x1 > 0 && x2 > 0) { const lr = Math.log(p1 / p2), sl = Math.sqrt((1 - p1) / x1 + (1 - p2) / x2); rl = p1 / p2 - 1; rlo = Math.exp(lr - zc * sl) - 1; rhi = Math.exp(lr + zc * sl) - 1; }
+  return { p1, p2, diff: d, z, p, ciLo: d - zc * seu, ciHi: d + zc * seu, se: seu, rel: rl, relLo: rlo, relHi: rhi };
+};
+const lchoose = (n, k) => lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1);
+S.fisher = (a, b, c, d) => { const r1 = a + b, r2 = c + d, c1 = a + c, n = r1 + r2, lo = Math.max(0, c1 - r2), hi = Math.min(r1, c1); const lp = x => lchoose(r1, x) + lchoose(r2, c1 - x) - lchoose(n, c1); const po = lp(a); let p = 0; for (let x = lo; x <= hi; x++) { const v = lp(x); if (v <= po + 1e-9) p += Math.exp(v); } return Math.min(1, p); };
+S.chi2Table = tab => { const R = tab.length, C = tab[0].length, rs = tab.map(sum), cs = tab[0].map((_, j) => sum(tab.map(r => r[j]))), n = sum(rs); let x = 0, minE = Infinity; for (let i = 0; i < R; i++) for (let j = 0; j < C; j++) { const e = rs[i] * cs[j] / n; minE = Math.min(minE, e); if (e > 0) x += (tab[i][j] - e) ** 2 / e; } const df = (R - 1) * (C - 1); return { chi2: x, df, p: S.chi2Sf(x, df), minExpected: minE, cramersV: Math.sqrt(x / (n * Math.min(R - 1, C - 1))) }; };
+S.welch = (m1, s1, n1, m2, s2, n2, alpha) => { alpha = alpha || 0.05; const v1 = s1 * s1 / n1, v2 = s2 * s2 / n2, se = Math.sqrt(v1 + v2), d = m1 - m2, t = se ? d / se : 0, df = (v1 + v2) ** 2 / (v1 * v1 / (n1 - 1) + v2 * v2 / (n2 - 1)), p = se ? S.tSf2(t, df) : 1, tc = S.tCrit(alpha, df); return { diff: d, se, t, df, p, ciLo: d - tc * se, ciHi: d + tc * se, rel: m2 ? d / m2 : NaN, relLo: m2 ? (d - tc * se) / m2 : NaN, relHi: m2 ? (d + tc * se) / m2 : NaN }; };
+S.anova = groups => { // groups: [{n, mean, sd}]
+  const N = sum(groups.map(g => g.n)), k = groups.length, gm = sum(groups.map(g => g.n * g.mean)) / N; let ssb = 0, ssw = 0; for (const g of groups) { ssb += g.n * (g.mean - gm) ** 2; ssw += (g.n - 1) * g.sd * g.sd; } const df1 = k - 1, df2 = N - k, F = (ssb / df1) / (ssw / df2); return { F, df1, df2, p: S.fSf(F, df1, df2), etaSq: ssb / (ssb + ssw) };
+};
+S.mannWhitney = (x, y) => { const n1 = x.length, n2 = y.length, all = x.concat(y), r = S.ranks(all); let R1 = 0; for (let i = 0; i < n1; i++) R1 += r[i]; const U1 = R1 - n1 * (n1 + 1) / 2, mu = n1 * n2 / 2, N = n1 + n2, cnt = {}; for (const v of all) cnt[v] = (cnt[v] || 0) + 1; let tie = 0; for (const k in cnt) tie += cnt[k] ** 3 - cnt[k]; const sg = Math.sqrt(n1 * n2 / 12 * ((N + 1) - tie / (N * (N - 1)))); const z = sg ? (Math.abs(U1 - mu) - 0.5) / sg * Math.sign(U1 - mu) : 0; return { U: U1, z, p: sg ? S.normSf2(z) : 1, auc: U1 / (n1 * n2) }; };
+S.wilcoxon = d0 => { const d = d0.filter(v => v !== 0), n = d.length; if (n < 1) return { W: 0, z: 0, p: 1, n: 0 }; const r = S.ranks(d.map(Math.abs)); let Wp = 0; d.forEach((v, i) => { if (v > 0) Wp += r[i]; }); const mu = n * (n + 1) / 4, cnt = {}; for (const v of d) { const a = Math.abs(v); cnt[a] = (cnt[a] || 0) + 1; } let tc = 0; for (const k in cnt) tc += cnt[k] ** 3 - cnt[k]; const sg = Math.sqrt(n * (n + 1) * (2 * n + 1) / 24 - tc / 48), z = sg ? (Math.abs(Wp - mu) - 0.5) / sg * Math.sign(Wp - mu) : 0; return { W: Wp, z, p: sg ? S.normSf2(z) : 1, n }; };
+S.pairedT = d => { const n = d.length, m = S.mean(d), s = S.sd(d), t = m / (s / Math.sqrt(n)); return { mean: m, t, df: n - 1, p: s ? S.tSf2(t, n - 1) : 1 }; };
+/* Bayesian Beta-Binomial: P(treatment > control), expected loss, credible interval on relative lift */
+S.betaBinom = (x1, n1, x2, n2, draws, seed) => { const r = MT.rng(seed || 7); draws = draws || 40000; let win = 0, lossT = 0, lossC = 0; const rel = []; for (let i = 0; i < draws; i++) { const a = r.beta(x1 + 1, n1 - x1 + 1), b = r.beta(x2 + 1, n2 - x2 + 1); if (a > b) win++; lossT += Math.max(b - a, 0); lossC += Math.max(a - b, 0); rel.push(a / b - 1); } rel.sort((p, q) => p - q); return { pBeat: win / draws, expLossChoose: lossT / draws, expLossKeep: lossC / draws, relLo: rel[Math.floor(draws * 0.025)], relHi: rel[Math.floor(draws * 0.975)], relMed: rel[Math.floor(draws / 2)] }; };
+S.bootDiff = (x, y, B, seed, stat) => { const r = MT.rng(seed || 11); B = B || 3000; const f = stat || S.mean, out = []; for (let b = 0; b < B; b++) { const xs = new Array(x.length), ys = new Array(y.length); for (let i = 0; i < x.length; i++) xs[i] = x[r.int(x.length)]; for (let i = 0; i < y.length; i++) ys[i] = y[r.int(y.length)]; out.push(f(xs) - f(ys)); } out.sort((a, b) => a - b); return { lo: out[Math.floor(B * 0.025)], hi: out[Math.floor(B * 0.975)] }; };
+/* minimum detectable absolute effect for two-proportion test at given power */
+S.mdeProp = (p, n1, n2, alpha, power) => { const za = S.zCrit(alpha || 0.05), zb = S.normInv(power || 0.8); return (za + zb) * Math.sqrt(p * (1 - p) * (1 / n1 + 1 / n2)); };
+S.mdeMean = (sd, n1, n2, alpha, power) => { const za = S.zCrit(alpha || 0.05), zb = S.normInv(power || 0.8); return (za + zb) * sd * Math.sqrt(1 / n1 + 1 / n2); };
+S.sampleSizeProp = (p, relMde, alpha, power) => { const za = S.zCrit(alpha || 0.05), zb = S.normInv(power || 0.8), d = p * relMde; return Math.ceil(2 * p * (1 - p) * (za + zb) ** 2 / (d * d)); };
+
+/* ---------- time series ---------- */
+/* Holt linear trend, grid search on SSE. Returns forecast(h) */
+S.holt = y => { let best = null; for (let a = 0.05; a <= 0.96; a += 0.05) for (let b = 0.01; b <= 0.5; b += 0.05) { let L = y[0], T = y.length > 1 ? y[1] - y[0] : 0, sse = 0; for (let t = 1; t < y.length; t++) { const f = L + T; sse += (y[t] - f) ** 2; const Ln = a * y[t] + (1 - a) * (L + T); T = b * (Ln - L) + (1 - b) * T; L = Ln; } if (!best || sse < best.sse) best = { a, b, sse, L, T }; } best.forecast = h => best.L + h * best.T; best.rmse = Math.sqrt(best.sse / Math.max(1, y.length - 1)); return best; };
+S.ses = y => { let best = null; for (let a = 0.05; a <= 0.96; a += 0.05) { let L = y[0], sse = 0; for (let t = 1; t < y.length; t++) { sse += (y[t] - L) ** 2; L = a * y[t] + (1 - a) * L; } if (!best || sse < best.sse) best = { a, sse, L }; } best.forecast = () => best.L; best.rmse = Math.sqrt(best.sse / Math.max(1, y.length - 1)); return best; };
+S.simplexProject = v => { const n = v.length, u = v.slice().sort((a, b) => b - a); let css = 0, rho = 0, th = 0; for (let i = 0; i < n; i++) { css += u[i]; const t = (css - 1) / (i + 1); if (u[i] - t > 0) { rho = i; th = t; } } return v.map(x => Math.max(x - th, 0)); };
+/* Synthetic control weights: min ||y - X w||^2, w on simplex. X: T x J. FISTA. */
+S.scmWeights = (X, y, iters) => {
+  const T = X.length, J = X[0].length; iters = iters || 3000;
+  // Lipschitz via power iteration on X'X
+  const XtX = M.mul(M.T(X), X), Xty = M.mulv(M.T(X), y); let v = new Array(J).fill(1 / Math.sqrt(J)), lam = 1; for (let i = 0; i < 40; i++) { const w = M.mulv(XtX, v), nn = Math.sqrt(sum(w.map(a => a * a))) || 1; lam = nn; v = w.map(a => a / nn); }
+  const step = 1 / (2 * lam + 1e-12); let w = new Array(J).fill(1 / J), z = w.slice(), tk = 1;
+  for (let it = 0; it < iters; it++) { const grad = M.mulv(XtX, z).map((a, j) => 2 * (a - Xty[j])), wn = S.simplexProject(z.map((zj, j) => zj - step * grad[j])), tn = (1 + Math.sqrt(1 + 4 * tk * tk)) / 2; z = wn.map((a, j) => a + (tk - 1) / tn * (a - w[j])); w = wn; tk = tn; }
+  return w;
+};
+/* classical multiplicative seasonal indices given values and period m (centered moving average) */
+S.seasonalIdx = (y, m) => { const n = y.length, ma = new Array(n).fill(NaN), h = Math.floor(m / 2); for (let t = h; t < n - h; t++) { if (m % 2 === 0) { let s = 0.5 * y[t - h] + 0.5 * y[t + h]; for (let k = t - h + 1; k <= t + h - 1; k++) s += y[k]; ma[t] = s / m; } else { let s = 0; for (let k = t - h; k <= t + h; k++) s += y[k]; ma[t] = s / m; } } return { ma }; };
+
+/* ---------- charts ---------- */
+const C = {}; MT.chart = C;
+const NS = 'http://www.w3.org/2000/svg';
+const sv = (n, a, kids) => { const e = document.createElementNS(NS, n); for (const k in (a || {})) e.setAttribute(k, a[k]); (kids || []).forEach(c => e.appendChild(c)); return e; };
+const COLORS = i => `var(--series-${(i % 8) + 1})`;
+C.color = COLORS;
+function niceTicks(lo, hi, n) { if (lo === hi) { lo -= 1; hi += 1; } const span = hi - lo, step0 = span / (n || 5), mag = Math.pow(10, Math.floor(Math.log10(step0))), r = step0 / mag, step = (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag, a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step, t = []; for (let v = a; v <= b + step / 2; v += step) t.push(+v.toPrecision(12)); return { lo: a, hi: b, ticks: t }; }
+const compact = v => { const a = Math.abs(v); if (a >= 1e9) return +(v / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return +(v / 1e6).toFixed(2) + 'M'; if (a >= 1e4) return +(v / 1e3).toFixed(1) + 'K'; if (a >= 100) return Math.round(v).toString(); if (a >= 1) return +v.toFixed(2) + ''; return +v.toPrecision(2) + ''; };
+C.compact = compact;
+function shell(el, opts) {
+  el.innerHTML = ''; el.classList.add('chart');
+  if (opts.title) { const t = document.createElement('div'); t.className = 'ttl'; t.textContent = opts.title; el.appendChild(t); }
+  if (opts.series && opts.series.length > 1 || opts.legend) { const l = document.createElement('div'); l.className = 'legend'; l.innerHTML = (opts.legend || opts.series.map((s, i) => ({ name: s.name, color: s.color || COLORS(i) }))).map(s => `<span><i style="background:${s.color}"></i>${MT.esc(s.name)}</span>`).join(''); el.appendChild(l); }
+  const tip = document.createElement('div'); tip.className = 'tip'; el.style.position = 'relative'; return tip;
+}
+function hookTips(el, tip) {
+  el.addEventListener('mousemove', e => { const t = e.target.closest && e.target.closest('[data-tip]'); if (!t) { tip.style.display = 'none'; return; } tip.innerHTML = t.getAttribute('data-tip'); tip.style.display = 'block'; const r = el.getBoundingClientRect(); let x = e.clientX - r.left + 12, y = e.clientY - r.top - 8; tip.style.left = Math.min(x, r.width - tip.offsetWidth - 4) + 'px'; tip.style.top = Math.max(0, y - tip.offsetHeight) + 'px'; });
+  el.addEventListener('mouseleave', () => tip.style.display = 'none');
+}
+function dataTable(el, heads, rows, label) { if (!rows.length) return; const d = document.createElement('details'); d.innerHTML = `<summary>${label || 'View as table'}</summary>` + MT.tbl(heads, rows.slice(0, 500).map(r => r.map(v => isNum(v) ? MT.fmt.sig(v, 5) : v)), { num: heads.map((_, i) => i).slice(1) }); el.appendChild(d); }
+/* line chart. opts: {title, xs, series:[{name, values, color, dash, band:{lo,hi}, width}], vlines:[{x,label}], xFmt, yFmt, height, yLabel, zero} */
+C.line = (el, o) => {
+  const tip = shell(el, o), W = 760, H = o.height || 280, m = { l: 56, r: 14, t: 14, b: 30 }, xs = o.xs, xf = o.xFmt || (v => v), yf = o.yFmt || compact;
+  let lo = Infinity, hi = -Infinity; o.series.forEach(s => { s.values.forEach(v => { if (isNum(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }); if (s.band) { s.band.lo.forEach(v => isNum(v) && (lo = Math.min(lo, v))); s.band.hi.forEach(v => isNum(v) && (hi = Math.max(hi, v))); } });
+  if (o.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  const nt = niceTicks(lo, hi, 5), x0 = Math.min(...xs), x1 = Math.max(...xs), X = v => m.l + (x1 === x0 ? 0.5 : (v - x0) / (x1 - x0)) * (W - m.l - m.r), Y = v => H - m.b - (v - nt.lo) / (nt.hi - nt.lo) * (H - m.t - m.b);
+  const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'line chart' });
+  const g = sv('g', { class: 'grid' }), ax = sv('g', { class: 'ax' });
+  nt.ticks.forEach(v => { g.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v) })); const t = sv('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }); t.textContent = yf(v); ax.appendChild(t); });
+  const nx = Math.min(7, xs.length); for (let i = 0; i < nx; i++) { const v = x0 + (x1 - x0) * i / Math.max(1, nx - 1), t = sv('text', { x: X(v), y: H - 10, 'text-anchor': i === 0 ? 'start' : i === nx - 1 ? 'end' : 'middle' }); t.textContent = xf(v); ax.appendChild(t); }
+  svg.appendChild(g); svg.appendChild(ax);
+  if (o.yLabel) { const t = sv('text', { x: 4, y: 10, class: 'lbl' }); t.textContent = o.yLabel; svg.appendChild(t); }
+  (o.vlines || []).forEach(v => { svg.appendChild(sv('line', { x1: X(v.x), x2: X(v.x), y1: m.t, y2: H - m.b, stroke: 'var(--ink-muted)', 'stroke-dasharray': '4 3', 'stroke-width': 1.2 })); if (v.label) { const t = sv('text', { x: X(v.x) + 4, y: m.t + 9, class: 'lbl' }); t.textContent = v.label; svg.appendChild(t); } });
+  const path = (vals) => { let d = '', pen = false; vals.forEach((v, i) => { if (!isNum(v)) { pen = false; return; } d += (pen ? 'L' : 'M') + X(xs[i]).toFixed(1) + ' ' + Y(v).toFixed(1); pen = true; }); return d; };
+  o.series.forEach((s, i) => { const col = s.color || COLORS(i); if (s.band) { let d = ''; const idx = xs.map((_, k) => k).filter(k => isNum(s.band.lo[k]) && isNum(s.band.hi[k])); if (idx.length) { d = 'M' + idx.map(k => X(xs[k]).toFixed(1) + ' ' + Y(s.band.hi[k]).toFixed(1)).join('L') + 'L' + idx.slice().reverse().map(k => X(xs[k]).toFixed(1) + ' ' + Y(s.band.lo[k]).toFixed(1)).join('L') + 'Z'; svg.appendChild(sv('path', { d, fill: col, opacity: 0.16 })); } } svg.appendChild(sv('path', { d: path(s.values), fill: 'none', stroke: col, 'stroke-width': s.width || 2, 'stroke-dasharray': s.dash || '', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' })); });
+  const cross = sv('line', { y1: m.t, y2: H - m.b, stroke: 'var(--ink-muted)', 'stroke-width': 1, opacity: 0 }), dots = o.series.map((s, i) => sv('circle', { r: 4, fill: s.color || COLORS(i), stroke: 'var(--surface)', 'stroke-width': 2, opacity: 0 }));
+  svg.appendChild(cross); dots.forEach(d => svg.appendChild(d));
+  const ov = sv('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: 'transparent' }); svg.appendChild(ov);
+  ov.addEventListener('mousemove', e => { const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W, v = x0 + (px - m.l) / (W - m.l - m.r) * (x1 - x0); let bi = 0, bd = Infinity; xs.forEach((x, k) => { const d = Math.abs(x - v); if (d < bd) { bd = d; bi = k; } }); cross.setAttribute('x1', X(xs[bi])); cross.setAttribute('x2', X(xs[bi])); cross.setAttribute('opacity', 1); dots.forEach((d, i) => { const val = o.series[i].values[bi]; if (isNum(val)) { d.setAttribute('cx', X(xs[bi])); d.setAttribute('cy', Y(val)); d.setAttribute('opacity', 1); } else d.setAttribute('opacity', 0); }); tip.innerHTML = `<b>${MT.esc(xf(xs[bi]))}</b>` + o.series.map((s, i) => isNum(s.values[bi]) ? `<br><span style="color:${s.color || COLORS(i)}">■</span> ${MT.esc(s.name)}: ${MT.esc(yf(s.values[bi]))}` : '').join(''); tip.style.display = 'block'; const cr = el.getBoundingClientRect(); tip.style.left = Math.min(e.clientX - cr.left + 14, cr.width - tip.offsetWidth - 4) + 'px'; tip.style.top = Math.max(0, e.clientY - cr.top - tip.offsetHeight - 6) + 'px'; });
+  ov.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); dots.forEach(d => d.setAttribute('opacity', 0)); tip.style.display = 'none'; });
+  el.appendChild(svg); el.appendChild(tip);
+  if (o.table !== false) dataTable(el, ['x'].concat(o.series.map(s => s.name)), xs.map((x, k) => [xf(x)].concat(o.series.map(s => s.values[k]))));
+};
+/* vertical grouped bars. opts: {title, cats, series:[{name, values, color}], errors:[{lo,hi}] (first series), yFmt, height, ref} */
+C.bars = (el, o) => {
+  const tip = shell(el, o), W = 760, H = o.height || 260, m = { l: 56, r: 14, t: 14, b: 44 }, yf = o.yFmt || compact, ns = o.series.length;
+  let lo = 0, hi = -Infinity; o.series.forEach(s => s.values.forEach(v => isNum(v) && (hi = Math.max(hi, v), lo = Math.min(lo, v)))); if (o.errors) o.errors.forEach(e => { if (e) { hi = Math.max(hi, e.hi); lo = Math.min(lo, e.lo); } }); if (o.ref != null) { hi = Math.max(hi, o.ref); lo = Math.min(lo, o.ref); }
+  const nt = niceTicks(lo, hi, 5), Y = v => H - m.b - (v - nt.lo) / (nt.hi - nt.lo) * (H - m.t - m.b), cw = (W - m.l - m.r) / o.cats.length, bw = Math.min(46, cw * 0.72 / ns), svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'bar chart' }), g = sv('g', { class: 'grid' }), ax = sv('g', { class: 'ax' });
+  nt.ticks.forEach(v => { g.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v) })); const t = sv('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }); t.textContent = yf(v); ax.appendChild(t); });
+  svg.appendChild(g); svg.appendChild(ax);
+  o.cats.forEach((c, ci) => {
+    const cx = m.l + cw * ci + cw / 2; const t = sv('text', { x: cx, y: H - m.b + 15, 'text-anchor': 'middle', class: 'lbl' }); let lab = String(c); if (lab.length > 16 && o.cats.length > 5) lab = lab.slice(0, 15) + '…'; t.textContent = lab; svg.appendChild(t);
+    o.series.forEach((s, si) => { const v = s.values[ci]; if (!isNum(v)) return; const x = cx - (ns * bw + (ns - 1) * 2) / 2 + si * (bw + 2), y0 = Y(0), y1 = Y(v), top = Math.min(y0, y1), h = Math.max(1, Math.abs(y1 - y0)), r = Math.min(4, bw / 2, h);
+      const d = v >= 0 ? `M${x} ${top + h}V${top + r}Q${x} ${top} ${x + r} ${top}H${x + bw - r}Q${x + bw} ${top} ${x + bw} ${top + r}V${top + h}Z` : `M${x} ${top}V${top + h - r}Q${x} ${top + h} ${x + r} ${top + h}H${x + bw - r}Q${x + bw} ${top + h} ${x + bw} ${top + h - r}V${top}Z`;
+      svg.appendChild(sv('path', { d, fill: s.color || COLORS(si), 'data-tip': `<b>${MT.esc(c)}</b><br>${MT.esc(s.name)}: ${MT.esc(yf(v))}` }));
+      if (o.cats.length * ns <= 10) { const tv = sv('text', { x: x + bw / 2, y: v >= 0 ? top - 4 : top + h + 11, 'text-anchor': 'middle', class: 'lbl' }); tv.textContent = yf(v); svg.appendChild(tv); }
+      if (si === 0 && o.errors && o.errors[ci]) { const e = o.errors[ci], xc = x + bw / 2; svg.appendChild(sv('line', { x1: xc, x2: xc, y1: Y(e.lo), y2: Y(e.hi), stroke: 'var(--ink)', 'stroke-width': 1.5 })); [e.lo, e.hi].forEach(q => svg.appendChild(sv('line', { x1: xc - 4, x2: xc + 4, y1: Y(q), y2: Y(q), stroke: 'var(--ink)', 'stroke-width': 1.5 }))); } });
+  });
+  if (o.ref != null) svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(o.ref), y2: Y(o.ref), stroke: 'var(--ink-muted)', 'stroke-dasharray': '4 3' }));
+  svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), stroke: 'var(--border-strong)' }));
+  el.appendChild(svg); el.appendChild(tip); hookTips(el, tip);
+  if (o.table !== false) dataTable(el, ['Category'].concat(o.series.map(s => s.name)), o.cats.map((c, i) => [c].concat(o.series.map(s => s.values[i]))));
+};
+/* horizontal bars, single series: {title, cats, values, colors?, fmt, height} */
+C.hbars = (el, o) => {
+  const tip = shell(el, o), rowH = 24, n = o.cats.length, W = 760, m = { l: Math.min(230, 20 + 6.2 * Math.max(...o.cats.map(c => String(c).length), 4)), r: 60, t: 8, b: 20 }, H = m.t + m.b + rowH * n, f = o.fmt || compact, mx = Math.max(...o.values.filter(isNum), 1e-9), svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'bar chart' });
+  o.cats.forEach((c, i) => { const y = m.t + i * rowH, w = Math.max(1, (o.values[i] / mx) * (W - m.l - m.r)); const t = sv('text', { x: m.l - 8, y: y + rowH / 2 + 4, 'text-anchor': 'end', class: 'lbl' }); let lab = String(c); if (lab.length > 34) lab = lab.slice(0, 33) + '…'; t.textContent = lab; svg.appendChild(t); svg.appendChild(sv('path', { d: `M${m.l} ${y + 3}H${m.l + w - 4}Q${m.l + w} ${y + 3} ${m.l + w} ${y + 7}V${y + rowH - 7}Q${m.l + w} ${y + rowH - 3} ${m.l + w - 4} ${y + rowH - 3}H${m.l}Z`, fill: (o.colors && o.colors[i]) || COLORS(0), 'data-tip': `<b>${MT.esc(c)}</b><br>${MT.esc(f(o.values[i]))}` })); const v = sv('text', { x: m.l + w + 6, y: y + rowH / 2 + 4, class: 'lbl' }); v.textContent = f(o.values[i]); svg.appendChild(v); });
+  el.appendChild(svg); el.appendChild(tip); hookTips(el, tip);
+};
+/* forest plot: rows [{label, est, lo, hi, color}] */
+C.forest = (el, o) => {
+  const tip = shell(el, o), rowH = 30, n = o.rows.length, W = 760, m = { l: Math.min(220, 20 + 6.4 * Math.max(...o.rows.map(r => String(r.label).length), 4)), r: 20, t: 10, b: 28 }, H = m.t + m.b + rowH * n, f = o.fmt || compact;
+  let lo = Math.min(...o.rows.map(r => r.lo), o.ref == null ? 0 : o.ref), hi = Math.max(...o.rows.map(r => r.hi), o.ref == null ? 0 : o.ref); const nt = niceTicks(lo, hi, 5), X = v => m.l + (v - nt.lo) / (nt.hi - nt.lo) * (W - m.l - m.r), svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'forest plot' }), g = sv('g', { class: 'grid' }), ax = sv('g', { class: 'ax' });
+  nt.ticks.forEach(v => { g.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b })); const t = sv('text', { x: X(v), y: H - 10, 'text-anchor': 'middle' }); t.textContent = f(v); ax.appendChild(t); }); svg.appendChild(g); svg.appendChild(ax);
+  const rf = o.ref == null ? 0 : o.ref; svg.appendChild(sv('line', { x1: X(rf), x2: X(rf), y1: m.t, y2: H - m.b, stroke: 'var(--ink-muted)', 'stroke-dasharray': '4 3', 'stroke-width': 1.3 }));
+  o.rows.forEach((r, i) => { const y = m.t + i * rowH + rowH / 2, col = r.color || COLORS(0); const t = sv('text', { x: m.l - 10, y: y + 4, 'text-anchor': 'end', class: 'lbl' }); t.textContent = String(r.label).length > 32 ? String(r.label).slice(0, 31) + '…' : r.label; svg.appendChild(t); const tp = `<b>${MT.esc(r.label)}</b><br>${MT.esc(f(r.est))} [${MT.esc(f(r.lo))}, ${MT.esc(f(r.hi))}]`; svg.appendChild(sv('line', { x1: X(r.lo), x2: X(r.hi), y1: y, y2: y, stroke: col, 'stroke-width': 2.5, 'stroke-linecap': 'round' })); svg.appendChild(sv('circle', { cx: X(r.est), cy: y, r: 5, fill: col, stroke: 'var(--surface)', 'stroke-width': 2 })); svg.appendChild(sv('rect', { x: m.l, y: y - rowH / 2, width: W - m.l - m.r, height: rowH, fill: 'transparent', 'data-tip': tp })); });
+  el.appendChild(svg); el.appendChild(tip); hookTips(el, tip);
+};
+/* histogram with marker. opts: {title, values, marker, markerLabel, bins, xFmt} */
+C.hist = (el, o) => {
+  const tip = shell(el, o), W = 760, H = o.height || 200, m = { l: 40, r: 14, t: 16, b: 30 }, vals = o.values.filter(isNum), mk = o.marker;
+  let lo = Math.min(...vals, isNum(mk) ? mk : Infinity), hi = Math.max(...vals, isNum(mk) ? mk : -Infinity); if (lo === hi) { lo -= 1; hi += 1; } const nb = o.bins || Math.min(24, Math.max(6, Math.ceil(Math.sqrt(vals.length) * 1.5))), bw = (hi - lo) / nb, cnt = new Array(nb).fill(0); vals.forEach(v => cnt[Math.min(nb - 1, Math.floor((v - lo) / bw))]++);
+  const mc = Math.max(...cnt, 1), X = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r), Y = c => H - m.b - c / mc * (H - m.t - m.b), f = o.xFmt || compact, svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.title || 'histogram' });
+  cnt.forEach((c, i) => { if (!c) return; svg.appendChild(sv('rect', { x: X(lo + i * bw) + 1, y: Y(c), width: Math.max(1, X(lo + (i + 1) * bw) - X(lo + i * bw) - 2), height: H - m.b - Y(c), fill: 'var(--series-1)', opacity: 0.5, rx: 2, 'data-tip': `${MT.esc(f(lo + i * bw))} to ${MT.esc(f(lo + (i + 1) * bw))}: ${c} placebo run${c > 1 ? 's' : ''}` })); });
+  const ax = sv('g', { class: 'ax' }); for (let i = 0; i <= 5; i++) { const v = lo + (hi - lo) * i / 5, t = sv('text', { x: X(v), y: H - 10, 'text-anchor': i === 0 ? 'start' : i === 5 ? 'end' : 'middle' }); t.textContent = f(v); ax.appendChild(t); } svg.appendChild(ax); svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: 'var(--border-strong)' }));
+  if (isNum(mk)) { svg.appendChild(sv('line', { x1: X(mk), x2: X(mk), y1: m.t - 4, y2: H - m.b, stroke: 'var(--series-2)', 'stroke-width': 2.5, 'data-tip': `${MT.esc(o.markerLabel || 'Actual')}: ${MT.esc(f(mk))}` })); const t = sv('text', { x: Math.min(X(mk) + 5, W - 120), y: m.t + 6, class: 'lbl' }); t.textContent = o.markerLabel || 'Actual'; svg.appendChild(t); }
+  el.appendChild(svg); el.appendChild(tip); hookTips(el, tip);
+};
+
+/* ---------- misc text helpers ---------- */
+const STOP = new Set('a an the and or but if of to in on at for with by from as is are was were be been it its this that these those we you your our their they he she i not no can will just do does did has have had so than then them into out up down over under more most very also any all each per via about after before between during while which who whom how what when where why'.split(' '));
+MT.stop = STOP;
+MT.stem = w => w.length > 4 ? w.replace(/(ations?|ition|ments?|ness|ings?|ers?|ies|ied|ed|es|s|ly)$/, m => m === 'ies' || m === 'ied' ? 'y' : '') : w;
+MT.tokens = (t, keepStop) => (String(t).toLowerCase().match(/[a-z0-9à-ÿ][a-z0-9à-ÿ'\-]*/g) || []).map(w => w.replace(/^['-]+|['-]+$/g, '')).filter(w => w && (keepStop || !STOP.has(w)));
+MT.syllables = w => { w = w.toLowerCase().replace(/[^a-z]/g, ''); if (w.length <= 3) return 1; w = w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '').replace(/^y/, ''); const m = w.match(/[aeiouy]{1,2}/g); return m ? m.length : 1; };
+MT.fkGrade = t => { const s = (String(t).match(/[^.!?\n]+[.!?]*/g) || []).filter(x => /\w/.test(x)), w = MT.tokens(t, true); if (!s.length || !w.length) return NaN; const syl = w.reduce((a, x) => a + MT.syllables(x), 0); return 0.39 * (w.length / s.length) + 11.8 * (syl / w.length) - 15.59; };
+MT.debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms || 150); }; };
+MT.range = (n, s) => Array.from({ length: n }, (_, i) => i + (s || 0));
+
+/* ---------- form helpers ---------- */
+MT.val = id => { const el = document.getElementById(id); if (!el) return NaN; if (el.type === 'checkbox') return el.checked ? 1 : 0; return el.tagName === 'SELECT' ? (isNaN(parseFloat(el.value)) ? el.value : parseFloat(el.value)) : MT.num(el.value); };
+MT.live = (root, fn) => { const f = MT.debounce(fn, 60); root.addEventListener('input', f); root.addEventListener('change', f); fn(); };
+/* fields: [{id,label,value,step,min,max,hint,type:'number'|'text'|'select'|'textarea'|'check',options:[[v,l]],rows}] */
+MT.fields = (root, list, cls) => {
+  root.innerHTML = list.map(f => { const t = f.type || 'number', id = 'f_' + f.id; let inp;
+    if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
+    else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
+    else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
+    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
+  root.classList.add('grid'); root.classList.add(cls || 'g3');
+};
+MT.f = id => MT.val('f_' + id);
+MT.fset = (id, v) => { const el = document.getElementById('f_' + id); if (el) { if (el.type === 'checkbox') el.checked = !!v; else el.value = v; } };
+MT.sampleBtn = (container, label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-secondary btn-sm'; b.textContent = label; b.addEventListener('click', fn); container.appendChild(b); return b; };
+MT.tone = (v, good, warn, lowerBetter) => { if (!MT.isNum(v)) return ''; if (lowerBetter) return v <= good ? 'good' : v <= warn ? 'warn' : 'bad'; return v >= good ? 'good' : v >= warn ? 'warn' : 'bad'; };
+MT.cellTone = k => k === 'good' ? 'background:var(--good-wash)' : k === 'warn' ? 'background:var(--warn-wash)' : k === 'bad' ? 'background:var(--critical-wash)' : '';
+MT.rag = (level, title, reasons) => `<div class="verdict ${level === 'green' ? 'pos' : level === 'red' ? 'neg' : 'neu'}" role="status"><div class="ico" aria-hidden="true">${level === 'green' ? '▲' : level === 'red' ? '▼' : '●'}</div><div><h2>${MT.esc(title)}</h2><p>${reasons.map(MT.esc).join(' ')}</p></div></div>`;
+
+/* ---------- quality of life ---------- */
+MT.store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }, del(k) { try { localStorage.removeItem(k); } catch (e) { } } };
+(function () { const t = MT.store.get('mt:theme'); if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t); })();
+MT.persist = slug => {
+  const key = 'mt:v1:' + slug, MAX = 250000;
+  const els = () => MT.$$('main input[id], main select[id], main textarea[id]').filter(e => !['file', 'button', 'submit', 'range'].includes(e.type) || e.type === 'range');
+  let ran = false; const saveNow = () => { const o = { v: {}, r: {}, ran }; els().forEach(e => { if (e.type === 'radio') return; const val = e.type === 'checkbox' ? e.checked : e.value; if (typeof val === 'string' && val.length > MAX) return; o.v[e.id] = val; }); MT.$$('main input[type=radio][name]:checked').forEach(r => o.r[r.name] = r.value); MT.store.set(key, JSON.stringify(o)); }, save = MT.debounce(saveNow, 400);
+  let raw = MT.store.get(key), o = null; try { o = raw ? JSON.parse(raw) : null; } catch (e) { o = null; }
+  if (o) {
+    Object.keys(o.r || {}).forEach(n => { const r = MT.$(`main input[type=radio][name="${n}"][value="${o.r[n]}"]`); if (r && !r.checked) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); } });
+    const sels = [];
+    Object.keys(o.v || {}).forEach(id => { const e = document.getElementById(id); if (!e) return; if (e.tagName === 'SELECT') { sels.push([e, o.v[id]]); return; } if (e.type === 'checkbox') { if (e.checked !== !!o.v[id]) { e.checked = !!o.v[id]; e.dispatchEvent(new Event('change', { bubbles: true })); } return; } if (e.value !== o.v[id]) { e.value = o.v[id]; e.dispatchEvent(new Event('input', { bubbles: true })); } });
+    const applySel = () => sels.forEach(([e, v]) => { if (Array.from(e.options).some(op => op.value === v) && e.value !== v) { e.value = v; e.dispatchEvent(new Event('change', { bubbles: true })); } });
+    applySel(); setTimeout(applySel, 500); setTimeout(applySel, 1100);
+    const note = MT.$('.saved-note'); if (note) note.textContent = 'Restored your last inputs.';
+  }
+  if (o && o.ran) setTimeout(() => { const b = MT.$('#go') || MT.$('#run'); if (b && !b.disabled) b.click(); }, 1200);
+  document.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'go' || b.id === 'run') ran = true; if (b.id === 'smp' || b.dataset.s != null) ran = true; setTimeout(save, 600); }); setTimeout(() => { document.addEventListener('input', save); document.addEventListener('change', save); }, 1300);
+  ran = !!(o && o.ran);
+  window.addEventListener('pagehide', saveNow); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveNow(); });
+  return { clear() { MT.store.del(key); } };
+};
+MT.boot = (slug, template) => {
+  const p = MT.persist(slug);
+  const bar = MT.$('.toolbar'); if (!bar) return;
+  bar.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (!b) return; const a = b.dataset.act;
+    if (a === 'template' && template) MT.download(slug + '-template.csv', template.trim() + '\n', 'text/csv');
+    if (a === 'print') { const root = document.documentElement, prev = root.getAttribute('data-theme'); root.setAttribute('data-theme', 'light'); setTimeout(() => { window.print(); if (prev) root.setAttribute('data-theme', prev); else root.removeAttribute('data-theme'); }, 50); }
+    if (a === 'clear') { p.clear(); location.reload(); } });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { const b = MT.$('#go') || MT.$('#run'); if (b && !b.disabled) { e.preventDefault(); b.click(); } } });
+};
+})(window);
+</script>
+<script>/* Experiment engine: model selection + estimation for randomized (A/B/n), factorial (multivariate) and quasi-experimental tests.
+   Method selection follows the "Causal Inference Model Selection Guide" decision tree. Pure functions, no DOM. */
+(function (g) {
+'use strict';
+const MT = g.MT, S = MT.stat, M = MT.mat, isNum = MT.isNum, F = MT.fmt;
+const E = MT.exp = {};
+const sum = S.sum;
+const tick = () => new Promise(r => setTimeout(r, 0));
+
+/* ---------- formatting + verdict ---------- */
+function fmtEff(x, res, rel) {
+  if (!isNum(x)) return '—';
+  if (rel) return F.spct(x, 1);
+  if (res.unit === 'pp') return (x >= 0 ? '+' : '') + (x * 100).toFixed(2) + ' pp';
+  return (x >= 0 ? '+' : '') + F.n(x, Math.abs(x) < 10 ? 3 : 1);
+}
+E.fmtEff = fmtEff;
+function pLabel(p, bound) { if (!isNum(p)) return ''; if (bound) return 'p < ' + (Math.round(p * 1000) / 1000); const s = F.p(p); return s[0] === '<' ? 'p ' + s : 'p = ' + s; }
+/* comps: [{name, est, rel, sig, pAdj}] -> verdict */
+function verdictFrom(res, comps, opt) {
+  const better = opt.better || 'high', good = c => (better === 'low' ? -c.est : c.est) > 0, minEff = opt.minEff;
+  const pos = comps.filter(c => c.sig && good(c)), neg = comps.filter(c => c.sig && !good(c));
+  const small = c => isNum(minEff) && minEff > 0 && isNum(c.rel) && Math.abs(c.rel) < minEff;
+  const desc = c => `${c.name}: ${fmtEff(c.est, res)} (${fmtEff(c.rel, res, true)} relative), ${pLabel(c.pAdj != null ? c.pAdj : c.p, c.pBound)}${comps.length > 1 && c.pAdj != null ? ' (Holm-adjusted)' : ''}`;
+  let v;
+  if (pos.length && !neg.length) {
+    const best = pos.slice().sort((a, b) => Math.abs(b.est) - Math.abs(a.est))[0];
+    v = { cls: 'pos', title: 'Positive and statistically significant', text: desc(best) + (pos.length > 1 ? `. ${pos.length - 1} other comparison${pos.length > 2 ? 's are' : ' is'} also significantly positive.` : '.') + (small(best) ? ` The effect is smaller than your minimum effect of interest (${F.pct(minEff, 1)}), so it may not be worth acting on.` : '') };
+  } else if (neg.length && !pos.length) {
+    const worst = neg.slice().sort((a, b) => Math.abs(b.est) - Math.abs(a.est))[0];
+    v = { cls: 'neg', title: 'Negative and statistically significant', text: desc(worst) + (neg.length > 1 ? `. ${neg.length - 1} other comparison${neg.length > 2 ? 's are' : ' is'} also significantly negative.` : '.') + ' The change made results worse than the baseline.' };
+  } else if (pos.length && neg.length) {
+    v = { cls: 'neu', title: 'Mixed: some comparisons win, others lose', text: `${pos.length} significantly positive and ${neg.length} significantly negative. Review each comparison below before choosing.` };
+  } else {
+    v = { cls: 'neu', title: 'No statistically significant difference', text: (comps.length === 1 ? desc(comps[0]) + '. ' : '') + 'The data cannot separate the change from random noise at your chosen significance level. This is not proof of no effect.' + (res.power && isNum(res.power.mdeRel) ? ` At this sample size the test could reliably detect only a relative change of about ±${F.pct(res.power.mdeRel, 1)} (80% power). Smaller real effects remain possible.` : '') };
+  }
+  return v;
+}
+E.verdictFrom = verdictFrom;
+
+/* ---------- A/B/n (randomized, one factor) ---------- */
+/* groups: [{name, n, x}] binary | [{name, n, mean, sd, raw?:[]}] continuous. groups[0] is the control. */
+E.analyzeAB = function (groups, opt) {
+  const alpha = opt.alpha || 0.05, k = groups.length, c = groups[0], res = { kind: 'ab', metric: opt.metric, unit: opt.metric === 'binary' ? 'pp' : 'num', groups, comps: [], diag: [], notes: [], path: [], why: [], alpha };
+  if (k < 2) throw new Error('Add at least two variants (a control and one treatment).');
+  const bin = opt.metric === 'binary';
+  if (!bin) groups.forEach(gp => { if (gp.raw) { gp.mean = S.mean(gp.raw); gp.sd = S.sd(gp.raw); gp.n = gp.raw.length; } });
+  groups.forEach(gp => { if (!(gp.n >= 2)) throw new Error(`"${gp.name}": visitors must be at least 2.`); if (bin && (gp.x < 0 || gp.x > gp.n)) throw new Error(`"${gp.name}": conversions must be between 0 and visitors.`); if (!bin && !(gp.sd >= 0)) throw new Error(`"${gp.name}": enter a valid standard deviation.`); });
+  // Sample ratio mismatch
+  const N = sum(groups.map(x => x.n)); let w = opt.split && opt.split.length === k ? opt.split.slice() : new Array(k).fill(1); const ws = sum(w); w = w.map(x => x / ws);
+  let chi = 0; groups.forEach((gp, i) => { chi += (gp.n - N * w[i]) ** 2 / (N * w[i]); }); const srmP = S.chi2Sf(chi, k - 1); res.srm = { chi2: chi, p: srmP };
+  res.diag.push(srmP < 0.001 ? { s: 'bad', t: `Sample ratio mismatch (p = ${F.p(srmP)}). Traffic did not split as planned, which usually means a bug in assignment or tracking. Do not trust the result until this is explained.` } : srmP < 0.01 ? { s: 'warn', t: `Possible sample ratio mismatch (p = ${F.p(srmP)}). Check the assignment mechanism.` } : { s: 'ok', t: `Traffic split matches the plan (SRM chi-square p = ${F.p(srmP)}).` });
+  if (bin) {
+    const minN = Math.min(...groups.map(x => x.n)); if (minN < 100) res.diag.push({ s: 'warn', t: `Smallest group has only ${minN} visitors. Normal approximations are unreliable at this size.` });
+    const tot = sum(groups.map(x => x.x)), pooled = tot / N;
+    if (k === 2) {
+      const t = groups[1], a = t.x, b = t.n - t.x, cc = c.x, d = c.n - c.x, r1 = a + b, r2 = cc + d, c1 = a + cc, c2 = b + d, minExp = Math.min(r1 * c1, r1 * c2, r2 * c1, r2 * c2) / N;
+      const zt = S.twoProp(t.x, t.n, c.x, c.n, alpha), fisher = minExp < 5 ? S.fisher(a, b, cc, d) : null, bay = S.betaBinom(t.x, t.n, c.x, c.n, 40000, 7);
+      const useF = fisher != null, p = useF ? fisher : zt.p;
+      res.method = useF ? 'Fisher exact test' : 'Two-proportion z-test';
+      res.path = ['Randomized split', 'Binary outcome (conversions / visitors)', '2 variants', useF ? 'Fisher exact test' : 'Two-proportion z-test'];
+      res.why.push(useF ? `A cell has an expected count of ${minExp.toFixed(1)} (below 5), so the z approximation is unreliable. Fisher's exact test gives an exact p-value.` : 'Both groups are large enough (all expected cell counts are 5 or more) for the two-proportion z-test.', 'Randomization removes confounding, so a direct comparison of rates is valid. No counterfactual modeling is needed.');
+      res.comps.push({ name: `${t.name} vs ${c.name}`, est: zt.diff, lo: zt.ciLo, hi: zt.ciHi, rel: zt.rel, relLo: zt.relLo, relHi: zt.relHi, p, pAdj: p, sig: p < alpha, rateT: zt.p1, rateC: zt.p2, bayes: bay, z: zt.z });
+      res.power = { mdeAbs: S.mdeProp(zt.p2 || pooled, t.n, c.n, alpha, 0.8) }; res.power.mdeRel = zt.p2 ? res.power.mdeAbs / zt.p2 : NaN;
+      res.notes.push(`Bayesian cross-check: probability the variant beats control is ${F.pct(bay.pBeat, 1)}; expected loss if you ship it is ${(bay.expLossChoose * 100).toFixed(3)} pp.`);
+    } else {
+      const tab = groups.map(x => [x.x, x.n - x.x]), om = S.chi2Table(tab); res.omnibus = { name: 'Chi-square test of independence', stat: om.chi2, df: om.df, p: om.p, effect: `Cramer's V = ${om.cramersV.toFixed(3)}` };
+      res.method = 'Chi-square omnibus test with Holm-corrected pairwise z-tests'; res.path = ['Randomized split', 'Binary outcome (conversions / visitors)', `${k} variants (A/B/n)`, 'Chi-square omnibus + Holm pairwise'];
+      res.why.push(`Testing ${k - 1} variants against one control multiplies the chance of a false positive. The omnibus test asks whether any difference exists, and Holm's correction controls the family-wise error rate across the ${k - 1} pairwise comparisons.`);
+      if (om.minExpected < 5) res.diag.push({ s: 'warn', t: 'Some expected cell counts are below 5. Treat the omnibus p-value as approximate.' });
+      const ps = []; groups.slice(1).forEach(t => { const zt = S.twoProp(t.x, t.n, c.x, c.n, alpha), bay = S.betaBinom(t.x, t.n, c.x, c.n, 20000, 7); ps.push(zt.p); res.comps.push({ name: `${t.name} vs ${c.name}`, est: zt.diff, lo: zt.ciLo, hi: zt.ciHi, rel: zt.rel, relLo: zt.relLo, relHi: zt.relHi, p: zt.p, rateT: zt.p1, rateC: zt.p2, bayes: bay }); });
+      const adj = S.holm(ps); res.comps.forEach((x, i) => { x.pAdj = adj[i]; x.sig = adj[i] < alpha; });
+      const zc = S.zCrit(alpha / (k - 1)); res.notes.push(`Confidence intervals shown are unadjusted (${F.pct(1 - alpha, 0)}). Significance uses Holm-adjusted p-values.`);
+      res.power = { mdeAbs: S.mdeProp(c.x / c.n || pooled, Math.min(...groups.slice(1).map(x => x.n)), c.n, alpha / (k - 1), 0.8) }; res.power.mdeRel = c.x ? res.power.mdeAbs / (c.x / c.n) : NaN;
+    }
+  } else {
+    groups.forEach(gp => { if (gp.raw) { gp.mean = S.mean(gp.raw); gp.sd = S.sd(gp.raw); gp.n = gp.raw.length; } });
+    const minN = Math.min(...groups.map(x => x.n)); if (minN < 30) res.diag.push({ s: 'warn', t: `Smallest group has ${minN} observations. The t-test assumes roughly normal means; results are fragile below about 30 per group.` });
+    let skew = NaN, zeros = NaN; if (c.raw) { skew = Math.max(...groups.map(x => Math.abs(S.skew(x.raw)))); zeros = sum(groups.map(x => x.raw.filter(v => v === 0).length)) / N; res.skew = skew; if (skew > 2) res.diag.push({ s: 'warn', t: `Heavy skew detected (max |skew| = ${skew.toFixed(1)}). Revenue-style metrics have long tails; a few large orders can drive the mean. Check the bootstrap interval and consider capping outliers.` }); if (zeros > 0.5) res.notes.push(`${F.pct(zeros, 0)} of observations are zero (zero-inflated metric). The t-test on mean per visitor is still valid at large n, but see the conversion-rate component separately.`); }
+    if (k === 2) {
+      const t = groups[1], wl = S.welch(t.mean, t.sd, t.n, c.mean, c.sd, c.n, alpha); let p = wl.p, method = 'Welch two-sample t-test', mw = null, boot = null, lo = wl.ciLo, hi = wl.ciHi;
+      if (c.raw) { mw = S.mannWhitney(t.raw, c.raw); boot = S.bootDiff(t.raw, c.raw, 2000, 11); }
+      const nonpar = c.raw && minN < 30 && skew > 1;
+      if (nonpar) { p = mw.p; method = 'Mann-Whitney U test (rank-based)'; lo = boot.lo; hi = boot.hi; res.why.push(`Groups are small (n < 30) and skewed (|skew| = ${skew.toFixed(1)}), so a rank-based test is safer than a t-test. The interval is a bootstrap.`); }
+      else res.why.push(c.raw ? 'Welch\'s t-test does not assume equal variances and is reliable at these sample sizes. Mann-Whitney and a bootstrap interval are shown as robustness checks.' : 'Only summary statistics were supplied, so Welch\'s t-test (unequal variances) is used. Distribution shape cannot be checked without raw data.');
+      res.method = method; res.path = ['Randomized split', 'Continuous outcome (mean per user)', '2 variants', nonpar ? 'Mann-Whitney U' : 'Welch t-test'];
+      res.comps.push({ name: `${t.name} vs ${c.name}`, est: wl.diff, lo, hi, rel: wl.rel, relLo: lo / c.mean, relHi: hi / c.mean, p, pAdj: p, sig: p < alpha, meanT: t.mean, meanC: c.mean, robust: mw ? { mwP: mw.p, bootLo: boot.lo, bootHi: boot.hi, welchP: wl.p } : null, t: wl.t, df: wl.df });
+      const sdp = Math.sqrt((t.sd ** 2 + c.sd ** 2) / 2); res.power = { mdeAbs: S.mdeMean(sdp, t.n, c.n, alpha, 0.8) }; res.power.mdeRel = c.mean ? res.power.mdeAbs / Math.abs(c.mean) : NaN;
+      if (mw && Math.abs(mw.p < alpha ? 1 : 0) !== Math.abs(wl.p < alpha ? 1 : 0)) res.diag.push({ s: 'warn', t: `Welch (p = ${F.p(wl.p)}) and Mann-Whitney (p = ${F.p(mw.p)}) disagree on significance. The result is sensitive to outliers or distribution shape.` });
+    } else {
+      const an = S.anova(groups); res.omnibus = { name: 'One-way ANOVA', stat: an.F, df: `${an.df1}, ${an.df2}`, p: an.p, effect: `eta-squared = ${an.etaSq.toFixed(4)}` };
+      res.method = 'One-way ANOVA with Holm-corrected pairwise Welch t-tests'; res.path = ['Randomized split', 'Continuous outcome (mean per user)', `${k} variants (A/B/n)`, 'ANOVA + Holm pairwise Welch'];
+      res.why.push(`With ${k} variants, ANOVA tests for any difference first and Holm's correction protects the ${k - 1} pairwise comparisons against inflated false positives.`);
+      const ps = []; groups.slice(1).forEach(t => { const wl = S.welch(t.mean, t.sd, t.n, c.mean, c.sd, c.n, alpha); ps.push(wl.p); res.comps.push({ name: `${t.name} vs ${c.name}`, est: wl.diff, lo: wl.ciLo, hi: wl.ciHi, rel: wl.rel, relLo: wl.relLo, relHi: wl.relHi, p: wl.p, meanT: t.mean, meanC: c.mean }); });
+      const adj = S.holm(ps); res.comps.forEach((x, i) => { x.pAdj = adj[i]; x.sig = adj[i] < alpha; });
+      const sdp = Math.sqrt(sum(groups.map(x => x.sd ** 2)) / k); res.power = { mdeAbs: S.mdeMean(sdp, Math.min(...groups.slice(1).map(x => x.n)), c.n, alpha / (k - 1), 0.8) }; res.power.mdeRel = c.mean ? res.power.mdeAbs / Math.abs(c.mean) : NaN;
+    }
+  }
+  res.notes.push('Fixed-horizon tests assume you analyse once, at the planned sample size. Repeatedly checking and stopping at the first significant result inflates false positives.');
+  res.verdict = verdictFrom(res, res.comps, opt); if (res.diag.some(d => d.s === 'bad')) { res.verdict.caution = 'Sample ratio mismatch detected. Resolve it before acting on this result.'; }
+  return res;
+};
+
+/* ---------- Multivariate / factorial ---------- */
+/* cells: [{lv:{factor:level}, n, s}] binary | [{lv, n, mean, sd}] continuous. opt: {metric, alpha, factors:[], base:{f:level}, interactions:bool} */
+E.analyzeMV = function (cells, opt) {
+  const alpha = opt.alpha || 0.05, bin = opt.metric === 'binary', factors = opt.factors, res = { kind: 'mv', metric: opt.metric, unit: bin ? 'pp' : 'num', comps: [], diag: [], notes: [], path: [], why: [], alpha, cells, factors };
+  const levels = {}; factors.forEach(f => { levels[f] = Array.from(new Set(cells.map(c => c.lv[f]))).sort(); });
+  factors.forEach(f => { if (levels[f].length < 2) throw new Error(`Factor "${f}" has only one level in the data.`); if (levels[f].length > 8) throw new Error(`Factor "${f}" has ${levels[f].length} levels. Limit is 8; combine sparse levels.`); });
+  const base = {}; factors.forEach(f => { base[f] = opt.base && levels[f].includes(opt.base[f]) ? opt.base[f] : (levels[f].find(l => /^(control|baseline|default|original|current|none|a\b)/i.test(l)) || levels[f][0]); });
+  res.levels = levels; res.base = base;
+  cells = cells.filter(c => c.n > 0); const Ncell = cells.length, Ntot = sum(cells.map(c => c.n));
+  if (Ncell < 3) throw new Error('Need at least 3 combinations (cells) with data.');
+  let inter = !!opt.interactions && factors.length >= 2;
+  const build = (inter2) => { const terms = [{ n: 'Intercept', f: [] }]; factors.forEach(f => levels[f].forEach(l => { if (l !== base[f]) terms.push({ n: `${f} = ${l}`, f: [f], l: { [f]: l } }); })); if (inter2) for (let i = 0; i < factors.length; i++) for (let j = i + 1; j < factors.length; j++) { const a = factors[i], b = factors[j]; levels[a].forEach(la => { if (la === base[a]) return; levels[b].forEach(lb => { if (lb === base[b]) return; terms.push({ n: `${a} = ${la} × ${b} = ${lb}`, f: [a, b], l: { [a]: la, [b]: lb } }); }); }); } return terms; };
+  let terms = build(inter);
+  if (inter && terms.length >= Ncell) { inter = false; terms = build(false); res.diag.push({ s: 'warn', t: `Interactions dropped: the model would need ${build(true).length} parameters but only ${Ncell} combinations have data.` }); }
+  if (terms.length >= Ncell + (inter ? 1 : 0) && Ncell <= terms.length - 1) throw new Error('More parameters than cells. Reduce factors or levels.');
+  const row = lv => terms.map(t => t.n === 'Intercept' ? 1 : Object.keys(t.l).every(f => lv[f] === t.l[f]) ? 1 : 0), Xc = cells.map(c => row(c.lv)), k = terms.length;
+  res.terms = terms.map(t => t.n); res.interactions = inter;
+  // fit
+  let beta, V, linkInv, dlink, dfRes = Infinity, logit = null, testP;
+  if (bin) {
+    logit = S.logit(Xc, cells.map(c => c.s), cells.map(c => c.n)); beta = logit.beta; V = logit.cov; linkInv = e => 1 / (1 + Math.exp(-e)); dlink = e => { const p = 1 / (1 + Math.exp(-e)); return p * (1 - p); };
+    if (logit.separation) res.diag.push({ s: 'warn', t: 'Perfect or near-perfect separation in some cells (rates at 0% or 100%). Coefficients are unstable; collect more data or merge levels.' });
+    if (!logit.converged) res.diag.push({ s: 'warn', t: 'The logistic fit did not fully converge. Interpret coefficients cautiously.' });
+    res.method = 'Logistic regression' + (inter ? ' with two-way interactions' : ' (main effects)') + ' on cell counts, Wald tests, Holm-corrected'; testP = (w, df) => S.chi2Sf(w, df);
+  } else {
+    const A = Array.from({ length: k }, () => new Array(k).fill(0)), b = new Array(k).fill(0); cells.forEach((c, i) => { for (let a = 0; a < k; a++) { b[a] += c.n * Xc[i][a] * c.mean; for (let d = 0; d < k; d++) A[a][d] += c.n * Xc[i][a] * Xc[i][d]; } });
+    const Ai = M.inv(A); beta = M.mulv(Ai, b); const meat = Array.from({ length: k }, () => new Array(k).fill(0)); cells.forEach((c, i) => { const d = c.mean - sum(Xc[i].map((x, j) => x * beta[j])), w = (c.n - 1) * c.sd * c.sd + c.n * d * d; for (let a = 0; a < k; a++) for (let e2 = 0; e2 < k; e2++) meat[a][e2] += Xc[i][a] * Xc[i][e2] * w; });
+    V = M.mul(M.mul(Ai, meat), Ai).map(r => r.map(v => v * Ntot / Math.max(1, Ntot - k))); linkInv = e => e; dlink = () => 1; dfRes = Ntot - k;
+    res.method = 'Weighted least squares' + (inter ? ' with two-way interactions' : ' (main effects)') + ', robust (HC1) standard errors, Wald tests, Holm-corrected'; testP = (w, df) => S.fSf(w / df, df, dfRes);
+  }
+  const zp = (est, se) => bin ? S.normSf2(est / se) : S.tSf2(est / se, dfRes), crit = bin ? S.zCrit(alpha) : S.tCrit(alpha, dfRes);
+  // Wald joint tests
+  const wald = idx => { const b = idx.map(i => beta[i]), Vs = idx.map(i => idx.map(j => V[i][j])), w = sum(M.mulv(M.inv(Vs), b).map((v, i) => v * b[i])); return { w, df: idx.length, p: testP(w, idx.length) }; };
+  res.factorTests = factors.map(f => { const idx = terms.map((t, i) => t.f.includes(f) ? i : -1).filter(i => i >= 0), r = wald(idx); return { factor: f, df: r.df, w: r.w, p: r.p, scope: inter ? 'main effect and its interactions' : 'main effect' }; });
+  res.interTests = []; if (inter) for (let i = 0; i < factors.length; i++) for (let j = i + 1; j < factors.length; j++) { const idx = terms.map((t, q) => t.f.length === 2 && t.f.includes(factors[i]) && t.f.includes(factors[j]) ? q : -1).filter(q => q >= 0); if (idx.length) { const r = wald(idx); res.interTests.push({ pair: `${factors[i]} × ${factors[j]}`, df: r.df, p: r.p, sig: r.p < alpha }); } }
+  if (res.interTests.some(t => t.sig)) res.notes.push('At least one interaction is significant: the effect of one element depends on the value of another. Average effects below can mislead; use the combination table to pick a winner.');
+  // Average marginal effects per level vs baseline (delta method)
+  const wts = cells.map(c => c.n), W = sum(wts);
+  const predAt = (mod) => { let mu = 0; const gr = new Array(k).fill(0); cells.forEach((c, i) => { const lv = Object.assign({}, c.lv, mod), x = row(lv), eta = sum(x.map((v, j) => v * beta[j])); mu += wts[i] * linkInv(eta); const d = dlink(eta); for (let j = 0; j < k; j++) gr[j] += wts[i] * d * x[j]; }); return { mu: mu / W, gr: gr.map(v => v / W) }; };
+  const ps = [];
+  factors.forEach(f => { const b0 = predAt({ [f]: base[f] }); levels[f].forEach(l => { if (l === base[f]) return; const t = predAt({ [f]: l }), est = t.mu - b0.mu, gr = t.gr.map((v, j) => v - b0.gr[j]), se = Math.sqrt(Math.max(0, sum(M.mulv(V, gr).map((v, j) => v * gr[j])))), p = se ? zp(est, se) : 1; ps.push(p); res.comps.push({ name: `${f}: ${l} vs ${base[f]}`, factor: f, level: l, est, lo: est - crit * se, hi: est + crit * se, rel: b0.mu ? est / b0.mu : NaN, relLo: b0.mu ? (est - crit * se) / b0.mu : NaN, relHi: b0.mu ? (est + crit * se) / b0.mu : NaN, p, base: b0.mu, odds: bin ? Math.exp(beta[terms.findIndex(q => q.n === `${f} = ${l}`)]) : null }); }); });
+  const adj = S.holm(ps); res.comps.forEach((c, i) => { c.pAdj = adj[i]; c.sig = adj[i] < alpha; });
+  // coefficient table
+  res.coefs = terms.map((t, i) => ({ term: t.n, est: beta[i], se: Math.sqrt(V[i][i]), p: zp(beta[i], Math.sqrt(V[i][i])) }));
+  // cell table vs control cell
+  const ctrl = cells.find(c => factors.every(f => c.lv[f] === base[f])); res.cellRows = [];
+  const rate = c => bin ? c.s / c.n : c.mean;
+  cells.forEach(c => { res.cellRows.push({ label: factors.map(f => c.lv[f]).join(' / '), lv: c.lv, n: c.n, val: rate(c), isCtrl: c === ctrl }); });
+  if (ctrl) { const cp = [], idx = []; cells.forEach((c, i) => { if (c === ctrl) return; let p, d; if (bin) { const t = S.twoProp(c.s, c.n, ctrl.s, ctrl.n, alpha); p = t.p; d = t.diff; res.cellRows[i].rel = t.rel; } else { const t = S.welch(c.mean, c.sd, c.n, ctrl.mean, ctrl.sd, ctrl.n, alpha); p = t.p; d = t.diff; res.cellRows[i].rel = t.rel; } res.cellRows[i].est = d; res.cellRows[i].p = p; cp.push(p); idx.push(i); }); const ad = S.holm(cp); idx.forEach((i, q) => { res.cellRows[i].pAdj = ad[q]; res.cellRows[i].sig = ad[q] < alpha; }); }
+  res.controlCell = ctrl ? factors.map(f => base[f]).join(' / ') : null; if (!ctrl) res.notes.push('The all-baseline combination is not in the data, so combinations are not compared against a control cell.');
+  // recommended combo (model-based)
+  const comboBest = {}; factors.forEach(f => { let bl = base[f], bv = 0; res.comps.filter(c => c.factor === f).forEach(c => { const v = (opt.better === 'low' ? -c.est : c.est); if (c.sig && v > bv) { bv = v; bl = c.level; } }); comboBest[f] = bl; }); res.recommended = comboBest;
+  const combKey = lv => factors.map(f => lv[f]).join('|'); const rc = cells.find(c => combKey(c.lv) === combKey(comboBest)); res.recommendedObserved = rc ? { val: rate(rc), n: rc.n } : null; res.recommendedPred = predictCell(comboBest);
+  function predictCell(lv) { const x = row(lv), eta = sum(x.map((v, j) => v * beta[j])); return linkInv(eta); }
+  // diagnostics
+  const minN = Math.min(...cells.map(c => c.n)); if (minN < 100) res.diag.push({ s: 'warn', t: `Smallest combination has ${minN} observations. Multivariate tests split traffic thinly; cells this small give wide intervals.` });
+  if (bin) { const lowS = cells.filter(c => c.s < 10 || c.n - c.s < 10).length; if (lowS) res.diag.push({ s: 'warn', t: `${lowS} combination${lowS > 1 ? 's have' : ' has'} fewer than 10 conversions (or non-conversions). Estimates there are unreliable.` }); }
+  const eq = Ntot / Ncell; let chi = 0; cells.forEach(c => chi += (c.n - eq) ** 2 / eq); const srmP = S.chi2Sf(chi, Ncell - 1); res.srm = { p: srmP };
+  res.diag.push(srmP < 0.001 ? { s: 'bad', t: `Traffic is not evenly split across combinations (chi-square p = ${F.p(srmP)}). If you planned equal allocation, check assignment.` } : { s: 'ok', t: `Traffic is evenly split across combinations (p = ${F.p(srmP)}).` });
+  const allComb = factors.reduce((a, f) => a * levels[f].length, 1); if (Ncell < allComb) res.diag.push({ s: 'warn', t: `Only ${Ncell} of ${allComb} possible combinations appear in the data (fractional design). Interactions may not be estimable.` });
+  res.path = ['Randomized split', `${factors.length} elements varied together (factorial)`, bin ? 'Binary outcome' : 'Continuous outcome', bin ? 'Logistic regression' : 'Weighted least squares'];
+  res.why.push(`Several elements change at once, so a single A/B test per element would waste traffic and hide interactions. A regression on all cells estimates each element's effect while holding the others fixed.`, bin ? 'The outcome is binary, so a logistic model keeps predicted rates between 0 and 100%. Effects are reported as average marginal effects (percentage-point change) via the delta method.' : 'The outcome is continuous, so weighted least squares on cell means with heteroskedasticity-robust errors is used. Effects are average marginal effects in metric units.', 'Holm correction is applied across all level-vs-baseline contrasts because each is a separate hypothesis.');
+  res.notes.push('Baselines: ' + factors.map(f => `${f} = ${base[f]}`).join('; ') + '.');
+  res.power = { mdeRel: NaN };
+  res.verdict = verdictFrom(res, res.comps, opt); if (res.verdict.cls === 'pos' || res.verdict.cls === 'neu') { const pos = res.comps.filter(c => c.sig && (opt.better === 'low' ? c.est < 0 : c.est > 0)); if (pos.length) res.verdict.text += ' Best combination by the model: ' + factors.map(f => `${f} = ${comboBest[f]}`).join(', ') + '.'; }
+  if (res.diag.some(d => d.s === 'bad')) res.verdict.caution = 'Allocation problem detected. Confirm the traffic split before acting.';
+  return res;
+};
+
+/* ---------- Quasi-experimental ---------- */
+const col = (X, j) => X.map(r => r[j]);
+const rows = cols => cols[0].map((_, i) => cols.map(c => c[i]));
+const nanArr = n => new Array(n).fill(NaN);
+function finishEffect(D, e, cf, y, o) { const T = y.length, post = MT.range(T - e, e); const gaps = post.map(i => y[i] - cf[i]); return { avg: S.mean(gaps), cum: sum(gaps), gaps, cfPostMean: S.mean(post.map(i => cf[i])), cfPostSum: sum(post.map(i => cf[i])) }; }
+
+E.fitITS = function (D, e, o) {
+  o = o || {}; const T = D.y.length, y = D.y, m = o.season || 0, ctrl = o.ctrl || null, alpha = o.alpha || 0.05, nP = T - e;
+  const build = (i, post) => { const tc = i - e, r = [1, tc, post ? 1 : 0, post ? tc : 0]; if (m > 1) for (let s = 1; s < m; s++) r.push(i % m === s ? 1 : 0); if (ctrl) ctrl[i].forEach(v => r.push(v)); return r; };
+  const X = MT.range(T).map(i => build(i, i >= e)), k = X[0].length; if (T <= k + 2) throw new Error('Too few observations for the interrupted time series model.');
+  const L = S.nwLag(T), fit = S.ols(X, y, { se: L }), tcm = S.mean(MT.range(nP, e).map(i => i - e)), Lv = new Array(k).fill(0); Lv[2] = 1; Lv[3] = tcm;
+  const est = sum(Lv.map((l, j) => l * fit.beta[j])), vr = sum(M.mulv(fit.cov, Lv).map((v, j) => v * Lv[j])), se = Math.sqrt(Math.max(vr, 0)), tc = S.tCrit(alpha, fit.df), p = se ? S.tSf2(est / se, fit.df) : 1;
+  const cf = new Array(T), lo = nanArr(T), hi = nanArr(T);
+  for (let i = 0; i < T; i++) { const x = build(i, false), f = sum(x.map((v, j) => v * fit.beta[j])); cf[i] = f; if (i >= e) { const s = Math.sqrt(Math.max(0, sum(M.mulv(fit.cov, x).map((v, j) => v * x[j])))); lo[i] = f - tc * s; hi[i] = f + tc * s; } }
+  const ef = finishEffect(D, e, cf, y), r1 = (() => { const r = fit.resid; return S.corr(r.slice(1), r.slice(0, -1)); })();
+  return { method: 'ITS', avg: est, avgLo: est - tc * se, avgHi: est + tc * se, cum: est * nP, cumLo: (est - tc * se) * nP, cumHi: (est + tc * se) * nP, rel: est / ef.cfPostMean, relLo: (est - tc * se) / ef.cfPostMean, relHi: (est + tc * se) / ef.cfPostMean, p, sig: p < alpha, cf, cfLo: lo, cfHi: hi,
+    extra: { level: { est: fit.beta[2], se: fit.se[2], p: fit.p[2] }, slopePre: { est: fit.beta[1], se: fit.se[1], p: fit.p[1] }, slopeChange: { est: fit.beta[3], se: fit.se[3], p: fit.p[3] }, r2: fit.r2, rho1: r1, nwLag: L, k, season: m, controls: ctrl ? ctrl[0].length : 0 } };
+};
+E.fitPrePost = function (D, e, o) {
+  o = o || {}; const T = D.y.length, y = D.y, alpha = o.alpha || 0.05, w = Math.min(e, T - e), pre = y.slice(e - w, e), post = y.slice(e, e + w), d = post.map((v, i) => v - pre[i]);
+  const wil = S.wilcoxon(d), pt = S.pairedT(d), mw = S.mannWhitney(y.slice(e), y.slice(0, e)), tc = S.tCrit(alpha, Math.max(1, w - 1)), se = S.sd(d) / Math.sqrt(w), avg = S.mean(d);
+  const cf = new Array(T).fill(S.mean(y.slice(0, e))), preMean = S.mean(pre), nP = T - e;
+  return { method: 'PrePost', avg, avgLo: avg - tc * se, avgHi: avg + tc * se, cum: avg * nP, cumLo: (avg - tc * se) * nP, cumHi: (avg + tc * se) * nP, rel: avg / preMean, relLo: (avg - tc * se) / preMean, relHi: (avg + tc * se) / preMean, p: wil.p, sig: wil.p < alpha, cf, cfLo: nanArr(T), cfHi: nanArr(T), extra: { window: w, wilcoxon: wil, pairedT: pt, mannWhitney: mw, preMean, postMean: S.mean(post) } };
+};
+E.parallelTrends = function (D, e, ctrlSeries) {
+  const T = D.y.length, d = D.y.map((v, i) => v - ctrlSeries[i]), dp = d.slice(0, e), n = e, f = S.ols(MT.range(n).map(i => [1, i / n]), dp, { se: S.nwLag(n) });
+  const did = S.ols(MT.range(T).map(i => [1, i >= e ? 1 : 0]), d, { se: S.nwLag(T) }), gapT = (T - e - 1) / 2 + e - (n - 1) / 2, slopePerStep = f.beta[1] / n, driftBias = slopePerStep * gapT, seDiD = did.se[1];
+  const lowPower = Math.abs(driftBias) > 0.5 * seDiD, pass = f.p[1] >= 0.10 && !lowPower;
+  return { slope: slopePerStep, se: f.se[1] / n, p: f.p[1], n, driftBias, seDiD, pass, byDrift: f.p[1] >= 0.10 && lowPower };
+};
+E.fitDiD = function (D, e, o) {
+  o = o || {}; const T = D.y.length, alpha = o.alpha || 0.05, c = o.control, d = D.y.map((v, i) => v - c[i]), X = MT.range(T).map(i => [1, i >= e ? 1 : 0]), L = S.nwLag(T), fit = S.ols(X, d, { se: L }), b = fit.beta[1], se = fit.se[1], tc = S.tCrit(alpha, fit.df), nP = T - e;
+  const cf = c.map(v => v + fit.beta[0]), lo = nanArr(T), hi = nanArr(T); for (let i = e; i < T; i++) { lo[i] = cf[i] - tc * fit.se[0]; hi[i] = cf[i] + tc * fit.se[0]; }
+  const ef = finishEffect(D, e, cf, D.y), p = fit.p[1], yT = D.y, mean = (a, s, t) => S.mean(a.slice(s, t));
+  return { method: 'DiD', avg: b, avgLo: b - tc * se, avgHi: b + tc * se, cum: b * nP, cumLo: (b - tc * se) * nP, cumHi: (b + tc * se) * nP, rel: b / ef.cfPostMean, relLo: (b - tc * se) / ef.cfPostMean, relHi: (b + tc * se) / ef.cfPostMean, p, sig: p < alpha, cf, cfLo: lo, cfHi: hi,
+    extra: { table: { treatPre: mean(yT, 0, e), treatPost: mean(yT, e, T), ctrlPre: mean(c, 0, e), ctrlPost: mean(c, e, T) }, nwLag: L, se } };
+};
+function scmFit(y, X, e) { const w = S.scmWeights(rows(X.map(c => c.slice(0, e))), y.slice(0, e)), T = y.length, cf = MT.range(T).map(i => sum(w.map((wj, j) => wj * X[j][i]))); return { w, cf }; }
+function rmspe(y, cf, a, b) { let s = 0; for (let i = a; i < b; i++) s += (y[i] - cf[i]) ** 2; return Math.sqrt(s / Math.max(1, b - a)); }
+E.fitSCM = function (D, e, o) {
+  o = o || {}; const T = D.y.length, y = D.y, J = D.donors.length, alpha = o.alpha || 0.05, nP = T - e, Xc = D.donors.map(d => d.values), { w, cf } = scmFit(y, Xc, e);
+  const rp = rmspe(y, cf, 0, e), rq = rmspe(y, cf, e, T), ratio = rq / Math.max(rp, 1e-12), ef = finishEffect(D, e, cf, y), sstPre = sum(y.slice(0, e).map(v => (v - S.mean(y.slice(0, e))) ** 2)), r2 = 1 - (rp * rp * e) / sstPre;
+  const half = Math.floor(e / 2), wA = S.scmWeights(rows(Xc.map(c => c.slice(0, half))), y.slice(0, half)), wB = S.scmWeights(rows(Xc.map(c => c.slice(half, e))), y.slice(half, e)), stab = 1 - sum(wA.map((v, j) => Math.abs(v - wB[j]))) / 2;
+  const lo = nanArr(T), hi = nanArr(T); for (let i = e; i < T; i++) { lo[i] = cf[i] - 1.96 * rp; hi[i] = cf[i] + 1.96 * rp; }
+  let placebo = null;
+  if (o.placebo !== false && J >= 3) { const ratios = [], gaps = []; for (let j = 0; j < J; j++) { const yj = Xc[j], others = Xc.filter((_, q) => q !== j), f = scmFit(yj, others, e), a = rmspe(yj, f.cf, 0, e), b = rmspe(yj, f.cf, e, T); ratios.push(b / Math.max(a, 1e-12)); gaps.push(S.mean(MT.range(nP, e).map(i => yj[i] - f.cf[i]))); } const cnt = ratios.filter(r => r >= ratio).length; placebo = { ratios, gaps, p: (1 + cnt) / (J + 1), pMin: 1 / (J + 1), n: J, rank: cnt + 1 }; }
+  return { method: 'SCM', avg: ef.avg, avgLo: NaN, avgHi: NaN, cum: ef.cum, cumLo: NaN, cumHi: NaN, rel: ef.avg / ef.cfPostMean, relLo: NaN, relHi: NaN, p: placebo ? placebo.p : NaN, sig: placebo ? placebo.p < alpha : false, cf, cfLo: lo, cfHi: hi,
+    extra: { weights: w.map((v, j) => ({ name: D.donors[j].name, w: v })).sort((a, b) => b.w - a.w), preRmspe: rp, postRmspe: rq, ratio, r2, stability: stab, placebo } };
+};
+/* Lightweight BSTS: local-level state space + spike-and-slab regression on donors, Gibbs sampled in the browser */
+E.fitBSTS = function (D, e, o) {
+  o = o || {}; const T = D.y.length, alpha = o.alpha || 0.05, draws = o.draws || 1000, burn = o.burn || 300, rng = MT.rng(o.seed || 42), nP = T - e;
+  const names = D.donors.map(d => d.name).concat(D.covs ? D.covs.map(c => c.name) : []), raw = D.donors.map(d => d.values).concat(D.covs ? D.covs.map(c => c.values) : []);
+  const m = o.season || 0; const seasonCols = []; if (m > 1) for (let s = 1; s < m; s++) { seasonCols.push(MT.range(T).map(i => i % m === s ? 1 : 0)); names.push('season ' + s); }
+  const yPre = D.y.slice(0, e), my = S.mean(yPre), sy = S.sd(yPre) || 1, yS = D.y.map(v => (v - my) / sy);
+  const K0 = raw.length, cols = [], forced = [], sd = [], mu = [];
+  raw.forEach(c => { const cm = S.mean(c.slice(0, e)), cs = S.sd(c.slice(0, e)); mu.push(cm); sd.push(cs || 1); cols.push(c.map(v => (v - cm) / (cs || 1))); forced.push(false); });
+  seasonCols.forEach(c => { mu.push(0); sd.push(1); cols.push(c.map(v => v - 1 / m)); forced.push(true); });
+  const K = cols.length, xtx = cols.map(c => { let s = 0; for (let t = 0; t < e; t++) s += c[t] * c[t]; return s; });
+  const aE = 16, bE = 15 * 0.2, levelSd = o.levelSd || 0.01, aN = 4, bN = 3 * levelSd * levelSd, tau2 = 1, pi = Math.min(0.5, 3 / Math.max(1, K0)), lo = Math.log(pi / (1 - pi));
+  let beta = new Array(K).fill(0), gam = new Array(K).fill(0), s2 = 0.2, sn2 = levelSd * levelSd, muS = new Array(T).fill(0);
+  const fitV = new Array(T).fill(0), inc = new Array(K).fill(0), bsum = new Array(K).fill(0), cfMean = new Array(T).fill(0), effAvg = [], effCum = [], cfSumD = [], perT = MT.range(nP).map(() => []);
+  const mS = new Array(e), CS = new Array(e);
+  for (let it = 0; it < burn + draws; it++) {
+    // 1. states: forward filter backward sample (pre only)
+    let mPrev = yS[0] - fitV[0], CPrev = 10;
+    for (let t = 0; t < e; t++) { const R = t === 0 ? CPrev : CPrev + sn2, a = t === 0 ? mPrev : mPrev, Q = R + s2, Kg = R / Q, r = yS[t] - fitV[t]; mS[t] = a + Kg * (r - a); CS[t] = R - Kg * R; mPrev = mS[t]; CPrev = CS[t]; }
+    muS[e - 1] = mS[e - 1] + Math.sqrt(Math.max(CS[e - 1], 1e-12)) * rng.n();
+    for (let t = e - 2; t >= 0; t--) { const B = CS[t] / (CS[t] + sn2), mean = mS[t] + B * (muS[t + 1] - mS[t]), v = CS[t] * (1 - B); muS[t] = mean + Math.sqrt(Math.max(v, 1e-12)) * rng.n(); }
+    // 2. spike and slab
+    const res = new Array(e); for (let t = 0; t < e; t++) res[t] = yS[t] - muS[t] - fitV[t];
+    for (let j = 0; j < K; j++) {
+      const c = cols[j], bj = beta[j]; let xr = 0; for (let t = 0; t < e; t++) xr += c[t] * res[t]; xr += xtx[j] * bj;
+      const v = 1 / (xtx[j] / s2 + 1 / tau2), mm = v * xr / s2, lbf = 0.5 * Math.log(v / tau2) + mm * mm / (2 * v), pr = forced[j] ? 1 : 1 / (1 + Math.exp(-(lo + lbf)));
+      const inc1 = forced[j] || rng.u() < pr, nb = inc1 ? mm + Math.sqrt(v) * rng.n() : 0; gam[j] = inc1 ? 1 : 0;
+      if (nb !== bj) { const d = nb - bj; for (let t = 0; t < e; t++) res[t] -= c[t] * d; for (let t = 0; t < T; t++) fitV[t] += c[t] * d; beta[j] = nb; }
+    }
+    // 3. variances
+    let ss = 0; for (let t = 0; t < e; t++) ss += res[t] * res[t]; s2 = (bE + 0.5 * ss) / rng.gamma(aE + e / 2);
+    let sd2 = 0; for (let t = 1; t < e; t++) sd2 += (muS[t] - muS[t - 1]) ** 2; sn2 = Math.max(1e-10, (bN + 0.5 * sd2) / rng.gamma(aN + (e - 1) / 2));
+    if (it < burn) continue;
+    for (let j = 0; j < K; j++) { inc[j] += gam[j]; bsum[j] += beta[j]; }
+    for (let t = 0; t < e; t++) cfMean[t] += muS[t] + fitV[t];
+    let level = muS[e - 1], sE = 0, sC = 0; const sq = Math.sqrt(s2), sn = Math.sqrt(sn2);
+    for (let q = 0; q < nP; q++) { const t = e + q; level += sn * rng.n(); const ycf = level + fitV[t] + sq * rng.n(); perT[q].push(ycf); sE += yS[t] - ycf; sC += ycf; }
+    effAvg.push(sE / nP); effCum.push(sE); cfSumD.push(sC);
+  }
+  // rebuild post counterfactual mean from draws
+  const cf = new Array(T), cfLo = nanArr(T), cfHi = nanArr(T), nD = draws;
+  for (let t = 0; t < e; t++) cf[t] = my + sy * (cfMean[t] / nD);
+  for (let q = 0; q < nP; q++) { const a = perT[q].slice().sort((x, y2) => x - y2); cf[e + q] = my + sy * S.mean(a); cfLo[e + q] = my + sy * a[Math.floor(nD * alpha / 2)]; cfHi[e + q] = my + sy * a[Math.min(nD - 1, Math.floor(nD * (1 - alpha / 2)))]; }
+  const sorted = effAvg.slice().sort((a, b) => a - b), q = f => sorted[Math.min(nD - 1, Math.max(0, Math.floor(nD * f)))] * sy;
+  const avg = S.mean(effAvg) * sy, aLo = q(alpha / 2), aHi = q(1 - alpha / 2), cfSum = S.mean(cfSumD) * sy * 1 + nP * my, pLe = (effAvg.filter(v => v <= 0).length + 1) / (nD + 1), pGe = (effAvg.filter(v => v >= 0).length + 1) / (nD + 1), p = Math.max(2 / (nD + 1), Math.min(1, 2 * Math.min(pLe, pGe))), pFloor = 2 / (nD + 1);
+  const actSum = sum(D.y.slice(e)), relDraws = cfSumD.map(c => actSum / (my * nP + sy * c) - 1).sort((a, b) => a - b), rq = f => relDraws[Math.min(nD - 1, Math.max(0, Math.floor(nD * f)))];
+  const cfPostMean = cfSum / nP, inclusion = names.map((n, j) => ({ name: n, prob: inc[j] / nD, coef: bsum[j] / nD * sy / sd[j] })).filter((_, j) => j < K0 + (D.covs ? 0 : 0) || true).filter(x => !/^season /.test(x.name)).sort((a, b) => b.prob - a.prob);
+  const pre = MT.range(e), ssr = sum(pre.map(i => (D.y[i] - cf[i]) ** 2)), sst = sum(pre.map(i => (D.y[i] - my) ** 2));
+  return { method: 'BSTS', avg, avgLo: aLo, avgHi: aHi, cum: avg * nP, cumLo: aLo * nP, cumHi: aHi * nP, rel: avg / cfPostMean, relLo: rq(alpha / 2), relHi: rq(1 - alpha / 2), p, sig: (aLo > 0 || aHi < 0), cf, cfLo, cfHi, extra: { inclusion, r2: 1 - ssr / sst, postProbPositive: 1 - pLe + 1 / (nD + 1), draws: nD, levelSd, pFloor } };
+};
+
+/* ---------- selection ---------- */
+E.selectQX = function (D, e, o) {
+  o = o || {}; const T = D.y.length, J = D.donors.length, nPre = e, hasCov = !!(D.covs && D.covs.length), path = ['Non-randomized (no random holdout)'], why = [], warns = [], info = {};
+  let model;
+  const corrs = D.donors.map(d => S.corr(d.values.slice(0, e), D.y.slice(0, e))); info.corrs = corrs;
+  const strong = corrs.filter(r => r > 0.7).length; info.strongDonors = strong;
+  if (J === 0 && !hasCov) {
+    path.push('No unexposed control series');
+    if (nPre >= 60) { model = 'ITS'; path.push(`Long pre-period (${nPre} intervals, 60 or more)`, 'Interrupted time series'); why.push(`With ${nPre} pre-campaign intervals and no control group, the pre-period trend and seasonality can be modeled directly. Segmented regression estimates the immediate level shift and any slope change, with Newey-West errors for autocorrelation.`); }
+    else if (nPre >= 30) { model = 'ITS'; path.push(`Borderline pre-period (${nPre} intervals, between 30 and 60)`, 'Interrupted time series (low power)'); why.push(`The guide's threshold for a reliable time-series baseline is 60 or more intervals. With ${nPre}, ITS is still the best available option but confidence intervals will be wide and seasonality may be poorly identified.`); warns.push(`Only ${nPre} pre-period intervals. Add history if you can.`); }
+    else { model = 'PrePost'; path.push(`Short pre-period (${nPre} intervals, under 30)`, 'Pre/post with non-parametric tests'); why.push(`Under 30 baseline intervals is too short to model trend or seasonality. The fallback is a matched pre/post comparison with a Wilcoxon signed-rank test.`); warns.push('Pre/post designs cannot separate the campaign from trend, seasonality, or anything else that changed at the same time. Treat the result as directional only.'); }
+  } else if (J === 0 && hasCov) { model = 'BSTS'; path.push('No unexposed control series', 'Time-varying covariates supplied', 'Bayesian structural time series'); why.push('No control regions, but exogenous covariates were supplied. A state-space model with regression on those covariates absorbs external shocks.'); if (nPre < 30) warns.push('Short pre-period for a covariate model.'); }
+  else if (J === 1) {
+    path.push('Exactly one control series'); const pt = E.parallelTrends(D, e, D.donors[0].values); info.parallel = pt;
+    if (pt.pass) { model = 'DiD'; path.push(`Parallel trends holds (slope p = ${F.p(pt.p)})`, 'Difference-in-differences'); why.push(`The treated-minus-control gap shows no significant drift before launch (p = ${F.p(pt.p)}), so parallel trends is plausible and DiD isolates lift by subtracting the control's change.`); }
+    else { model = 'ITS_CTRL'; path.push(pt.byDrift ? `Parallel trends doubtful (pre-trend p = ${F.p(pt.p)}, but implied drift is large relative to the effect's precision)` : `Parallel trends violated (slope p = ${F.p(pt.p)})`, 'ITS with control regressor'); why.push(pt.byDrift ? `The pre-launch gap trend is not statistically significant (p = ${F.p(pt.p)}), but the test has low power: extrapolating the observed drift would shift the DiD estimate by ${F.n(Math.abs(pt.driftBias), 1)}, more than half its standard error (${F.n(pt.seDiD, 1)}). To avoid a biased DiD, the control is used as a regressor in an interrupted time series instead.` : `The treated-minus-control gap was already trending before launch (p = ${F.p(pt.p)}), which biases DiD. The control series is used as a regressor inside an interrupted time series model instead.`); }
+    if (Math.abs(corrs[0]) < 0.5) warns.push(`The control series is only weakly correlated with the treated series in the pre-period (r = ${corrs[0].toFixed(2)}). It may not be a good comparison.`);
+  } else if (J < 5 || o.fewControls) {
+    path.push(`${J} control series (fewer than 5)`); const avgC = MT.range(T).map(i => S.mean(D.donors.map(d => d.values[i]))), pt = E.parallelTrends(D, e, avgC); info.parallel = pt; info.avgControl = avgC;
+    if (pt.pass) { model = 'DiD_AVG'; path.push(`Parallel trends holds against the control average (p = ${F.p(pt.p)})`, 'Difference-in-differences'); why.push(`The guide covers 1 or 5+ controls. With ${J}, the controls are averaged into one comparison series. Its gap to the treated series does not drift before launch (p = ${F.p(pt.p)}), so DiD applies.`); }
+    else { model = 'ITS_CTRL'; path.push(`Parallel trends ${pt.byDrift ? 'doubtful' : 'violated'} (p = ${F.p(pt.p)})`, 'ITS with control regressors'); why.push(`With ${J} controls the average does not track the treated series in parallel (pre-trend p = ${F.p(pt.p)}${pt.byDrift ? '; low power with large implied drift' : ''}). ITS with the controls as regressors is used.`); }
+    warns.push(`Only ${J} control series. Synthetic control and BSTS need 5 or more donors to work well.`);
+  } else {
+    path.push(`${J} control series (5 or more donors)`);
+    const sc = E.fitSCM(D, e, { placebo: false }), dyn = sc.extra.stability < 0.5 || sc.extra.r2 < 0.8; info.scm = { r2: sc.extra.r2, stability: sc.extra.stability };
+    if (hasCov) { model = 'BSTS'; path.push('Time-varying covariates supplied', 'Bayesian structural time series'); why.push('Time-varying exogenous factors (such as promo schedule or spend) were supplied, which is the guide\'s criterion for BSTS.'); }
+    else if (dyn) { model = 'BSTS'; path.push(`Dynamic relationship (static SCM fit R² = ${sc.extra.r2.toFixed(2)}, weight stability ${sc.extra.stability.toFixed(2)})`, 'Bayesian structural time series'); why.push(`A fixed convex combination of donors fits the pre-period poorly (R² = ${sc.extra.r2.toFixed(2)}) or its weights shift between the first and second half of the pre-period (stability ${sc.extra.stability.toFixed(2)}). That points to a dynamic relationship, where BSTS with donor selection is the guide's recommendation.`); }
+    else { model = 'SCM'; path.push(`Static relationship (R² = ${sc.extra.r2.toFixed(2)}, weight stability ${sc.extra.stability.toFixed(2)})`, 'Synthetic control'); why.push(`A fixed, non-negative weighted average of donors reproduces the pre-period closely (R² = ${sc.extra.r2.toFixed(2)}) with stable weights (${sc.extra.stability.toFixed(2)}), so the synthetic control method applies. Its weights are transparent.`); }
+    if (strong < 3) warns.push(`Only ${strong} donor${strong === 1 ? '' : 's'} correlate above 0.7 with the treated series in the pre-period. The guide asks for strong donors; predictions may be weak.`);
+  }
+  if (o.force && o.force !== 'auto') { const map = { its: 'ITS', did: J >= 1 ? 'DiD' : null, scm: J >= 3 ? 'SCM' : null, bsts: (J >= 1 || hasCov) ? 'BSTS' : null, prepost: 'PrePost', its_ctrl: J >= 1 ? 'ITS_CTRL' : null }; const f = map[o.force]; if (f) { if (f !== model) { path.push('Manual override: ' + f); why.push(`You overrode the automatic choice (${model}) with ${f}.`); model = f; } } else warns.push('The chosen override is not possible with this data, so the automatic choice was used.'); }
+  return { model, path, why, warns, info };
+};
+const MODEL_NAME = { ITS: 'Interrupted time series (segmented regression, Newey-West errors)', PrePost: 'Pre/post comparison with Wilcoxon signed-rank test', DiD: 'Difference-in-differences', DiD_AVG: 'Difference-in-differences (control average)', ITS_CTRL: 'Interrupted time series with control regressors', SCM: 'Synthetic control method (convex weights, placebo inference)', BSTS: 'Bayesian structural time series (spike-and-slab, Gibbs sampled)' };
+E.MODEL_NAME = MODEL_NAME;
+function runModel(model, D, e, o, quick) {
+  const J = D.donors.length, base = { alpha: o.alpha, season: o.season, seed: o.seed };
+  if (model === 'ITS') return E.fitITS(D, e, base);
+  if (model === 'PrePost') return E.fitPrePost(D, e, base);
+  if (model === 'DiD') return E.fitDiD(D, e, Object.assign({ control: D.donors[0].values }, base));
+  if (model === 'DiD_AVG') return E.fitDiD(D, e, Object.assign({ control: MT.range(D.y.length).map(i => S.mean(D.donors.map(d => d.values[i]))) }, base));
+  if (model === 'ITS_CTRL') { const cs = D.donors.map(d => d.values), nPre = e, maxK = Math.max(1, Math.min(4, Math.floor(nPre / 15))); let idx = MT.range(cs.length); if (cs.length > maxK) { const cr = cs.map(c => Math.abs(S.corr(c.slice(0, e), D.y.slice(0, e)))); idx = idx.sort((a, b) => cr[b] - cr[a]).slice(0, maxK); } const chosen = idx.map(i => cs[i]); return Object.assign(E.fitITS(D, e, Object.assign({ ctrl: rows(chosen) }, base)), { method: 'ITS_CTRL' }); }
+  if (model === 'SCM') return E.fitSCM(D, e, Object.assign({ placebo: !quick }, base));
+  if (model === 'BSTS') return E.fitBSTS(D, e, Object.assign({ draws: quick ? 400 : (o.draws || 1000), burn: quick ? 150 : 300 }, base));
+  throw new Error('Unknown model ' + model);
+}
+E.runModel = runModel;
+function sub(D, a, b) { return { y: D.y.slice(a, b), dates: D.dates.slice(a, b), donors: D.donors.map(d => ({ name: d.name, values: d.values.slice(a, b) })), covs: D.covs ? D.covs.map(d => ({ name: d.name, values: d.values.slice(a, b) })) : [] }; }
+E.subset = sub;
+
+/* main quasi-experimental entry: async so the UI can update progress */
+E.analyzeQX = async function (D, e, opt, progress) {
+  progress = progress || (() => {}); const alpha = opt.alpha || 0.05, T = D.y.length, J = D.donors.length, nP = T - e;
+  const res = { kind: 'qx', unit: 'num', comps: [], diag: [], notes: [], path: [], why: [], alpha, D, e };
+  if (e < 8) throw new Error(`Only ${e} observations before the launch date. Need at least 8 (ideally 30+).`); if (nP < 3) throw new Error(`Only ${nP} observations after the launch date. Need at least 3.`);
+  const season = opt.season || 0, o = { alpha, season, seed: 42, draws: opt.draws };
+  progress('Selecting model'); await tick();
+  const sel = E.selectQX(D, e, { force: opt.force, fewControls: false }); res.path = sel.path; res.why = sel.why; res.selection = sel; sel.warns.forEach(w => res.diag.push({ s: 'warn', t: w }));
+  let model = sel.model; res.modelKey = model; res.method = MODEL_NAME[model];
+  progress('Fitting ' + MODEL_NAME[model]); await tick();
+  const main = runModel(model, D, e, o, false); res.main = main;
+  let prim = { est: main.avg, lo: main.avgLo, hi: main.avgHi, p: main.p, sig: main.sig, rel: main.rel, from: model, pBound: model === 'BSTS' && main.p <= main.extra.pFloor * 1.001 };
+  if (model === 'SCM') {
+    const pl = main.extra.placebo;
+    if (pl && pl.pMin >= alpha) {
+      progress('Donor pool too small for placebo significance; fitting BSTS for uncertainty'); await tick();
+      const bs = E.fitBSTS(D, e, Object.assign({}, o, { draws: opt.draws || 1000, burn: 300 })); res.inference = bs; prim = { est: main.avg, lo: bs.avgLo, hi: bs.avgHi, p: bs.p, sig: bs.sig, rel: main.rel, from: 'SCM point estimate, BSTS interval', pBound: bs.p <= bs.extra.pFloor * 1.001 };
+      res.diag.push({ s: 'warn', t: `With ${pl.n} donors the smallest possible placebo p-value is ${F.p(pl.pMin)}, which cannot reach your alpha of ${alpha}. Significance below comes from a BSTS credible interval; the SCM estimate and placebo ranking are shown as supporting evidence. About ${Math.ceil(1 / alpha) - 1} donors are needed for placebo inference alone.` });
+    }
+  }
+  // cross-check with an alternative model
+  if (opt.cross !== false) {
+    let alt = null; if (model === 'SCM' && !res.inference) alt = 'BSTS'; else if (model === 'BSTS' && J >= 3) alt = 'SCM'; else if (model === 'DiD') alt = 'ITS_CTRL'; else if (model === 'ITS_CTRL' && J === 1) alt = 'DiD'; else if (model === 'DiD_AVG') alt = 'ITS_CTRL'; else if (model === 'ITS' && nP > 0 && e >= 30 && false) alt = null;
+    if (alt) { progress('Cross-check with ' + alt); await tick(); try { const a = runModel(alt, D, e, o, false); res.alt = { key: alt, name: MODEL_NAME[alt], r: a }; const agree = isNum(a.avg) && Math.sign(a.avg) === Math.sign(main.avg); res.diag.push(agree ? { s: 'ok', t: `Cross-check (${alt}) agrees on direction: ${fmtEff(a.avg, res)} average effect vs ${fmtEff(main.avg, res)} from the primary model.` } : { s: 'warn', t: `Cross-check (${alt}) disagrees on direction (${fmtEff(a.avg, res)} vs ${fmtEff(main.avg, res)}). The result depends on modeling choices.` }); } catch (err) { /* alternative not estimable */ } }
+  }
+  // in-time placebo
+  const pe = Math.floor(e / 2); res.placeboTime = null;
+  if (pe >= 12 && e - pe >= 4) {
+    progress('In-time placebo test'); await tick();
+    try { const Dp = sub(D, 0, e), pm = model === 'SCM' && J < 3 ? 'ITS' : model, r = runModel(pm, Dp, pe, Object.assign({}, o, { draws: 400 }), true); let ps = r.p, sg = r.sig; if (model === 'SCM') { const bs = E.fitBSTS(Dp, pe, Object.assign({}, o, { draws: 400, burn: 150 })); ps = bs.p; sg = bs.sig; }
+      res.placeboTime = { event: pe, est: r.avg, p: ps, sig: sg, model: pm }; res.diag.push(sg ? { s: 'bad', t: `In-time placebo FAILED: a fake launch halfway through the pre-period shows a "significant" effect (${fmtEff(r.avg, res)}, p = ${F.p(ps)}). The model is picking up drift or seasonality, so the real result may be spurious.` } : { s: 'ok', t: `In-time placebo passed: a fake launch at the midpoint of the pre-period shows no significant effect (${fmtEff(r.avg, res)}, p = ${F.p(ps)}).` }); } catch (err) { res.diag.push({ s: 'warn', t: 'In-time placebo could not be run: ' + err.message }); }
+  } else res.diag.push({ s: 'warn', t: 'Pre-period too short for an in-time placebo test (needs about 16+ intervals).' });
+  // in-space placebo (SCM built in; others skip)
+  if (model === 'SCM' && main.extra.placebo) { const pl = main.extra.placebo; res.diag.push(pl.p < alpha ? { s: 'ok', t: `In-space placebo: the treated series ranks ${pl.rank} of ${pl.n + 1} on post/pre RMSPE ratio (p = ${F.p(pl.p)}). Its post-launch divergence is unusual compared with untreated donors.` } : { s: 'warn', t: `In-space placebo: the treated series ranks ${pl.rank} of ${pl.n + 1} on post/pre RMSPE ratio (p = ${F.p(pl.p)}). ${pl.n + 1 <= 1 / alpha ? 'The pool is too small for this to reach significance.' : 'Several untreated donors diverge as much as the treated series.'}` }); }
+  if (model === 'BSTS' && J >= 5 && J <= 25 && opt.spacePlacebo !== false) {
+    progress('In-space placebo (BSTS on each donor)'); await tick(); const ratios = [], tr = { post: 0, pre: 0 };
+    const yy = D.y, fitR = (yv, others, name) => { const Dq = { y: yv, dates: D.dates, donors: others, covs: [] }; const r = E.fitBSTS(Dq, e, { alpha, draws: 250, burn: 100, seed: 5 }); return { avg: r.avg, sd: S.sd(yv.slice(0, e)) }; };
+    const gaps = []; for (let j = 0; j < J; j++) { const others = D.donors.filter((_, q) => q !== j); if (others.length < 2) continue; const r = fitR(D.donors[j].values, others); gaps.push(Math.abs(r.avg) / (r.sd || 1)); if (j % 3 === 2) { progress(`In-space placebo ${j + 1}/${J}`); await tick(); } }
+    const tg = Math.abs(main.avg) / (S.sd(yy.slice(0, e)) || 1), cnt = gaps.filter(v => v >= tg).length; res.placeboSpace = { gaps, treated: tg, p: (1 + cnt) / (gaps.length + 1), rank: cnt + 1, n: gaps.length };
+    res.diag.push(res.placeboSpace.p < alpha ? { s: 'ok', t: `In-space placebo: treated effect (in pre-period SDs) ranks ${res.placeboSpace.rank} of ${gaps.length + 1} against untreated donors (p = ${F.p(res.placeboSpace.p)}).` } : { s: 'warn', t: `In-space placebo: treated effect ranks ${res.placeboSpace.rank} of ${gaps.length + 1} against untreated donors (p = ${F.p(res.placeboSpace.p)}). Untreated donors show shifts of similar size.` });
+  }
+  // model-specific diagnostics
+  if (model === 'ITS' || model === 'ITS_CTRL') { const x = main.extra; res.diag.push(Math.abs(x.rho1) > 0.3 ? { s: 'ok', t: `Residual lag-1 autocorrelation is ${x.rho1.toFixed(2)}. Newey-West standard errors (lag ${x.nwLag}) correct for it.` } : { s: 'ok', t: `Residual autocorrelation is low (${x.rho1.toFixed(2)}); Newey-West errors (lag ${x.nwLag}) applied anyway.` }); if (x.season > 1) res.notes.push(`Seasonal dummies for period ${x.season} were included.`); }
+  if (model === 'DiD' || model === 'DiD_AVG') { const pt = sel.info.parallel; if (pt) res.diag.push({ s: pt.pass ? 'ok' : 'warn', t: `Parallel trends check (pre-period gap slope): p = ${F.p(pt.p)}; drift implied bias ${F.n(pt.driftBias, 1)} vs DiD standard error ${F.n(pt.seDiD, 1)}. ${pt.pass ? 'No evidence of diverging pre-trends.' : 'Divergence detected.'} A high p-value is weak evidence when the pre-period is short.` }); const tb = main.extra.table; if (tb.ctrlPre && Math.abs(Math.log(Math.abs(tb.treatPre / tb.ctrlPre))) > Math.log(3)) res.diag.push({ s: 'warn', t: 'Treated and control series differ in scale by more than 3x. Additive DiD assumes equal absolute trends; consider indexing both series to a common base.' }); }
+  if (model === 'SCM') { const x = main.extra; res.diag.push({ s: x.r2 >= 0.8 ? 'ok' : 'warn', t: `Pre-period fit: R² = ${x.r2.toFixed(3)}, RMSPE = ${F.n(x.preRmspe, 2)}. ${x.r2 >= 0.8 ? 'The synthetic control tracks the treated series well.' : 'Poor pre-period fit weakens any conclusion.'}` }); }
+  if (model === 'BSTS') { const x = main.extra; res.diag.push({ s: x.r2 >= 0.7 ? 'ok' : 'warn', t: `Pre-period fit: R² = ${x.r2.toFixed(3)}. Posterior draws: ${x.draws}.` }); if (sel.info.strongDonors != null && sel.info.strongDonors < 3 && D.donors.length) res.diag.push({ s: 'warn', t: 'Few strongly correlated donors (r above 0.7). Counterfactual precision will be limited.' }); }
+  if (model === 'PrePost') res.diag.push({ s: 'bad', t: 'Low-confidence design: pre/post cannot rule out trend, seasonality, or concurrent changes. Use a control series or a longer history if you can.' });
+  // spend spillover reminder
+  res.notes.push('Control series must be unaffected by the campaign. Ad spillover into control regions biases the estimate toward zero.');
+  const relBase = main.rel; res.primary = prim; res.comps = [{ name: 'Average effect per interval, post-launch', est: prim.est, lo: prim.lo, hi: prim.hi, rel: prim.rel, p: prim.p, pAdj: prim.p, sig: prim.sig, pBound: prim.pBound }];
+  res.summary = { avg: main.avg, cum: main.cum, cumLo: res.inference ? res.inference.cumLo : main.cumLo, cumHi: res.inference ? res.inference.cumHi : main.cumHi, rel: main.rel, nPost: nP, nPre: e, T };
+  res.verdict = verdictFrom(res, res.comps, opt);
+  if (res.placeboTime && res.placeboTime.sig) { res.verdict.caution = 'The in-time placebo test failed, so this estimate may reflect baseline drift rather than the campaign.'; if (res.verdict.cls === 'pos' || res.verdict.cls === 'neg') { res.verdict.title = (res.verdict.cls === 'pos' ? 'Apparent positive effect' : 'Apparent negative effect') + ', but validation failed'; res.verdict.cls = 'neu'; } }
+  if (model === 'PrePost' && (res.verdict.cls === 'pos' || res.verdict.cls === 'neg')) { res.verdict.title += ' (directional only)'; res.verdict.caution = 'Pre/post design: cannot separate the campaign from other changes over time.'; }
+  progress('Done'); return res;
+};
+
+/* ---------- QX data assembly from a parsed CSV table ---------- */
+E.buildQX = function (tab, o) {
+  const notes = []; let map = new Map(), names = [];
+  const put = (d, u, v) => { if (!isNum(d)) return; if (!map.has(d)) map.set(d, {}); const r = map.get(d); (r[u] = r[u] || []).push(v); };
+  if (o.format === 'long') { const seen = new Set(); tab.rows.forEach(r => { const u = String(r[o.unit]).trim(); seen.add(u); put(MT.parseDate(r[o.date]), u, MT.num(r[o.value])); }); names = Array.from(seen); }
+  else { const cols = [o.treated].concat(o.controls || [], o.covs || []); names = cols; tab.rows.forEach(r => { const d = MT.parseDate(r[o.date]); cols.forEach(c => put(d, c, MT.num(r[c]))); }); }
+  const tName = o.format === 'long' ? o.treatedUnit : o.treated; if (!names.includes(tName)) throw new Error('Treated series not found in data.');
+  let dates = Array.from(map.keys()).sort((a, b) => a - b); if (dates.length < 12) throw new Error('Could not read at least 12 dated rows. Check the date column and format (YYYY-MM-DD works best).');
+  const val = (d, u) => { const a = (map.get(d)[u] || []).filter(isNum); return a.length ? S.mean(a) : NaN; };
+  const dup = tab.rows.length - dates.length * (o.format === 'long' ? names.length : 1); if (o.format !== 'long' && dup > 0) notes.push(`${dup} duplicate date rows were averaged.`);
+  dates = dates.filter(d => isNum(val(d, tName))); const dropped = Array.from(map.keys()).length - dates.length; if (dropped) notes.push(`${dropped} dates with a missing treated value were dropped.`);
+  let donorNames = o.format === 'long' ? names.filter(n => n !== tName && (!o.controls || !o.controls.length || o.controls.includes(n))) : (o.controls || []); const covNames = o.format === 'long' ? [] : (o.covs || []);
+  const mk = list => list.map(n => ({ name: n, values: dates.map(d => val(d, n)) })), ok = c => c.values.every(isNum);
+  let donors = mk(donorNames), covs = mk(covNames); const bad = donors.filter(c => !ok(c)).map(c => c.name).concat(covs.filter(c => !ok(c)).map(c => c.name)); if (bad.length) notes.push(`Dropped series with missing values (SCM and BSTS need complete data): ${bad.slice(0, 6).join(', ')}${bad.length > 6 ? '...' : ''}.`); donors = donors.filter(ok); covs = covs.filter(ok);
+  const zeroVar = donors.filter(c => S.sd(c.values) === 0); if (zeroVar.length) { notes.push(`Dropped constant series: ${zeroVar.map(c => c.name).join(', ')}.`); donors = donors.filter(c => S.sd(c.values) > 0); }
+  const y = dates.map(d => val(d, tName)); const gaps = dates.slice(1).map((d, i) => d - dates[i]), med = S.median(gaps); const irregular = gaps.filter(gp => gp > 1.5 * med).length; if (irregular) notes.push(`${irregular} gaps in the date sequence are longer than the typical interval. Missing periods are not interpolated.`);
+  const e = dates.findIndex(d => d >= o.eventMs); if (e < 0) throw new Error('The launch date is after the last date in the data.'); if (e === 0) throw new Error('The launch date is at or before the first date in the data.');
+  const stepDays = med / 86400000, seasonGuess = stepDays <= 1.5 ? 7 : stepDays <= 8 ? (dates.length >= 104 ? 52 : 0) : stepDays <= 32 ? (dates.length >= 24 ? 12 : 0) : 0;
+  return { D: { y, dates, donors, covs }, e, notes, stepDays, seasonGuess, tName };
+};
+})(window);
+</script>
+<script>/* Deterministic sample datasets for the Experiment Analyzer */
+(function (g) {
+'use strict';
+const MT = g.MT, S = MT.stat, DAY = 86400000, D0 = Date.UTC(2026, 0, 1);
+const iso = i => MT.fmt.date(D0 + i * DAY);
+function ar1(rng, n, rho, sd) { const o = new Array(n); let p = 0; for (let i = 0; i < n; i++) { p = rho * p + sd * rng.n(); o[i] = p; } return o; }
+function common(rng, T) { const rw = []; let s = 0; for (let i = 0; i < T; i++) { s += 6 * rng.n(); rw.push(s); } return MT.range(T).map(i => 1000 + 1.8 * i + 70 * Math.sin(2 * Math.PI * i / 7) + 25 * Math.sin(2 * Math.PI * i / 45) + rw[i]); }
+const toCSV = (heads, cols) => MT.toCSV([heads].concat(cols[0].map((_, i) => cols.map((c, j) => j === 0 ? c[i] : (Math.round(c[i] * 10) / 10)))));
+const S_ = MT.samples = {};
+/* geo test, 12 donor regions. shifting=true makes the treated-donor relationship change over time (favours BSTS) */
+S_.geo = function (o) {
+  o = o || {}; const J = o.J || 12, T = o.T || 140, ev = o.ev || 100, lift = o.lift == null ? 0.08 : o.lift, rng = MT.rng(o.seed || 1), com = common(rng, T), donors = [];
+  for (let j = 0; j < J; j++) { const a = 0.4 + 1.2 * rng.u(), idio = ar1(rng, T, 0.7, 10 + 10 * rng.u()); donors.push(com.map((c, i) => a * c + idio[i])); }
+  const wA = new Array(J).fill(0), wB = new Array(J).fill(0); wA[0] = 0.5; wA[1] = 0.3; wA[2] = 0.2; wB[5] = 0.5; wB[6] = 0.3; wB[7] = 0.2; const noise = ar1(rng, T, 0.5, 8);
+  const cov = com.map((c, i) => 100 + 0.05 * c + 6 * Math.sin(i / 9) + 3 * rng.n()), drift = o.drift ? ar1(rng, T, 0.97, o.drift) : new Array(T).fill(0);
+  const treated = MT.range(T).map(i => { const f = o.shifting ? i / (T - 1) : 0; let v = drift[i]; for (let j = 0; j < J; j++) v += ((1 - f) * wA[j] + f * wB[j]) * donors[j][i]; v += noise[i] + (o.cov ? 1.5 * (cov[i] - 100) : 0); return i >= ev ? v * (1 + lift) : v; });
+  const heads = ['date', 'treated_region'].concat(donors.map((_, j) => 'region_' + String(j + 1).padStart(2, '0'))).concat(o.cov ? ['category_demand_index'] : []);
+  return { csv: toCSV(heads, [MT.range(T).map(iso), treated].concat(donors).concat(o.cov ? [cov] : [])), covs: o.cov ? ['category_demand_index'] : [], eventDate: iso(ev), treatedCol: 'treated_region', truth: { lift, avgEffect: lift * S.mean(treated.slice(ev).map(v => v / (1 + lift))) } };
+};
+S_.oneControl = function (o) {
+  o = o || {}; const T = o.T || 120, ev = o.ev || 80, lift = o.lift == null ? 0.06 : o.lift, rng = MT.rng(o.seed || 4), com = common(rng, T), n1 = ar1(rng, T, 0.5, 9), n2 = ar1(rng, T, 0.5, 9);
+  const control = com.map((c, i) => 0.8 * c + n1[i]), base = com.map((c, i) => (o.parallel === false ? 0.95 : 0.8) * c + 60 + n2[i]), treated = base.map((v, i) => i >= ev ? v * (1 + lift) : v);
+  return { csv: toCSV(['date', 'treated_market', 'control_market'], [MT.range(T).map(iso), treated, control]), eventDate: iso(ev), treatedCol: 'treated_market', truth: { lift } };
+};
+S_.noControl = function (o) {
+  o = o || {}; const T = o.T || 120, ev = o.ev || 90, shift = o.shift == null ? 60 : o.shift, rng = MT.rng(o.seed || 3), n = ar1(rng, T, 0.5, 20);
+  const y = MT.range(T).map(i => 1000 + 2 * i + 80 * Math.sin(2 * Math.PI * i / 7) + n[i] + (i >= ev ? shift : 0));
+  return { csv: toCSV(['date', 'daily_signups'], [MT.range(T).map(iso), y]), eventDate: iso(ev), treatedCol: 'daily_signups', truth: { shift } };
+};
+S_.short = function (o) {
+  o = o || {}; const T = 35, ev = 28, rng = MT.rng(o.seed || 4), n = ar1(rng, T, 0.3, 18);
+  const y = MT.range(T).map(i => 500 + 50 * Math.sin(2 * Math.PI * i / 7) + n[i] + (i >= ev ? 45 : 0));
+  return { csv: toCSV(['date', 'leads'], [MT.range(T).map(iso), y]), eventDate: iso(ev), treatedCol: 'leads', truth: { shift: 45 } };
+};
+/* aggregated factorial: headline x image x cta on conversion */
+S_.mvBinary = function (o) {
+  o = o || {}; const rng = MT.rng(o.seed || 9), rows = [['headline', 'image', 'cta', 'visitors', 'conversions']], n = o.n || 4000;
+  const H = { 'Original': 1, 'Benefit-led': 1.12 }, I = { 'Current photo': 1, 'Lifestyle': 0.97 }, C = { 'Control: Learn more': 1, 'Get started': 1.18 };
+  for (const h in H) for (const im in I) for (const c in C) { const p = 0.05 * H[h] * I[im] * C[c], x = Math.round(n * p + Math.sqrt(n * p * (1 - p)) * rng.n()); rows.push([h, im, c, n, x]); }
+  return MT.toCSV(rows);
+};
+/* raw continuous factorial (revenue per visitor) */
+S_.mvContinuous = function (o) {
+  o = o || {}; const rng = MT.rng(o.seed || 12), rows = [['price_display', 'badge', 'revenue']], n = o.n || 300;
+  for (const p of ['Monthly', 'Annual first']) for (const b of ['None', 'Best value']) for (let i = 0; i < n; i++) { let v = rng.u() < 0.1 + (p === 'Annual first' ? 0.02 : 0) + (b === 'Best value' ? 0.005 : 0) ? 40 + Math.exp(rng.n() * 0.5 + 2) * (p === 'Annual first' ? 1.25 : 1) : 0; rows.push([p, b, v.toFixed(2)]); }
+  return MT.toCSV(rows);
+};
+S_.abRawContinuous = function (o) {
+  o = o || {}; const rng = MT.rng(o.seed || 21), rows = [['variant', 'revenue']];
+  for (const [v, lift, n] of [['control', 0, 600], ['new_checkout', 0.12, 600]]) for (let i = 0; i < n; i++) rows.push([v, (rng.u() < 0.18 ? Math.exp(3.4 + 0.7 * rng.n()) * (1 + lift) : 0).toFixed(2)]);
+  return MT.toCSV(rows);
+};
+})(window);
+</script>
+<script>
+(function () {
+const $ = MT.$, F = MT.fmt, E = MT.exp, S = MT.stat, C = MT.chart, esc = MT.esc;
+let mode = 'ab', abRows = [], lastRes = null;
+const opts = () => { const me = parseFloat($('#minEff').value); return { alpha: +$('#alpha').value, better: $('#better').value, minEff: isFinite(me) && me > 0 ? me / 100 : null }; };
+
+/* ---------- mode switching ---------- */
+MT.$$('input[name=mode]').forEach(r => r.addEventListener('change', () => { mode = r.value; ['ab', 'mv', 'qx'].forEach(m => $('#p' + m.toUpperCase()).hidden = m !== mode); $('#results').innerHTML = ''; $('#err').textContent = ''; }));
+const setMode = m => { const r = MT.$(`input[name=mode][value=${m}]`); r.checked = true; r.dispatchEvent(new Event('change')); };
+
+/* ---------- A/B table ---------- */
+function renderAb() {
+  const bin = $('#abMetric').value === 'binary';
+  const head = bin ? ['Variant', 'Visitors', 'Conversions'] : ['Variant', 'Observations (n)', 'Mean', 'Standard deviation'];
+  $('#abRows').innerHTML = `<div class="table-wrap"><table class="t"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}<th></th></tr></thead><tbody>${abRows.map((r, i) => `<tr><td><input type="text" data-i="${i}" data-k="name" value="${esc(r.name)}" aria-label="Variant name"></td><td><input type="number" min="0" data-i="${i}" data-k="n" value="${r.n ?? ''}" aria-label="Visitors"></td>${bin ? `<td><input type="number" min="0" data-i="${i}" data-k="x" value="${r.x ?? ''}" aria-label="Conversions"></td>` : `<td><input type="number" step="any" data-i="${i}" data-k="mean" value="${r.mean ?? ''}" aria-label="Mean"></td><td><input type="number" step="any" min="0" data-i="${i}" data-k="sd" value="${r.sd ?? ''}" aria-label="Standard deviation"></td>`}<td>${i > 1 ? `<button class="btn btn-ghost btn-sm" data-del="${i}" type="button" aria-label="Remove variant">Remove</button>` : ''}</td></tr>`).join('')}</tbody></table></div>`;
+}
+$('#abRows').addEventListener('input', e => { const t = e.target; if (t.dataset.i == null) return; const r = abRows[+t.dataset.i], k = t.dataset.k; r[k] = k === 'name' ? t.value : (t.value === '' ? null : +t.value); });
+$('#abRows').addEventListener('click', e => { const d = e.target.dataset.del; if (d != null) { abRows.splice(+d, 1); renderAb(); } });
+$('#abAdd').addEventListener('click', () => { abRows.push({ name: 'Variant ' + String.fromCharCode(65 + abRows.length - 1), n: null, x: null, mean: null, sd: null }); renderAb(); });
+$('#abMetric').addEventListener('change', renderAb);
+$('#abFmt').addEventListener('change', () => { const raw = $('#abFmt').value === 'raw'; $('#abTableBox').hidden = raw; $('#abRawBox').hidden = !raw; });
+let abTab = null;
+function abLoad(text) { abTab = MT.readTable(text); const c = abTab.cols; MT.fillSelect($('#abVar'), c, /variant|group|arm|test|bucket|cell/i); MT.fillSelect($('#abOut'), c.filter(x => x !== $('#abVar').value).concat(c.filter(x => x === $('#abVar').value)), /convert|conv|outcome|revenue|value|purchase|success|order/i); abCtrls(); }
+function abCtrls() { if (!abTab) return; const v = $('#abVar').value, lv = Array.from(new Set(abTab.rows.map(r => String(r[v]).trim()))).sort(); $('#abCtrl').innerHTML = lv.map(l => `<option>${esc(l)}</option>`).join(''); const g = lv.find(l => /control|baseline|default|original|^a$/i.test(l)); if (g) $('#abCtrl').value = g; }
+$('#abVar').addEventListener('change', abCtrls);
+MT.dropzone($('#abDrop'), t => { $('#abPaste').value = t; abLoad(t); });
+$('#abPaste').addEventListener('input', MT.debounce(() => abLoad($('#abPaste').value), 250));
+
+function readAB(o) {
+  const bin = $('#abMetric').value === 'binary'; let groups;
+  if ($('#abFmt').value === 'table') {
+    groups = abRows.filter(r => r.name && (r.n || r.n === 0)).map(r => bin ? { name: r.name.trim(), n: r.n, x: r.x == null ? NaN : r.x } : { name: r.name.trim(), n: r.n, mean: r.mean, sd: r.sd });
+    groups.forEach(g => { if (bin && !isFinite(g.x)) throw new Error(`Enter conversions for "${g.name}".`); if (!bin && (g.mean == null || g.sd == null)) throw new Error(`Enter mean and standard deviation for "${g.name}".`); });
+  } else {
+    if (!abTab) throw new Error('Paste or upload your CSV first.');
+    const vc = $('#abVar').value, oc = $('#abOut').value, ctrl = $('#abCtrl').value, m = new Map();
+    if (vc === oc) throw new Error('Variant and outcome must be different columns.');
+    abTab.rows.forEach(r => { const k = String(r[vc]).trim(); let v = r[oc]; if (bin) { const s = String(v).trim().toLowerCase(); v = ['1', 'true', 'yes', 'y', 'converted', 'purchase'].includes(s) ? 1 : ['0', 'false', 'no', 'n', ''].includes(s) ? 0 : (MT.num(v) > 0 ? 1 : 0); } else { v = MT.num(v); if (!isFinite(v)) return; } if (!m.has(k)) m.set(k, []); m.get(k).push(v); });
+    const names = [ctrl].concat(Array.from(m.keys()).filter(k => k !== ctrl).sort()); if (!m.has(ctrl)) throw new Error('Control variant not found.');
+    groups = names.map(k => { const a = m.get(k); return bin ? { name: k, n: a.length, x: S.sum(a) } : { name: k, raw: a, n: a.length }; });
+  }
+  const sp = $('#abSplit').value.trim(); if (sp) { const w = sp.split(/[,\s:\/]+/).map(Number).filter(isFinite); if (w.length !== groups.length) throw new Error(`Planned split has ${w.length} numbers but there are ${groups.length} variants.`); o.split = w; }
+  return groups;
+}
+
+/* ---------- multivariate ---------- */
+let mvTab = null;
+function mvLoad(text) {
+  mvTab = MT.readTable(text); const c = mvTab.cols; MT.fillChecks($('#mvFactors'), c, 'mvf', x => !/visitor|session|user|count|conversion|revenue|mean|sd|std|^n$|order|value|click/i.test(x) && Array.from(new Set(mvTab.rows.map(r => r[x]))).length <= 8 && Array.from(new Set(mvTab.rows.map(r => r[x]))).length >= 2);
+  const num = c.filter(x => mvTab.rows.slice(0, 50).every(r => isFinite(MT.num(r[x]))));
+  MT.fillSelect($('#mvOut'), c, /conversion|convert|revenue|outcome|mean|value|purchase/i); MT.fillSelect($('#mvN'), c, /visitor|session|user|^n$|count|trial|impression/i); MT.fillSelect($('#mvSd'), c, /^sd$|std|deviation/i);
+  $('#mvFactors').addEventListener('change', mvBase); mvBase(); mvLayout();
+}
+function mvBase() { if (!mvTab) return; const f = MT.checked($('#mvFactors')); $('#mvBase').innerHTML = f.map(x => { const lv = Array.from(new Set(mvTab.rows.map(r => String(r[x]).trim()))).sort(); const g = lv.find(l => /^(control|baseline|default|original|current|none|a\b)/i.test(l)) || lv[0]; return `<div class="field"><label>${esc(x)}</label><select data-f="${esc(x)}">${lv.map(l => `<option ${l === g ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div>`; }).join(''); }
+function mvLayout() { const raw = $('#mvLayout').value === 'raw', bin = $('#mvMetric').value === 'binary'; $('#mvNBox').hidden = raw; $('#mvSdBox').hidden = raw || bin; $('#mvOutL').textContent = raw ? (bin ? 'Outcome column (0/1)' : 'Value column') : (bin ? 'Conversions column' : 'Mean column'); }
+$('#mvLayout').addEventListener('change', mvLayout); $('#mvMetric').addEventListener('change', mvLayout);
+MT.dropzone($('#mvDrop'), t => { $('#mvPaste').value = t; mvLoad(t); }); $('#mvPaste').addEventListener('input', MT.debounce(() => mvLoad($('#mvPaste').value), 250));
+function readMV(o) {
+  if (!mvTab) throw new Error('Paste or upload your CSV first.'); const f = MT.checked($('#mvFactors')); if (f.length < 2) throw new Error('Select at least two factor columns. For a single element use A/B/n.');
+  const bin = $('#mvMetric').value === 'binary', raw = $('#mvLayout').value === 'raw', oc = $('#mvOut').value, nc = $('#mvN').value, sc = $('#mvSd').value, map = new Map();
+  o.factors = f; o.metric = bin ? 'binary' : 'continuous'; o.interactions = $('#mvInter').checked; o.base = {}; MT.$$('#mvBase select').forEach(s => o.base[s.dataset.f] = s.value);
+  mvTab.rows.forEach(r => { const lv = {}; f.forEach(x => lv[x] = String(r[x]).trim()); const key = f.map(x => lv[x]).join('\u0001'); if (!map.has(key)) map.set(key, { lv, n: 0, s: 0, ys: [], _rows: [] });
+    const c = map.get(key);
+    if (raw) { let v = MT.num(r[oc]); if (bin) { const s = String(r[oc]).trim().toLowerCase(); v = ['1', 'true', 'yes'].includes(s) ? 1 : ['0', 'false', 'no', ''].includes(s) ? 0 : (v > 0 ? 1 : 0); } if (!isFinite(v)) return; c.n++; c.s += v; c.ys.push(v); }
+    else { const n = MT.num(r[nc]), v = MT.num(r[oc]); if (!isFinite(n) || !isFinite(v)) return; c.n += n; if (bin) c.s += v; else c._rows.push({ n, mean: v, sd: MT.num(r[sc]) }); } });
+  return Array.from(map.values()).map(c => { if (bin) return { lv: c.lv, n: c.n, s: c.s }; if (raw) return { lv: c.lv, n: c.n, mean: S.mean(c.ys), sd: S.sd(c.ys) }; const r0 = c._rows[0]; if (c._rows.length > 1) { const N = S.sum(c._rows.map(z => z.n)), m = S.sum(c._rows.map(z => z.n * z.mean)) / N; let ss = S.sum(c._rows.map(z => (z.n - 1) * z.sd * z.sd + z.n * (z.mean - m) ** 2)); return { lv: c.lv, n: N, mean: m, sd: Math.sqrt(ss / (N - 1)) }; } if (!isFinite(r0.sd)) throw new Error('Standard deviation column is required for aggregated continuous data.'); return { lv: c.lv, n: r0.n, mean: r0.mean, sd: r0.sd }; });
+}
+
+/* ---------- quasi-experimental ---------- */
+let qxTab = null;
+function qxLoad(text) {
+  qxTab = MT.readTable(text); const c = qxTab.cols; qxCols(c);
+}
+function qxCols(c) {
+  MT.fillSelect($('#qxDate'), c, /date|day|week|month|period|time/i); const dc = $('#qxDate').value, rest = c.filter(x => x !== dc);
+  MT.fillSelect($('#qxTreated'), rest, /treat|test|exposed|target|campaign/i); MT.fillSelect($('#qxUnit'), c, /unit|market|region|geo|dma|store|city|group/i); MT.fillSelect($('#qxVal'), c, /value|metric|revenue|sales|conv|leads|sessions/i);
+  qxUnits(); qxChecks(true);
+}
+function qxUnits() { if (!qxTab) return; const u = $('#qxUnit').value; const lv = Array.from(new Set(qxTab.rows.map(r => String(r[u]).trim()))); $('#qxTUnit').innerHTML = lv.map(l => `<option>${esc(l)}</option>`).join(''); const g = lv.find(l => /treat|test|exposed/i.test(l)); if (g) $('#qxTUnit').value = g; }
+function qxChecks(reset) {
+  if (!qxTab) return; const dc = $('#qxDate').value, t = $('#qxTreated').value, prevC = reset ? null : MT.checked($('#qxCtrls')), prevV = reset ? null : MT.checked($('#qxCovs')), rest = qxTab.cols.filter(x => x !== dc && x !== t);
+  const isCov = x => /covar|demand|promo|spend|index|price|weather|holiday|search_vol|competitor/i.test(x), isNumCol = x => qxTab.rows.slice(0, 30).every(r => isFinite(MT.num(r[x])));
+  const ok = rest.filter(isNumCol);
+  MT.fillChecks($('#qxCtrls'), ok, 'qc', x => prevC ? prevC.includes(x) : !isCov(x)); MT.fillChecks($('#qxCovs'), ok, 'qv', x => prevV ? prevV.includes(x) : isCov(x));
+}
+['#qxCtrls', '#qxCovs'].forEach(id => $(id).addEventListener('change', e => { const other = id === '#qxCtrls' ? '#qxCovs' : '#qxCtrls'; if (e.target.checked) { const o = MT.$(`${other} input[value="${CSS.escape(e.target.value)}"]`); if (o) o.checked = false; } }));
+$('#qxDate').addEventListener('change', () => qxChecks(false)); $('#qxTreated').addEventListener('change', () => qxChecks(false)); $('#qxUnit').addEventListener('change', qxUnits);
+$('#qxFmt').addEventListener('change', () => { const l = $('#qxFmt').value === 'long'; $('#qxWide').hidden = l; $('#qxLong').hidden = !l; });
+MT.dropzone($('#qxDrop'), t => { $('#qxPaste').value = t; qxLoad(t); }); $('#qxPaste').addEventListener('input', MT.debounce(() => qxLoad($('#qxPaste').value), 250));
+function readQX(o) {
+  if (!qxTab) throw new Error('Paste or upload your CSV first.'); const long = $('#qxFmt').value === 'long', ev = $('#qxEvent').value; if (!ev) throw new Error('Enter the launch date.');
+  const b = E.buildQX(qxTab, { format: long ? 'long' : 'wide', date: $('#qxDate').value, treated: $('#qxTreated').value, controls: long ? null : MT.checked($('#qxCtrls')), covs: long ? [] : MT.checked($('#qxCovs')), unit: $('#qxUnit').value, value: $('#qxVal').value, treatedUnit: $('#qxTUnit').value, eventMs: MT.parseDate(ev) });
+  const s = $('#qxSeason').value; o.season = s === 'auto' ? (b.D.donors.length === 0 && !b.D.covs.length ? b.seasonGuess : 0) : +s; o.force = $('#qxForce').value; o.cross = $('#qxCross').checked; o.draws = +$('#qxDraws').value; o.seasonAuto = s === 'auto'; return b;
+}
+
+/* ---------- samples ---------- */
+const load = { ab2: () => { setMode('ab'); $('#abMetric').value = 'binary'; $('#abFmt').value = 'table'; $('#abFmt').dispatchEvent(new Event('change')); abRows = [{ name: 'Control', n: 10000, x: 520 }, { name: 'New landing page', n: 10000, x: 590 }]; renderAb(); },
+  abn: () => { load.ab2(); abRows = [{ name: 'Control', n: 10000, x: 520 }, { name: 'Variant B', n: 10000, x: 530 }, { name: 'Variant C', n: 9900, x: 615 }, { name: 'Variant D', n: 10100, x: 470 }]; renderAb(); },
+  abcont: () => { setMode('ab'); $('#abMetric').value = 'continuous'; $('#abFmt').value = 'raw'; $('#abFmt').dispatchEvent(new Event('change')); const t = MT.samples.abRawContinuous(); $('#abPaste').value = t; abLoad(t); renderAb(); },
+  mvb: () => { setMode('mv'); $('#mvMetric').value = 'binary'; $('#mvLayout').value = 'agg'; const t = MT.samples.mvBinary(); $('#mvPaste').value = t; mvLoad(t); $('#mvOut').value = 'conversions'; $('#mvN').value = 'visitors'; mvLayout(); },
+  mvc: () => { setMode('mv'); $('#mvMetric').value = 'continuous'; $('#mvLayout').value = 'raw'; const t = MT.samples.mvContinuous(); $('#mvPaste').value = t; mvLoad(t); $('#mvOut').value = 'revenue'; mvLayout(); },
+  geo: () => qxSample(MT.samples.geo({})), geocov: () => qxSample(MT.samples.geo({ cov: true, seed: 8 })), one: () => qxSample(MT.samples.oneControl({})), none: () => qxSample(MT.samples.noControl({})), short: () => qxSample(MT.samples.short({})) };
+function qxSample(s) { setMode('qx'); $('#qxFmt').value = 'wide'; $('#qxFmt').dispatchEvent(new Event('change')); $('#qxPaste').value = s.csv; qxLoad(s.csv); $('#qxDate').value = 'date'; $('#qxTreated').value = s.treatedCol; qxChecks(true); MT.$$('#qxCtrls input,#qxCovs input').forEach(i => i.checked = false); const cv = s.covs || []; MT.$$('#qxCtrls input').forEach(i => { if (!cv.includes(i.value)) i.checked = true; }); MT.$$('#qxCovs input').forEach(i => { if (cv.includes(i.value)) i.checked = true; }); $('#qxEvent').value = s.eventDate; }
+MT.$$('[data-s]').forEach(b => b.addEventListener('click', () => { load[b.dataset.s](); $('#results').innerHTML = ''; $('#err').textContent = ''; }));
+
+/* ---------- run ---------- */
+$('#run').addEventListener('click', async () => {
+  const btn = $('#run'), st = $('#status'); $('#err').textContent = ''; $('#results').innerHTML = ''; btn.disabled = true;
+  try {
+    const o = opts(); let res;
+    if (mode === 'ab') { const g = readAB(o); o.metric = $('#abMetric').value; res = E.analyzeAB(g, o); }
+    else if (mode === 'mv') { const cells = readMV(o); res = E.analyzeMV(cells, o); }
+    else { const b = readQX(o); st.textContent = 'Working...'; res = await E.analyzeQX(b.D, b.e, o, msg => st.textContent = msg + '...'); res.dataNotes = b.notes; res.opt = o; if (o.seasonAuto && o.season > 1 && b.D.donors.length === 0) res.notes.push(`Weekly-style seasonality (period ${o.season}) was inferred from the date spacing.`); (b.notes || []).forEach(n => res.notes.push(n)); }
+    res.o = o; lastRes = res; render(res, o); st.textContent = '';
+    $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) { $('#err').textContent = e.message || String(e); console.error(e); st.textContent = ''; }
+  btn.disabled = false;
+});
+
+/* ---------- rendering ---------- */
+const kindOf = c => c === 'pos' ? 'pos' : c === 'neg' ? 'neg' : 'neu';
+const ebadge = (c, better) => { if (!c.sig) return MT.tag('No difference detected'); const good = (better === 'low' ? -c.est : c.est) > 0; return good ? MT.tag('Better', 'good') : MT.tag('Worse', 'bad'); };
+function render(res, o) {
+  const out = $('#results'); let h = '';
+  h += MT.verdict(kindOf(res.verdict.cls), res.verdict.title, esc(res.verdict.text));
+  if (res.verdict.caution) h += MT.note('<b>Caution.</b> ' + esc(res.verdict.caution), 'warn');
+  h += '<div class="card"><h3>How the model was chosen</h3><div class="path">' + res.path.map((p, i) => (i ? '<span class="arr" aria-hidden="true">\u2192</span>' : '') + `<span class="node${i === res.path.length - 1 ? ' pick' : ''}">${esc(p)}</span>`).join('') + '</div>' + (res.method ? `<p><b>Method:</b> ${esc(res.method)}</p>` : '') + '<ul style="padding-left:1.2rem;margin:.5rem 0 0;font-size:.85rem;color:var(--ink-secondary)">' + res.why.map(w => `<li style="margin-bottom:.3rem">${esc(w)}</li>`).join('') + '</ul></div>';
+  out.innerHTML = h; const sec = document.createElement('div'); out.appendChild(sec);
+  if (res.kind === 'ab') renderAB(res, o, sec); else if (res.kind === 'mv') renderMV(res, o, sec); else renderQX(res, o, sec);
+  const d = document.createElement('div'); d.className = 'card'; d.innerHTML = '<h3>Checks and diagnostics</h3><div style="margin-top:.5rem">' + res.diag.map(x => `<p style="margin:.35rem 0;font-size:.85rem">${MT.tag(x.s === 'ok' ? 'Pass' : x.s === 'warn' ? 'Check' : 'Problem', x.s === 'ok' ? 'good' : x.s === 'warn' ? 'warn' : 'bad')} ${esc(x.t)}</p>`).join('') + '</div>' + (res.notes.length ? '<ul style="padding-left:1.2rem;font-size:.82rem;color:var(--ink-secondary);margin-top:.75rem">' + res.notes.map(n => `<li>${esc(n)}</li>`).join('') + '</ul>' : '');
+  out.appendChild(d);
+  const ex = document.createElement('div'); ex.className = 'actions'; ex.innerHTML = '<button class="btn btn-secondary btn-sm" id="cpy" type="button">Copy summary</button><button class="btn btn-secondary btn-sm" id="dl" type="button">Download results (CSV)</button>'; out.appendChild(ex);
+  $('#cpy').addEventListener('click', e => MT.copy(summaryText(res, o), e.target)); $('#dl').addEventListener('click', () => MT.download('experiment-results.csv', resultsCSV(res), 'text/csv'));
+}
+const eff = (x, res) => E.fmtEff(x, res), relf = x => F.spct(x, 1);
+const ci = (c, res) => `[${eff(c.lo, res)}, ${eff(c.hi, res)}]`;
+function compTable(res, o) {
+  const rows = res.comps.map(c => [c.name, eff(c.est, res), ci(c, res), relf(c.rel), (c.pBound ? '<' + (Math.round(c.p * 1000) / 1000) : F.p(c.pAdj != null ? c.pAdj : c.p)), { h: ebadge(c, o.better) }]);
+  return MT.tbl(['Comparison', 'Effect', `${F.pct(1 - res.alpha, 0)} CI`, 'Relative', res.comps.length > 1 ? 'p (Holm-adjusted)' : 'p-value', 'Result'], rows, { num: [1, 3, 4] });
+}
+function renderAB(res, o, sec) {
+  const bin = res.metric === 'binary', c0 = res.groups[0]; let h = '';
+  if (res.comps.length === 1) { const c = res.comps[0]; h += MT.stats(bin ? [[c0.name + ' rate', F.pct(c.rateC, 2), F.int(c0.n) + ' visitors'], [res.groups[1].name + ' rate', F.pct(c.rateT, 2), F.int(res.groups[1].n) + ' visitors'], ['Absolute change', eff(c.est, res), ci(c, res)], ['Relative change', relf(c.rel), `[${relf(c.relLo)}, ${relf(c.relHi)}]`], ['p-value', F.p(c.p), res.method], ['Chance variant beats control', F.pct(c.bayes.pBeat, 1), 'Bayesian, flat prior']] : [[c0.name + ' mean', F.n(c.meanC, 2), 'n = ' + F.int(c0.n)], [res.groups[1].name + ' mean', F.n(c.meanT, 2), 'n = ' + F.int(res.groups[1].n)], ['Absolute change', eff(c.est, res), ci(c, res)], ['Relative change', relf(c.rel), `[${relf(c.relLo)}, ${relf(c.relHi)}]`], ['p-value', F.p(c.p), res.method]]); }
+  else { if (res.omnibus) h += MT.note(`<b>${esc(res.omnibus.name)}:</b> statistic ${F.n(res.omnibus.stat, 2)}, df ${res.omnibus.df}, p = ${F.p(res.omnibus.p)} (${esc(res.omnibus.effect)}).`); }
+  h += `<div class="card"><h3>Results</h3>${compTable(res, o)}<div id="chF"></div><div id="chB"></div></div>`; sec.innerHTML = h;
+  const rows = res.comps.map(c => ({ label: c.name, est: bin ? c.est * 100 : c.est, lo: bin ? c.lo * 100 : c.lo, hi: bin ? c.hi * 100 : c.hi, color: !c.sig ? 'var(--ink-muted)' : ((o.better === 'low' ? -c.est : c.est) > 0 ? 'var(--good-graphic)' : 'var(--critical)') }));
+  C.forest($('#chF'), { title: `Change vs control (${bin ? 'percentage points' : 'metric units'}, ${F.pct(1 - res.alpha, 0)} CI). Green = significantly better, red = significantly worse, gray = not significant.`, rows, fmt: v => F.n(v, 2), ref: 0 });
+  const zc = S.zCrit(res.alpha);
+  if (bin) C.bars($('#chB'), { title: 'Conversion rate by variant (error bars: ' + F.pct(1 - res.alpha, 0) + ' CI)', cats: res.groups.map(g => g.name), series: [{ name: 'Conversion rate', values: res.groups.map(g => g.x / g.n * 100), color: 'var(--series-1)' }], errors: res.groups.map(g => { const p = g.x / g.n, s = Math.sqrt(p * (1 - p) / g.n) * zc; return { lo: (p - s) * 100, hi: (p + s) * 100 }; }), yFmt: v => F.n(v, 2) + '%' });
+  else C.bars($('#chB'), { title: 'Mean by variant (error bars: ' + F.pct(1 - res.alpha, 0) + ' CI)', cats: res.groups.map(g => g.name), series: [{ name: 'Mean', values: res.groups.map(g => g.mean), color: 'var(--series-1)' }], errors: res.groups.map(g => { const s = S.tCrit(res.alpha, Math.max(1, g.n - 1)) * g.sd / Math.sqrt(g.n); return { lo: g.mean - s, hi: g.mean + s }; }), yFmt: v => F.n(v, 2) });
+  if (res.comps[0].robust) { const r = res.comps[0].robust; sec.insertAdjacentHTML('beforeend', MT.note(`<b>Robustness:</b> Welch p = ${F.p(r.welchP)}, Mann-Whitney p = ${F.p(r.mwP)}, bootstrap CI for the mean difference [${F.n(r.bootLo, 2)}, ${F.n(r.bootHi, 2)}].`)); }
+  if (res.power && isFinite(res.power.mdeRel)) sec.insertAdjacentHTML('beforeend', MT.note(`<b>Sensitivity:</b> with these sample sizes the test has 80% power to detect a relative change of about ${F.pct(res.power.mdeRel, 1)}.`));
+}
+function renderMV(res, o, sec) {
+  let h = '<div class="card"><h3>Effect of each element level vs its baseline</h3><p class="sub">Average marginal effects: the change in the metric when only that element switches from baseline, averaged over the traffic mix of all other elements.</p>' + compTable(res, o) + '<div id="chF"></div></div>';
+  h += '<div class="card"><h3>Does each element matter?</h3>' + MT.tbl(['Element', 'Tested', 'Joint test statistic', 'df', 'p-value'], res.factorTests.map(f => [f.factor, f.scope, F.n(f.w, 2), f.df, F.p(f.p)]), { num: [2, 3, 4] }) + (res.interTests.length ? '<h3 style="margin-top:1rem">Interactions</h3>' + MT.tbl(['Pair', 'df', 'p-value', 'Result'], res.interTests.map(t => [t.pair, t.df, F.p(t.p), { h: t.sig ? MT.tag('Interaction', 'warn') : MT.tag('None detected') }]), { num: [1, 2] }) : '') + '</div>';
+  const bin = res.metric === 'binary', ordered = res.cellRows.slice().sort((a, b) => (o.better === 'low' ? a.val - b.val : b.val - a.val));
+  h += '<div class="card"><h3>Every combination</h3><div id="chC"></div>' + MT.tbl(['Combination', 'Visitors', bin ? 'Conversion rate' : 'Mean', 'Change vs control cell', 'Relative', 'p (Holm)'], ordered.map(r => [r.label + (r.isCtrl ? ' (control)' : ''), F.int(r.n), bin ? F.pct(r.val, 2) : F.n(r.val, 2), r.isCtrl || r.est == null ? '\u2014' : eff(r.est, res), r.isCtrl || r.rel == null ? '\u2014' : relf(r.rel), r.isCtrl || r.pAdj == null ? '\u2014' : { h: F.p(r.pAdj) + (r.sig ? ' ' + MT.tag('sig', 'good') : '') }]), { num: [1, 2, 3, 4, 5] }) + '<p class="hint muted" style="font-size:.78rem">Model-recommended combination (best significant level of each element): <b>' + res.factors.map(f => `${esc(f)} = ${esc(res.recommended[f])}`).join(', ') + '</b>' + (res.recommendedObserved ? `. Observed in ${F.int(res.recommendedObserved.n)} visitors at ${bin ? F.pct(res.recommendedObserved.val, 2) : F.n(res.recommendedObserved.val, 2)}` : '') + `. Model prediction: ${bin ? F.pct(res.recommendedPred, 2) : F.n(res.recommendedPred, 2)}.</p></div>`;
+  h += '<div class="card"><details><summary>Model coefficients</summary>' + MT.tbl(['Term', bin ? 'Log-odds' : 'Coefficient', 'Std. error', 'p-value'], res.coefs.map(c => [c.term, F.n(c.est, 4), F.n(c.se, 4), F.p(c.p)]), { num: [1, 2, 3] }) + '</details></div>';
+  sec.innerHTML = h;
+  C.forest($('#chF'), { title: `Average marginal effect (${bin ? 'percentage points' : 'metric units'}, ${F.pct(1 - res.alpha, 0)} CI, unadjusted)`, rows: res.comps.map(c => ({ label: c.name, est: bin ? c.est * 100 : c.est, lo: bin ? c.lo * 100 : c.lo, hi: bin ? c.hi * 100 : c.hi, color: !c.sig ? 'var(--ink-muted)' : ((o.better === 'low' ? -c.est : c.est) > 0 ? 'var(--good-graphic)' : 'var(--critical)') })), fmt: v => F.n(v, 2), ref: 0 });
+  C.hbars($('#chC'), { title: (bin ? 'Conversion rate' : 'Mean') + ' by combination', cats: ordered.map(r => r.label), values: ordered.map(r => bin ? r.val * 100 : r.val), fmt: v => bin ? F.n(v, 2) + '%' : F.n(v, 2), colors: ordered.map(r => r.isCtrl ? 'var(--ink-muted)' : r.sig ? 'var(--series-3)' : 'var(--series-1)') });
+}
+function renderQX(res, o, sec) {
+  const m = res.main, T = res.D.y.length, e = res.e, xs = res.D.dates, cf = m.cf, y = res.D.y, nP = T - e, s = res.summary, P = res.primary;
+  let h = MT.stats([['Average effect per period', eff(P.est, res), isFinite(P.lo) ? `[${eff(P.lo, res)}, ${eff(P.hi, res)}]` : 'interval from placebo/BSTS below'], ['Relative effect', relf(P.rel), 'vs expected without campaign'], ['Cumulative effect', eff(s.cum, res), isFinite(s.cumLo) ? `[${eff(s.cumLo, res)}, ${eff(s.cumHi, res)}] over ${nP} periods` : `over ${nP} periods`], ['p-value', (P.pBound ? '<' + (Math.round(P.p * 1000) / 1000) : F.p(P.p)), P.from]]);
+  h += '<div class="card"><h3>Actual vs expected without the campaign</h3><div id="chA"></div><div id="chE"></div></div><div id="qxExtra"></div>'; sec.innerHTML = h;
+  C.line($('#chA'), { title: 'Treated series and counterfactual (shaded: ' + F.pct(1 - res.alpha, 0) + ' interval where available)', xs, xFmt: F.date, series: [{ name: 'Actual', values: y, color: 'var(--series-1)' }, { name: 'Expected without campaign', values: cf, color: 'var(--series-2)', dash: '5 4', band: { lo: m.cfLo, hi: m.cfHi } }], vlines: [{ x: xs[e], label: 'Launch' }], height: 300 });
+  const gap = y.map((v, i) => v - cf[i]);
+  C.line($('#chE'), { title: 'Effect per period (actual minus expected). Before launch this shows how well the model fits.', xs, xFmt: F.date, series: [{ name: 'Effect', values: gap, color: 'var(--series-1)', band: { lo: y.map((v, i) => isFinite(m.cfHi[i]) ? v - m.cfHi[i] : NaN), hi: y.map((v, i) => isFinite(m.cfLo[i]) ? v - m.cfLo[i] : NaN) } }, { name: 'No effect', values: y.map(() => 0), color: 'var(--ink-muted)', dash: '3 3', width: 1.2 }], vlines: [{ x: xs[e], label: 'Launch' }], zero: true, height: 220, table: false });
+  const ex = $('#qxExtra'); let x = '';
+  if (res.modelKey === 'ITS' || res.modelKey === 'ITS_CTRL') { const q = m.extra; x += '<div class="card"><h3>Segmented regression terms</h3>' + MT.tbl(['Term', 'Estimate', 'Std. error (Newey-West)', 'p-value'], [['Pre-launch slope (per period)', F.n(q.slopePre.est, 3), F.n(q.slopePre.se, 3), F.p(q.slopePre.p)], ['Immediate level change at launch', F.n(q.level.est, 2), F.n(q.level.se, 2), F.p(q.level.p)], ['Change in slope after launch (per period)', F.n(q.slopeChange.est, 3), F.n(q.slopeChange.se, 3), F.p(q.slopeChange.p)]], { num: [1, 2, 3] }) + `<p class="hint muted" style="font-size:.78rem">R\u00B2 = ${q.r2.toFixed(3)}, ${q.k} parameters${q.controls ? `, ${q.controls} control regressor${q.controls > 1 ? 's' : ''}` : ''}${q.season > 1 ? `, seasonal dummies (period ${q.season})` : ''}.</p></div>`; }
+  if (res.modelKey === 'DiD' || res.modelKey === 'DiD_AVG') { const t = m.extra.table; x += '<div class="card"><h3>Difference-in-differences table</h3>' + MT.tbl(['', 'Before launch', 'After launch', 'Change'], [['Treated', F.n(t.treatPre, 1), F.n(t.treatPost, 1), F.n(t.treatPost - t.treatPre, 1)], ['Control', F.n(t.ctrlPre, 1), F.n(t.ctrlPost, 1), F.n(t.ctrlPost - t.ctrlPre, 1)], [{ h: '<b>Difference in differences</b>' }, '', '', { h: '<b>' + F.n(m.avg, 1) + '</b>' }]], { num: [1, 2, 3] }) + '</div>'; }
+  if (res.modelKey === 'PrePost') { const q = m.extra; x += '<div class="card"><h3>Pre/post tests</h3>' + MT.tbl(['Test', 'Statistic', 'p-value'], [[`Wilcoxon signed-rank (${q.window} matched pairs)`, 'W+ = ' + F.n(q.wilcoxon.W, 1), F.p(q.wilcoxon.p)], [`Paired t-test`, 't = ' + F.n(q.pairedT.t, 2), F.p(q.pairedT.p)], ['Mann-Whitney (full windows)', 'z = ' + F.n(q.mannWhitney.z, 2), F.p(q.mannWhitney.p)]], { num: [1, 2] }) + '</div>'; }
+  if (res.modelKey === 'SCM') { const q = m.extra; x += '<div class="card"><h3>Synthetic control weights</h3><div id="chW"></div><p class="hint muted" style="font-size:.78rem">Pre-launch fit R\u00B2 ' + q.r2.toFixed(3) + ', RMSPE ' + F.n(q.preRmspe, 2) + '. Weight stability across pre-period halves: ' + q.stability.toFixed(2) + '. The shaded band is an approximate \u00B11.96 pre-period RMSPE, not a formal interval.</p></div>'; if (q.placebo) x += '<div class="card"><h3>In-space placebo test</h3><div id="chP"></div><p class="hint muted" style="font-size:.78rem">Each untreated donor was treated as if it had launched. The orange line is the real treated series. p = ' + F.p(q.placebo.p) + ' (rank ' + q.placebo.rank + ' of ' + (q.placebo.n + 1) + ').</p></div>'; }
+  const bs = res.modelKey === 'BSTS' ? m : res.inference; if (bs) { x += '<div class="card"><h3>Which controls drive the counterfactual (BSTS)</h3><div id="chI"></div><p class="hint muted" style="font-size:.78rem">Posterior inclusion probability from spike-and-slab selection. ' + bs.extra.draws + ' Gibbs draws, local level prior sd ' + bs.extra.levelSd + '.</p></div>'; }
+  if (res.alt) { const a = res.alt.r; x += '<div class="card"><h3>Cross-check: ' + esc(res.alt.name) + '</h3>' + MT.tbl(['Model', 'Avg effect', 'Relative', 'Interval', 'p'], [[res.method, eff(m.avg, res), relf(m.rel), isFinite(m.avgLo) ? `[${eff(m.avgLo, res)}, ${eff(m.avgHi, res)}]` : 'n/a', isFinite(m.p) ? F.p(m.p) : 'n/a'], [res.alt.name, eff(a.avg, res), relf(a.rel), isFinite(a.avgLo) ? `[${eff(a.avgLo, res)}, ${eff(a.avgHi, res)}]` : 'n/a', isFinite(a.p) ? F.p(a.p) : 'n/a']], { num: [1, 2, 4] }) + '</div>'; }
+  ex.innerHTML = x;
+  if (res.modelKey === 'SCM') { const q = m.extra; C.hbars($('#chW'), { cats: q.weights.filter(w => w.w > 0.005).slice(0, 12).map(w => w.name), values: q.weights.filter(w => w.w > 0.005).slice(0, 12).map(w => w.w * 100), fmt: v => F.n(v, 1) + '%' }); if (q.placebo && $('#chP')) C.hist($('#chP'), { title: 'Post/pre RMSPE ratio: untreated donors (bars) vs treated (line)', values: q.placebo.ratios, marker: q.ratio, markerLabel: 'Treated', xFmt: v => F.n(v, 1) }); }
+  if (bs && $('#chI')) C.hbars($('#chI'), { cats: bs.extra.inclusion.slice(0, 10).map(i => i.name), values: bs.extra.inclusion.slice(0, 10).map(i => i.prob * 100), fmt: v => F.n(v, 0) + '%' });
+}
+
+/* ---------- export ---------- */
+function summaryText(res, o) {
+  const L = []; L.push('EXPERIMENT RESULT'); L.push(res.verdict.title); L.push(res.verdict.text); if (res.verdict.caution) L.push('Caution: ' + res.verdict.caution); L.push(''); L.push('Method: ' + (res.method || '')); L.push('Selection path: ' + res.path.join(' > ')); L.push('Significance level: ' + res.alpha);
+  res.comps.forEach(c => L.push(`- ${c.name}: effect ${eff(c.est, res)} [${eff(c.lo, res)}, ${eff(c.hi, res)}], relative ${relf(c.rel)}, p ${c.pBound ? '< ' + (Math.round(c.p * 1000) / 1000) : '= ' + F.p(c.pAdj != null ? c.pAdj : c.p)}`));
+  if (res.summary) L.push(`Cumulative effect over ${res.summary.nPost} periods: ${eff(res.summary.cum, res)}`); L.push(''); L.push('Checks:'); res.diag.forEach(d => L.push(` [${d.s}] ${d.t}`)); return L.join('\n');
+}
+function resultsCSV(res) { const rows = [['comparison', 'effect', 'ci_low', 'ci_high', 'relative_effect', 'p_raw', 'p_adjusted', 'significant']]; res.comps.forEach(c => rows.push([c.name, c.est, c.lo, c.hi, c.rel, c.p, c.pAdj, c.sig])); if (res.kind === 'qx') { rows.push([]); rows.push(['date', 'actual', 'expected_without_campaign', 'effect']); res.D.dates.forEach((d, i) => rows.push([F.date(d), res.D.y[i], res.main.cf[i], res.D.y[i] - res.main.cf[i]])); } return MT.toCSV(rows); }
+
+/* ---------- init ---------- */
+load.ab2(); setMode('ab');
+})();
+</script>
+<script>MT.boot("experiment-analyzer", "variant,visitors,conversions\nControl,10000,420\nVariant B,10000,468\n");</script>
+</body>
+</html>

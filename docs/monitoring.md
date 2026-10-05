@@ -14,6 +14,32 @@ Add one HTTP(s) Keyword monitor per URL, interval 5 minutes, alert when the keyw
 | portfolio attribution      | `https://portfolio.faysalahmed.ca/tools/attribution/`      | `Multi-Touch Attribution`                                                      |
 | portfolio disclosure-check | `https://portfolio.faysalahmed.ca/tools/disclosure-check/` | `Disclosure Language Checker`                                                  |
 
+The 21 vendored marketing tools (served from `/marketing/`, shown in www's Marketing folder) get one monitor each. Use the same settings:
+
+| Monitor name                               | URL                                                                                | Keyword                                                  |
+| ------------------------------------------ | ---------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| marketing ad-claims-flagger                | `https://portfolio.faysalahmed.ca/marketing/ad-claims-flagger.html`                | `Ad Claims Substantiation & Compliance Flagger`          |
+| marketing affiliate-concentration-analyzer | `https://portfolio.faysalahmed.ca/marketing/affiliate-concentration-analyzer.html` | `Affiliate Revenue Concentration Risk Analyzer`          |
+| marketing affiliate-margin-calculator      | `https://portfolio.faysalahmed.ca/marketing/affiliate-margin-calculator.html`      | `Affiliate Commission & Margin Viability Calculator`     |
+| marketing attribution-window-normalizer    | `https://portfolio.faysalahmed.ca/marketing/attribution-window-normalizer.html`    | `Attribution Window Normalizer`                          |
+| marketing bot-traffic-screener             | `https://portfolio.faysalahmed.ca/marketing/bot-traffic-screener.html`             | `Web Traffic Quality & Bot Anomaly Screener`             |
+| marketing brand-incrementality             | `https://portfolio.faysalahmed.ca/marketing/brand-incrementality.html`             | `Paid Search Brand Incrementality Estimator`             |
+| marketing cac-payback-modeler              | `https://portfolio.faysalahmed.ca/marketing/cac-payback-modeler.html`              | `CAC, Margin & Payback Modeler`                          |
+| marketing creative-decay-monitor           | `https://portfolio.faysalahmed.ca/marketing/creative-decay-monitor.html`           | `Paid Social Creative & Frequency Decay Monitor`         |
+| marketing demand-capacity-guardrail        | `https://portfolio.faysalahmed.ca/marketing/demand-capacity-guardrail.html`        | `Demand Forecasting & Inventory Capacity Guardrail`      |
+| marketing experiment-analyzer              | `https://portfolio.faysalahmed.ca/marketing/experiment-analyzer.html`              | `A/B, Multivariate & Campaign Experiment Analyzer`       |
+| marketing feature-messaging-gap            | `https://portfolio.faysalahmed.ca/marketing/feature-messaging-gap.html`            | `Feature-to-Messaging Gap Analyzer`                      |
+| marketing gtm-container-auditor            | `https://portfolio.faysalahmed.ca/marketing/gtm-container-auditor.html`            | `GTM Container Auditor`                                  |
+| marketing promo-capacity-checker           | `https://portfolio.faysalahmed.ca/marketing/promo-capacity-checker.html`           | `Promotional Capacity Sanity-Checker`                    |
+| marketing quality-score-scorer             | `https://portfolio.faysalahmed.ca/marketing/quality-score-scorer.html`             | `Paid Ad Quality Score & Landing Page Checklist Scorer`  |
+| marketing redirect-mapper                  | `https://portfolio.faysalahmed.ca/marketing/redirect-mapper.html`                  | `Bulk Redirect Mapper & Loop Validator`                  |
+| marketing scv-gap-calculator               | `https://portfolio.faysalahmed.ca/marketing/scv-gap-calculator.html`               | `Single Customer View Gap Calculator`                    |
+| marketing seasonality-visualizer           | `https://portfolio.faysalahmed.ca/marketing/seasonality-visualizer.html`           | `Paid Search Seasonality Demand Curve Visualizer`        |
+| marketing seo-equivalent-value             | `https://portfolio.faysalahmed.ca/marketing/seo-equivalent-value.html`             | `SEO Equivalent Value Translator`                        |
+| marketing sqr-negative-keywords            | `https://portfolio.faysalahmed.ca/marketing/sqr-negative-keywords.html`            | `Search Query Report Bleed & Negative Keyword Extractor` |
+| marketing traffic-reconciler               | `https://portfolio.faysalahmed.ca/marketing/traffic-reconciler.html`               | `Reported-to-Verified Traffic Reconciler`                |
+| marketing utm-governance-auditor           | `https://portfolio.faysalahmed.ca/marketing/utm-governance-auditor.html`           | `UTM Governance Auditor`                                 |
+
 When a tool is added, add its row here in the same PR.
 
 ## Embedding by www
