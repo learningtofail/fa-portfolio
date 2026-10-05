@@ -1,6 +1,6 @@
 # fa-portfolio
 
-Source for `portfolio.faysalahmed.ca`: an Astro static resume page plus five client-side marketing tools (React islands, PapaParse, D3). Nothing a visitor enters leaves the browser.
+Source for `portfolio.faysalahmed.ca`: an Astro static resume page plus two client-side React-island tools (attribution, disclosure check; PapaParse, D3) and 21 vendored single-file marketing tools under `/marketing/`. Nothing a visitor enters leaves the browser.
 
 ```bash
 npm ci

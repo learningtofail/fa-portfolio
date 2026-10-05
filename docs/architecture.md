@@ -17,15 +17,12 @@
 
 ## Tools
 
-Each tool is a pure module in `src/lib/` plus a thin React island:
+Two Astro tools remain; the UTM, GTM and CAC tools were retired in favor of the marketing tools (decision 0008). Each tool is a pure module in `src/lib/` plus a thin React island:
 
-| Tool                           | Logic                                | Island                                   |
-| ------------------------------ | ------------------------------------ | ---------------------------------------- |
-| UTM Governance Auditor         | `lib/utm/audit.js`                   | `components/tools/UtmAuditor.jsx`        |
-| GTM Container Auditor          | `lib/gtm/audit.js`                   | `components/tools/GtmAuditor.jsx`        |
-| Multi-Touch Attribution        | `lib/attribution/compute.js`         | `components/tools/AttributionTool.jsx`   |
-| Disclosure Language Checker    | `lib/disclosure/{rulesets,check}.js` | `components/tools/DisclosureChecker.jsx` |
-| CAC / LTV / Payback Calculator | `lib/cac/calc.js`                    | `components/tools/CacCalculator.jsx`     |
+| Tool                        | Logic                                | Island                                   |
+| --------------------------- | ------------------------------------ | ---------------------------------------- |
+| Multi-Touch Attribution     | `lib/attribution/compute.js`         | `components/tools/AttributionTool.jsx`   |
+| Disclosure Language Checker | `lib/disclosure/{rulesets,check}.js` | `components/tools/DisclosureChecker.jsx` |
 
 Shared CSV handling is `lib/csv.js` (`parseCsvFile`, `lowercaseKeys` with prototype-free rows). The kit in `components/kit/` supplies the dropzone (`FileDropzone` over `useFileInput`), `StatRow` (owns the `aria-live` region), `StatCard`, `DataTable`, `ToolShell`, `ErrorNotice` and `useFileAnalysis` (file name, result and error state around an async analysis). Charts are in `components/charts/` (D3; `useChartWidth` redraws on resize and series colors come from CSS classes).
 

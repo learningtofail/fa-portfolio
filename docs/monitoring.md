@@ -8,9 +8,6 @@ Add one HTTP(s) Keyword monitor per URL, interval 5 minutes, alert when the keyw
 | -------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | portfolio home             | `https://portfolio.faysalahmed.ca/`                        | `Faysal Ahmed`                                                                 |
 | portfolio resume PDF       | `https://portfolio.faysalahmed.ca/faysal-ahmed-resume.pdf` | `%PDF` (HTTP status check is enough if the keyword monitor cannot read binary) |
-| portfolio utm-auditor      | `https://portfolio.faysalahmed.ca/tools/utm-auditor/`      | `UTM Governance Auditor`                                                       |
-| portfolio gtm-auditor      | `https://portfolio.faysalahmed.ca/tools/gtm-auditor/`      | `GTM Container Auditor`                                                        |
-| portfolio cac-calculator   | `https://portfolio.faysalahmed.ca/tools/cac-calculator/`   | `CAC / LTV / Payback Calculator`                                               |
 | portfolio attribution      | `https://portfolio.faysalahmed.ca/tools/attribution/`      | `Multi-Touch Attribution`                                                      |
 | portfolio disclosure-check | `https://portfolio.faysalahmed.ca/tools/disclosure-check/` | `Disclosure Language Checker`                                                  |
 
@@ -40,6 +37,8 @@ The 21 vendored marketing tools (served from `/marketing/`, shown in www's Marke
 | marketing traffic-reconciler               | `https://portfolio.faysalahmed.ca/marketing/traffic-reconciler.html`               | `Reported-to-Verified Traffic Reconciler`                |
 | marketing utm-governance-auditor           | `https://portfolio.faysalahmed.ca/marketing/utm-governance-auditor.html`           | `UTM Governance Auditor`                                 |
 
+The old `/tools/utm-auditor/`, `/tools/gtm-auditor/` and `/tools/cac-calculator/` URLs are redirect pages now. Delete their monitors if you added any; the marketing rows below cover the replacements.
+
 When a tool is added, add its row here in the same PR.
 
 ## Embedding by www
@@ -47,7 +46,7 @@ When a tool is added, add its row here in the same PR.
 The fa-www site shows these tools in an iframe. That works only while the response carries `frame-ancestors https://www.faysalahmed.ca` (enforced in `docs/caddy/Caddyfile.proposed.md`). Do not add `X-Frame-Options`. If www embeds break, check that header first:
 
 ```bash
-curl -sI https://portfolio.faysalahmed.ca/tools/utm-auditor/ | grep -i content-security-policy
+curl -sI https://portfolio.faysalahmed.ca/tools/attribution/ | grep -i content-security-policy
 ```
 
 ## Tokens in CI

@@ -2,11 +2,9 @@
 
 Items from the refactor review that need input the repo cannot supply. Nothing here changes tool output until the decision is made.
 
-## D8: GTM auditor false positives
+## D8: GTM auditor false positives (closed)
 
-Suspected: tags that only run as setup or teardown tags have no firing trigger by design, and triggers used only inside a Trigger Group count as unused. The auditor reports both.
-
-Needs: a real Google Tag Manager container export (JSON) from a container that uses setup/teardown tags and a Trigger Group, with identifying values redacted. Until then `tests/unit/GtmAuditor.test.jsx` holds a clearly labelled synthetic characterization test that pins today's behavior. When the export arrives, confirm the schema fields, add the export as a fixture, and flip the two characterization assertions together with the auditor change.
+The Astro GTM auditor this concerned was retired (decision 0008); `/tools/gtm-auditor/` now redirects to the marketing GTM Container Auditor, a separate implementation. If that tool shows the same false positives, raise it in the marketing tools project, not here.
 
 ## D9: Attribution revenue input contract
 

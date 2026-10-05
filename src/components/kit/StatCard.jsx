@@ -4,7 +4,7 @@
  *   label: string,
  *   value: string | number,
  *   sub?: string,
- *   tone?: import("../../lib/cac/calc.js").Tone | null,
+ *   tone?: "good" | "warn" | "bad" | null,
  *   size?: "narrow" | "default" | "wide",
  * }} props
  */

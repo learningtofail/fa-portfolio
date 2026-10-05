@@ -8,20 +8,17 @@ const hydrated = (page) => page.waitForFunction(() => !document.querySelector("a
 const fixture = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url));
 
 const TOOL_PAGES = [
-  { slug: "utm-auditor", heading: /UTM/i },
-  { slug: "gtm-auditor", heading: /GTM/i },
-  { slug: "cac-calculator", heading: /CAC/i },
   { slug: "attribution", heading: /Attribution/i },
   { slug: "disclosure-check", heading: /Disclosure/i },
 ];
 
 test.describe("resume page", () => {
-  test("renders every section and links the five tools", async ({ page }) => {
+  test("renders every section and links the two tools", async ({ page }) => {
     await page.goto("/");
     for (const id of ["summary", "experience", "skills", "tools", "contact"]) {
       await expect(page.locator(`#${id}`)).toBeVisible();
     }
-    await expect(page.locator("#tools a.tool-card")).toHaveCount(5);
+    await expect(page.locator("#tools a.tool-card")).toHaveCount(2);
   });
 
   test("serves the generated resume PDF", async ({ request }) => {
@@ -44,6 +41,27 @@ test.describe("resume page", () => {
   });
 });
 
+test.describe("retired tool URLs", () => {
+  for (const [old, target] of [
+    ["utm-auditor", "/marketing/utm-governance-auditor.html"],
+    ["gtm-auditor", "/marketing/gtm-container-auditor.html"],
+    ["cac-calculator", "/marketing/cac-payback-modeler.html"],
+  ]) {
+    test(`/tools/${old}/ redirects to ${target}`, async ({ page }) => {
+      await page.goto(`/tools/${old}/`);
+      await page.waitForURL(`**${target}`);
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    });
+  }
+
+  test("the tools index lists only the two remaining tools", async ({ page }) => {
+    await page.goto("/tools/");
+    await expect(page.getByRole("link", { name: /Multi-Touch Attribution/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Disclosure Language Checker/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /UTM Governance Auditor/ })).toHaveCount(0);
+  });
+});
+
 test.describe("tool pages", () => {
   for (const { slug, heading } of TOOL_PAGES) {
     test(`${slug} loads without page errors`, async ({ page }) => {
@@ -55,20 +73,6 @@ test.describe("tool pages", () => {
     });
   }
 
-  test("utm-auditor flags a row with a missing field", async ({ page }) => {
-    await page.goto("/tools/utm-auditor/");
-    await hydrated(page);
-    await page.setInputFiles('input[type="file"]', fixture("utm.csv"));
-    await expect(page.getByText("Rows with issues")).toBeVisible();
-    await expect(page.getByText("Missing utm_campaign")).toBeVisible();
-  });
-
-  test("cac-calculator shows the default CAC", async ({ page }) => {
-    await page.goto("/tools/cac-calculator/");
-    await hydrated(page);
-    await expect(page.getByText("$250.00")).toBeVisible();
-  });
-
   test("disclosure-check passes copy with #ad", async ({ page }) => {
     await page.goto("/tools/disclosure-check/");
     await hydrated(page);
@@ -77,7 +81,7 @@ test.describe("tool pages", () => {
   });
 
   test("dropzones open with the keyboard", async ({ page }) => {
-    await page.goto("/tools/utm-auditor/");
+    await page.goto("/tools/attribution/");
     await hydrated(page);
     const chooser = page.waitForEvent("filechooser");
     await page.getByRole("button", { name: /csv/i }).focus();
@@ -87,16 +91,6 @@ test.describe("tool pages", () => {
 });
 
 test.describe("prototype-colliding user data (D2)", () => {
-  test("utm-auditor survives a utm_source of 'constructor'", async ({ page }) => {
-    const errors = [];
-    page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto("/tools/utm-auditor/");
-    await hydrated(page);
-    await page.setInputFiles('input[type="file"]', fixture("constructor-utm.csv"));
-    await expect(page.getByText("Rows with issues")).toBeVisible({ timeout: 3000 });
-    expect(errors).toEqual([]);
-  });
-
   test("attribution survives a channel named 'constructor'", async ({ page }) => {
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
@@ -156,11 +150,7 @@ test.describe("styling rules (Phase 3)", () => {
 });
 
 test.describe("accessibility with results on screen", () => {
-  const CASES = [
-    ["utm-auditor", "utm.csv"],
-    ["gtm-auditor", "gtm.json"],
-    ["attribution", "attribution.csv"],
-  ];
+  const CASES = [["attribution", "attribution.csv"]];
   for (const [slug, file] of CASES) {
     test(`/tools/${slug}/ has no axe violations after an upload`, async ({ page }) => {
       await page.goto(`/tools/${slug}/`);
