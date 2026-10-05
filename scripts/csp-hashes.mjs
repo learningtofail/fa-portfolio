@@ -14,6 +14,8 @@ const checkFile = flag("--check");
 function htmlFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
     const full = path.join(dir, name);
+    // /marketing/ is vendored output with its own CSP (docs/decisions/0007), not part of the Astro policy.
+    if (full === path.join(dist, "marketing")) return [];
     if (statSync(full).isDirectory()) return htmlFiles(full);
     return full.endsWith(".html") ? [full] : [];
   });
