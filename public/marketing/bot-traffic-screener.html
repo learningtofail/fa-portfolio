@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Web Traffic Quality &amp; Bot Anomaly Screener | Marketing Tools</title>
-<meta name="description" content="Upload an analytics or server log export. Sessions are screened for data center networks, headless and scripted user agents, zero-second single-page visits and abnormal conversion rates, then summarized as human versus non-human traffic with ready-made segment rules.">
+<meta name="description" content="Upload an analytics or server log export. Sessions are screened for hosting networks, headless and scripted user agents, sub-second single-page visits and abnormal conversion rates, then summarized as human versus non-human traffic with ready-made filter rules.">
 <style>/* Signal & Serif tokens, shared by every tool */
 :root{
   color-scheme: light;
@@ -225,7 +225,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 <main class="wrap">
   <div class="hero">
     <h1 class="serif">Web Traffic Quality &amp; Bot Anomaly Screener</h1>
-    <p>Upload an analytics or server log export. Sessions are screened for data center networks, headless and scripted user agents, zero-second single-page visits and abnormal conversion rates, then summarized as human versus non-human traffic with ready-made segment rules.</p>
+    <p>Upload an analytics or server log export. Sessions are screened for hosting networks, headless and scripted user agents, sub-second single-page visits and abnormal conversion rates, then summarized as human versus non-human traffic with ready-made filter rules.</p>
     <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
   </div>
   <div class="toolbar">
@@ -237,12 +237,12 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
   </div>
 
 <div class="card"><h3>Traffic export</h3>
-  <p class="sub">Any CSV with at least one of: user agent, network domain or ASN, session duration, pages per session. Sessions, bounces and conversions columns add precision. One row can be one session (logs) or an aggregate (analytics).</p>
+  <p class="sub">Any CSV with at least one of: user agent, network domain or ISP, session duration, pages per session. Sessions, bounces and conversions columns add precision. One row can be one session (logs) or an aggregate (analytics). Durations can be seconds or hh:mm:ss. Conversions can be counts or yes/no (oui/non).</p>
   <div id="drop"></div>
   <div class="field" style="margin-top:.6rem"><label for="paste">Or paste CSV</label><textarea id="paste" rows="4" placeholder="user_agent,network_domain,country,source,sessions,avg_session_duration,pages_per_session,bounce_rate,conversions"></textarea></div>
   <div class="row3"><div class="field"><label for="cua">User agent</label><select id="cua"></select></div><div class="field"><label for="cnw">Network domain / ASN / ISP</label><select id="cnw"></select></div><div class="field"><label for="cse">Sessions (blank = 1 per row)</label><select id="cse"></select></div></div>
-  <div class="row3"><div class="field"><label for="cdu">Session duration (seconds)</label><select id="cdu"></select></div><div class="field"><label for="cpg">Pages per session</label><select id="cpg"></select></div><div class="field"><label for="cbo">Bounce rate or bounces</label><select id="cbo"></select></div></div>
-  <div class="row3"><div class="field"><label for="cco">Conversions / leads</label><select id="cco"></select></div><div class="field"><label for="cgr">Extra segment column</label><select id="cgr"></select></div><div class="field"><label for="zs">Zero-second threshold (s)</label><input id="zs" type="number" value="1"></div></div>
+  <div class="row3"><div class="field"><label for="cdu">Session duration (seconds or hh:mm:ss)</label><select id="cdu"></select></div><div class="field"><label for="cpg">Pages per session</label><select id="cpg"></select></div><div class="field"><label for="cbo">Bounce rate or bounces</label><select id="cbo"></select></div></div>
+  <div class="row3"><div class="field"><label for="cco">Conversions / leads</label><select id="cco"></select></div><div class="field"><label for="cgr">Extra segment column</label><select id="cgr"></select></div><div class="field"><label for="zs">Sub-second threshold (s)</label><input id="zs" type="number" value="1"></div></div>
   <div class="actions"><button class="btn btn-primary" id="go" type="button">Screen traffic</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div><div class="err" id="err"></div>
 </div>
 <div id="out"></div>
@@ -298,14 +298,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -315,6 +359,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -336,22 +382,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -359,7 +468,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -639,7 +748,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -686,38 +795,74 @@ MT.boot = (slug, template) => {
 <script>
 (function () {
 const $ = MT.$, F = MT.fmt, S = MT.stat, C = MT.chart; let tab = null;
-const DC = /(amazon|aws|ec2|google[\s-]?cloud|googleusercontent|microsoft|azure|digitalocean|ovh|hetzner|linode|akamai|oracle|alibaba|aliyun|tencent|vultr|choopa|leaseweb|m247|colocrossing|datacamp|cogent|quadranet|contabo|scaleway|packet|rackspace|softlayer|ibm cloud|hostinger|hosting|datacenter|data center|server|vps|cloud)/i;
-const UA = /(headlesschrome|phantomjs|selenium|puppeteer|playwright|python-requests|python-urllib|aiohttp|curl\/|wget|scrapy|go-http-client|java\/|libwww|okhttp|httpclient|node-fetch|axios|postmanruntime|bot\b|crawler|spider|slurp|ahrefs|semrush|mj12|dotbot|bytespider|petalbot|headless)/i;
-function load(t) { tab = MT.readTable(t, /agent|network|session|duration|browser/i); const c = tab.cols; [['#cua', /agent|browser/i], ['#cnw', /network|asn|isp|org|domain|hostname/i], ['#cse', /^sessions?$|visits/i], ['#cdu', /duration|time on/i], ['#cpg', /pages|pageviews/i], ['#cbo', /bounce/i], ['#cco', /conver|lead|goal|transaction/i], ['#cgr', /source|medium|country|campaign|channel/i]].forEach(([id, re]) => { MT.fillSelect($(id), c, re, { none: true }); if (!MT.guess(c, re)) $(id).value = ''; }); }
+/* Hosting and cloud networks only. Networks that real people also use (Microsoft, Oracle, Akamai, Cloudflare, iCloud Private Relay, big ISPs) are not here: see SHARED. */
+const DC = /\b(amazon|amazonaws|aws|ec2|google[\s-]?cloud|googleusercontent|azure|digitalocean|ovh|hetzner|linode|akamai connected cloud|alibaba|aliyun|tencent cloud|vultr|choopa|leaseweb|m247|colocrossing|datacamp|quadranet|contabo|scaleway|packet|rackspace|softlayer|ibm cloud|oracle cloud|hostinger|hosting|datacenter|data center|vps|dedicated servers?|zenlayer|psychz|hurricane electric|cloud)\b/i;
+const SHARED = /(microsoft|oracle|akamai|cloudflare|fastly|icloud|private relay|apple inc|zscaler|\bvpn\b|proxy|google llc)/i;
+const GOOD = /(googlebot|google-inspectiontool|adsbot-google|mediapartners-google|bingbot|bingpreview|msnbot|duckduckbot|yandexbot|baiduspider|applebot|slurp|facebookexternalhit|linkedinbot|twitterbot|pinterestbot)/i;
+const UA = /(headlesschrome|phantomjs|selenium|puppeteer|playwright|python-requests|python-urllib|aiohttp|curl\/|wget|scrapy|go-http-client|java\/|libwww|httpclient|node-fetch|axios|postmanruntime|crawler|spider|ahrefs|semrush|mj12|dotbot|bytespider|petalbot|headless|\bbot\b|\w+bot[\/;)])/i;
+const YES = /^(true|yes|oui|y|vrai|ja|si)$/i, NO = /^(false|no|non|n|faux|nein)$/i;
+/* hh:mm:ss, mm:ss and plain numbers (locale aware) to seconds. */
+function dur(s, fmt) { s = String(s == null ? '' : s).trim(); let m; if ((m = s.match(/^(\d+):(\d{2})(?::(\d{2}(?:[.,]\d+)?))?$/))) return m[3] != null ? +m[1] * 3600 + +m[2] * 60 + parseFloat(m[3].replace(',', '.')) : +m[1] * 60 + +m[2]; return MT.num(s, fmt); }
+function load(t) {
+  tab = MT.readTable(t, /agent|network|session|duration|dur[ée]e|browser|isp/i); const c = tab.cols;
+  [['#cua', /agent|browser/i], ['#cnw', /network|asn|isp|org|domain|hostname/i], ['#cse', /^sessions?$|^visits$|^s[ée]ances$/i], ['#cdu', /duration|time on|dur[ée]e|temps/i], ['#cpg', /pages|pageviews/i], ['#cbo', /bounce|rebond/i], ['#cco', /conver|lead|goal|transaction|rdv|rendez|booking|achat|vente|inscri/i]].forEach(([id, re]) => { MT.fillSelect($(id), c, re, { none: true }); if (!MT.guess(c, re)) $(id).value = ''; });
+  MT.fillSelect($('#cgr'), c, null, { none: true }); $('#cgr').value = MT.guess(c, /source|medium|campaign|channel|referr/i) || MT.guess(c, /country|pays/i) || '';
+}
 MT.dropzone($('#drop'), t => { $('#paste').value = t; load(t); }); $('#paste').addEventListener('input', MT.debounce(() => load($('#paste').value), 250));
 $('#smp').addEventListener('click', () => { const r = MT.rng(13), rows = [['user_agent', 'network_domain', 'country', 'source', 'sessions', 'avg_session_duration', 'pages_per_session', 'bounce_rate', 'conversions']]; const hum = [['Mozilla/5.0 (iPhone; CPU iPhone OS 17_5) Safari/605.1', 'comcast.net'], ['Mozilla/5.0 (Windows NT 10.0) Chrome/126.0', 'verizon.net'], ['Mozilla/5.0 (Macintosh) Safari/605.1.15', 'spectrum.com'], ['Mozilla/5.0 (Linux; Android 14) Chrome/126.0 Mobile', 'att.net']]; for (let i = 0; i < 90; i++) { const h = hum[i % 4], s = 5 + Math.round(r.u() * 60); rows.push([h[0], h[1], ['US', 'CA', 'GB', 'DE'][i % 4], ['organic', 'cpc', 'email', 'direct'][i % 4], s, (55 + r.u() * 90).toFixed(0), (2.4 + r.u() * 2).toFixed(1), (0.35 + r.u() * 0.2).toFixed(2), Math.round(s * 0.045 * (0.6 + r.u() * 0.8))]); } for (let i = 0; i < 14; i++) { const s = 30 + Math.round(r.u() * 200); rows.push(['Mozilla/5.0 (X11; Linux x86_64) HeadlessChrome/125.0', 'amazonaws.com', 'US', 'display', s, (0.2).toFixed(1), '1.0', '0.99', 0]); } for (let i = 0; i < 8; i++) { const s = 40 + Math.round(r.u() * 120); rows.push(['python-requests/2.31', 'digitalocean.com', 'SG', 'referral', s, '0', '1.0', '1.00', 0]); } for (let i = 0; i < 6; i++) { const s = 60 + Math.round(r.u() * 100); rows.push(['Mozilla/5.0 (Windows NT 10.0) Chrome/120.0', 'residential-isp.net', 'VN', 'paid_social', s, '0.4', '1.0', '0.97', 0]); } const t = MT.toCSV(rows); $('#paste').value = t; load(t); run(); });
 function run() {
   $('#err').textContent = ''; if (!tab) { $('#err').textContent = 'Paste or upload an export first.'; return; }
-  const g = id => $(id).value, ua = g('#cua'), nw = g('#cnw'), se = g('#cse'), du = g('#cdu'), pg = g('#cpg'), bo = g('#cbo'), co = g('#cco'), gr = g('#cgr'), zs = MT.val('zs');
+  const g = id => $(id).value, ua = g('#cua'), nw = g('#cnw'), se = g('#cse'), du = g('#cdu'), pg = g('#cpg'), bo = g('#cbo'), co = g('#cco'), gr = g('#cgr'), zs = MT.val('zs'), notes = [];
   if (!ua && !nw && !du && !pg) { $('#err').textContent = 'Map at least one of user agent, network, duration or pages.'; return; }
-  const rows = tab.rows.map(r => { const w = se ? MT.num(r[se]) : 1; if (!isFinite(w) || w <= 0) return null; const o = { w, ua: ua ? String(r[ua]) : '', nw: nw ? String(r[nw]) : '', dur: du ? MT.num(r[du]) : NaN, pg: pg ? MT.num(r[pg]) : NaN, bo: bo ? MT.pctNum(r[bo]) : NaN, cv: co ? (MT.num(r[co]) || 0) : NaN, seg: gr ? String(r[gr]) : '' }; if (isFinite(o.bo) && o.bo > 1 && o.bo <= 100 && /%|rate/i.test(bo) || (isFinite(o.bo) && o.bo > 1 && /rate/i.test(bo))) o.bo /= 100; if (isFinite(o.bo) && /bounces$/i.test(bo) && o.bo > 1) o.bo = Math.min(1, o.bo / w); return o; }).filter(Boolean);
-  if (!rows.length) { $('#err').textContent = 'No usable rows.'; return; }
-  rows.forEach(o => { const rs = []; if (o.ua && UA.test(o.ua)) rs.push('Bot or headless user agent'); if (o.nw && DC.test(o.nw)) rs.push('Data center network'); const zero = isFinite(o.dur) && o.dur <= zs && (!isFinite(o.pg) || o.pg <= 1.05) && (!isFinite(o.bo) || o.bo >= 0.9); if (zero) rs.push('Zero-second single-page visits'); o.rs = rs; o.cls = (rs.includes('Bot or headless user agent') || rs.includes('Data center network')) ? 'bot' : zero ? 'suspect' : 'human'; });
-  const tw = a => S.sum(a.map(o => o.w)), total = tw(rows), by = c => rows.filter(o => o.cls === c), bot = tw(by('bot')), sus = tw(by('suspect')), hum = tw(by('human')), hasCv = co && rows.some(o => isFinite(o.cv));
-  const cvAll = hasCv ? S.sum(rows.map(o => o.cv)) : NaN, cvHuman = hasCv ? S.sum(by('human').map(o => o.cv)) : NaN;
-  const site = hasCv ? cvHuman / Math.max(hum, 1) : NaN;
-  // anomalous segments: high volume, conv rate far below human rate
-  const seg = (name, keyf) => { const m = new Map(); rows.forEach(o => { const k = keyf(o); if (!k) return; const e = m.get(k) || { k, w: 0, cv: 0, bot: 0, dur: 0, dn: 0, zero: 0 }; e.w += o.w; e.cv += isFinite(o.cv) ? o.cv : 0; if (o.cls !== 'human') e.bot += o.w; if (isFinite(o.dur)) { e.dur += o.dur * o.w; e.dn += o.w; } if (isFinite(o.dur) && o.dur <= zs) e.zero += o.w; m.set(k, e); }); return Array.from(m.values()).map(e => Object.assign(e, { dim: name, botShare: e.bot / e.w, cr: hasCv ? e.cv / e.w : NaN, avgDur: e.dn ? e.dur / e.dn : NaN, z: hasCv && isFinite(site) && e.w >= 50 ? (function () { const p0 = site, se = Math.sqrt(p0 * (1 - p0) / e.w); return se > 0 ? (e.cv / e.w - p0) / se : 0; })() : 0 })); };
-  const segs = [].concat(nw ? seg('Network', o => o.nw.toLowerCase().trim()) : [], ua ? seg('User agent', o => o.ua.replace(/\d+(\.\d+)*/g, 'x').slice(0, 60)) : [], gr ? seg(g('#cgr'), o => o.seg) : []);
-  const flagged = segs.filter(s => s.w >= Math.max(50, total * 0.005) && (s.botShare >= 0.6 || (hasCv && s.z < -3 && s.cr < (site || 0) * 0.25))).sort((a, b) => b.w - a.w).slice(0, 25);
-  const inflated = (bot + sus) / total;
-  let h = MT.verdict(inflated > 0.15 ? 'neg' : inflated > 0.05 ? 'neu' : 'pos', `${F.pct(hum / total, 1)} human traffic, ${F.pct(bot / total, 1)} bots, ${F.pct(sus / total, 1)} suspect`, `${F.int(bot + sus)} of ${F.int(total)} sessions look non-human or low quality. Reported traffic is inflated by ${F.pct(inflated / Math.max(1 - inflated, 1e-9), 1)} versus the human baseline.${hasCv ? ` Conversion rate improves from ${F.pct(cvAll / total, 2)} to ${F.pct(site, 2)} after filtering.` : ''}`);
-  h += MT.stats([['Total sessions', F.int(total), ''], ['Human', F.int(hum), F.pct(hum / total, 1)], ['Bots', F.int(bot), F.pct(bot / total, 1), bot / total > 0.1 ? 'bad' : ''], ['Suspect', F.int(sus), F.pct(sus / total, 1), sus / total > 0.05 ? 'warn' : '']]);
+  const col = c => tab.rows.map(r => r[c]), fmt = c => c ? MT.numFmt(col(c)) : 'us', fS = fmt(se), fD = fmt(du), fP = fmt(pg), fB = fmt(bo), fC = fmt(co);
+  const idc = tab.cols.find(c => /session[\s_-]*id|id[\s_-]*(de[\s_-]*)?session|^id$/i.test(c)); let dupes = 0; const seenId = new Set();
+  const flag = (x, f) => { const t = String(x == null ? '' : x).trim(); if (YES.test(t)) return 1; if (NO.test(t)) return 0; return f(t); };
+  let noSess = 0, badDur = 0, badCv = 0, nCv = 0, nDur = 0, blank = 0, shared = 0;
+  const rows = tab.rows.map(r => {
+    if (idc) { const k = String(r[idc]).trim(); if (k) { if (seenId.has(k)) { dupes++; return null; } seenId.add(k); } }
+    const w = se ? MT.num(r[se], fS) : 1; if (!isFinite(w) || w <= 0) { noSess++; return null; }
+    const d = du ? dur(r[du], fD) : NaN; if (du && String(r[du]).trim() !== '') { nDur++; if (!isFinite(d)) badDur++; }
+    const o = { w, ua: ua ? String(r[ua]) : '', nw: nw ? String(r[nw]) : '', dur: d, pg: pg ? MT.num(r[pg], fP) : NaN, bo: NaN, cv: NaN, seg: gr ? String(r[gr]).trim() : '' };
+    if (bo) { const b = flag(r[bo], t => MT.pctNum(t, fB)); o.bo = b; if (isFinite(b) && b > 1 && b <= 100 && (/%/.test(r[bo]) || /rate|taux/i.test(bo))) o.bo = b / 100; else if (isFinite(b) && /bounces$|rebonds$/i.test(bo) && b > 1) o.bo = Math.min(1, b / w); }
+    if (co) { const t = String(r[co]).trim(); if (t !== '') { nCv++; const v = flag(t, x => MT.num(x, fC)); if (isFinite(v)) o.cv = v; else badCv++; } else o.cv = NaN; }
+    o.blank = !o.ua.trim() && !o.nw.trim() && (ua || nw); if (o.blank) blank += w; return o;
+  }).filter(Boolean);
+  if (dupes) notes.push(`${dupes} row${dupes === 1 ? '' : 's'} repeat a session ID already seen and ${dupes === 1 ? 'was' : 'were'} left out.`);
+  if (noSess) notes.push(`${noSess} row${noSess === 1 ? '' : 's'} left out because the sessions value was blank, zero or not a number.`);
+  if (du && nDur && badDur > nDur * 0.2) notes.push(`${badDur} of ${nDur} duration values could not be read as seconds or hh:mm:ss, so the duration rules were applied to the rest only.`);
+  if (!rows.length) { $('#out').innerHTML = MT.notComputed('Not computed: no usable rows', ['Every row was left out. Check the Sessions column choice, or set it to blank for one session per row.']) + (notes.length ? MT.note('<b>Data notes</b><ul>' + notes.map(t => '<li>' + MT.esc(t) + '</li>').join('') + '</ul>', 'warn') : ''); return; }
+  rows.forEach(o => {
+    const rs = [], goodUa = o.ua && GOOD.test(o.ua), badUa = o.ua && !goodUa && UA.test(o.ua), dc = o.nw && DC.test(o.nw), single = (!isFinite(o.pg) || o.pg <= 1.05) && (!isFinite(o.bo) || o.bo >= 0.9);
+    if (badUa) rs.push('Bot or scripted user agent'); if (dc) rs.push('Hosting or data center network'); if (goodUa && !dc) rs.push('Known search or social crawler');
+    const zero = isFinite(o.dur) && o.dur > 0 && o.dur <= zs && single; o.low = isFinite(o.dur) && o.dur === 0 && single; if (zero) rs.push('Sub-second single-page visit'); if (o.nw && SHARED.test(o.nw) && !dc) o.shared = true;
+    o.rs = rs; o.cls = (badUa || dc) ? 'bot' : goodUa ? 'crawler' : zero ? 'suspect' : 'human';
+  });
+  const tw = a => S.sum(a.map(o => o.w)), total = tw(rows), by = c => rows.filter(o => o.cls === c), bot = tw(by('bot')), sus = tw(by('suspect')), cra = tw(by('crawler')), hum = tw(by('human')), low = tw(rows.filter(o => o.low && o.cls === 'human')), sh = tw(rows.filter(o => o.shared && o.cls === 'human'));
+  const hasCv = co && nCv > 0 && badCv <= nCv * 0.5 && rows.some(o => isFinite(o.cv)); if (co && nCv && !hasCv) notes.push('Conversion values could not be read as numbers or yes/no, so conversion rates are not shown.');
+  const crows = rows.filter(o => isFinite(o.cv)), cvAll = hasCv ? S.sum(crows.map(o => o.cv)) : NaN, cvHuman = hasCv ? S.sum(by('human').filter(o => isFinite(o.cv)).map(o => o.cv)) : NaN, wAll = hasCv ? tw(crows) : NaN, wHum = hasCv ? tw(by('human').filter(o => isFinite(o.cv))) : NaN;
+  const site = hasCv && wHum > 0 ? cvHuman / wHum : NaN;
+  if (blank) notes.push(`${F.int(blank)} session${blank === 1 ? '' : 's'} (${F.pct(blank / total, 1)}) have no user agent and no network, so nothing could be tested. They are counted as human.`);
+  if (low) notes.push(`${F.int(low)} sessions (${F.pct(low / total, 1)}) are single-page visits with a recorded duration of exactly 0. Many analytics tools record every one-page visit that way, so this is not evidence of a bot and they are counted as human.`);
+  if (sh) notes.push(`${F.int(sh)} sessions (${F.pct(sh / total, 1)}) come from networks that many real people share (corporate gateways, VPNs, iCloud Private Relay, big clouds with offices behind them). They are counted as human unless another signal fires. Do not exclude those networks.`);
+  if (cra) notes.push('Search and social crawlers are shown separately. Their user agent can be faked, so verify a crawler by reverse DNS before trusting it. They are real crawlers when verified, not invalid traffic, but they are not people.');
+  const seg = (name, keyf) => { const m = new Map(); rows.forEach(o => { const k = keyf(o); if (!k) return; const e = m.get(k.k) || { k: k.k, raw: k.raw, w: 0, cv: 0, wcv: 0, bot: 0, dur: 0, dn: 0 }; e.w += o.w; if (isFinite(o.cv)) { e.cv += o.cv; e.wcv += o.w; } if (o.cls !== 'human') e.bot += o.w; if (isFinite(o.dur)) { e.dur += o.dur * o.w; e.dn += o.w; } m.set(k.k, e); }); return Array.from(m.values()).map(e => Object.assign(e, { dim: name, botShare: e.bot / e.w, cr: hasCv && e.wcv ? e.cv / e.wcv : NaN, avgDur: e.dn ? e.dur / e.dn : NaN, z: hasCv && isFinite(site) && e.wcv >= 200 ? (function () { const p0 = site, s0 = Math.sqrt(p0 * (1 - p0) / e.wcv); return s0 > 0 ? (e.cv / e.wcv - p0) / s0 : 0; })() : 0 })); };
+  const segs = [].concat(nw ? seg('Network', o => o.nw.trim() ? { k: o.nw.toLowerCase().trim() } : null) : [], ua ? seg('User agent', o => o.ua.trim() ? { k: o.ua.replace(/\d+(\.\d+)*/g, 'x').slice(0, 60), raw: o.ua.slice(0, 300) } : null) : [], gr ? seg(gr, o => o.seg ? { k: o.seg } : null) : []);
+  /* A low conversion rate alone never flags a segment: it must also carry a bot signal. Awareness channels often convert at zero. */
+  const flagged = segs.filter(s => s.w >= Math.max(50, total * 0.005) && (s.botShare >= 0.6 || (hasCv && s.z < -3 && s.cr < (site || 0) * 0.25 && s.botShare >= 0.2))).sort((a, b) => b.w - a.w).slice(0, 25);
+  const removed = (bot + sus + cra) / total, nonHuman = bot + sus + cra;
+  let h = MT.verdict(removed > 0.15 ? 'neg' : removed > 0.05 ? 'neu' : 'pos', `${F.pct(hum / total, 1)} human traffic, ${F.pct(bot / total, 1)} bots, ${F.pct(sus / total, 1)} suspect${cra ? ', ' + F.pct(cra / total, 1) + ' search and social crawlers' : ''}`, `${F.int(nonHuman)} of ${F.int(total)} sessions look non-human or low quality. Reported traffic would drop by ${F.pct(removed, 1)} if those were removed.${hasCv && isFinite(site) ? ` Conversion rate would move from ${F.pct(cvAll / wAll, 2)} to ${F.pct(site, 2)} on the human sessions.` : ''} Screening uses names and visit patterns only, so confirm large flagged groups in raw logs before changing historic reports.`);
+  if (notes.length) h += MT.note('<b>Data notes</b><ul>' + notes.map(t => '<li>' + MT.esc(t) + '</li>').join('') + '</ul>', 'warn');
+  h += MT.stats([['Total sessions', F.int(total), ''], ['Human', F.int(hum), F.pct(hum / total, 1)], ['Bots', F.int(bot), F.pct(bot / total, 1), bot / total > 0.1 ? 'bad' : ''], ['Suspect', F.int(sus), F.pct(sus / total, 1), sus / total > 0.05 ? 'warn' : ''], ...(cra ? [['Crawlers', F.int(cra), F.pct(cra / total, 1)]] : [])]);
   h += '<div class="card"><div id="c1"></div></div>';
   const reasons = new Map(); rows.forEach(o => o.rs.forEach(x => reasons.set(x, (reasons.get(x) || 0) + o.w)));
-  h += '<div class="card"><h3>Why sessions were flagged</h3>' + MT.tbl(['Rule', 'Sessions', 'Share'], Array.from(reasons.entries()).sort((a, b) => b[1] - a[1]).map(([k, v]) => [k, F.int(v), F.pct(v / total, 1)]), { num: [1, 2] }) + '</div>';
-  h += '<div class="card"><h3>Segments to exclude or investigate</h3>' + (flagged.length ? MT.tbl(['Dimension', 'Segment', 'Sessions', 'Non-human share', ...(hasCv ? ['Conv. rate'] : []), 'Avg duration'], flagged.map(s => [s.dim, s.k, F.int(s.w), F.pct(s.botShare, 0), ...(hasCv ? [F.pct(s.cr, 2)] : []), isFinite(s.avgDur) ? s.avgDur.toFixed(1) + 's' : '—']), { num: [2, 3, 4, 5] }) : '<p class="muted">No segment stands out.</p>') + '</div>';
-  const nets = flagged.filter(s => s.dim === 'Network').map(s => s.k), uas = flagged.filter(s => s.dim === 'User agent').map(s => s.k);
-  let rules = 'GA4 Explore segment (exclude sessions where any is true)\n'; if (nets.length) rules += ' - Network domain / hostname contains: ' + nets.join(' | ') + '\n'; rules += ' - Session duration under ' + (zs + 1) + ' seconds AND views per session = 1 AND Country not in your target markets\n'; if (uas.length) rules += ' - Browser / user agent matches: ' + uas.join(' | ') + '\n'; rules += ' - Hostname does not equal your domain (ghost spam)\nServer log filter (regex on user agent): ' + UA.source.replace(/\\b/g, '\\b');
-  h += '<div class="card"><h3>Segmentation criteria</h3><pre class="code" id="rules">' + MT.esc(rules) + '</pre><div class="actions"><button class="btn btn-secondary btn-sm" id="cp" type="button">Copy rules</button></div></div>';
-  h += MT.note('<b>Limits.</b> The data center list matches network names, not IP ranges, so it catches named clouds and hosts but misses residential proxies. Zero-second single-page visits are tagged suspect rather than bot because slow-loading pages and tab closes produce them too. Confirm large flagged segments in raw logs before excluding them from historic reporting.');
+  h += '<div class="card"><h3>Why sessions were flagged</h3><p class="sub">A session can match more than one rule, so these shares overlap and do not add up to the totals above.</p>' + (reasons.size ? MT.tbl(['Rule', 'Sessions', 'Share'], Array.from(reasons.entries()).sort((a, b) => b[1] - a[1]).map(([k, v]) => [k, F.int(v), F.pct(v / total, 1)]), { num: [1, 2] }) : '<p class="muted">No rule matched.</p>') + '</div>';
+  h += '<div class="card"><h3>Segments to investigate</h3><p class="sub">Listed when most of the segment trips a bot rule, or when it converts far below the human rate and also shows some bot signal. A segment that simply does not convert (awareness channels, for example) is not listed.</p>' + (flagged.length ? MT.tbl(['Dimension', 'Segment', 'Sessions', 'Non-human share', ...(hasCv ? ['Conv. rate'] : []), 'Avg duration'], flagged.map(s => [s.dim, s.k, F.int(s.w), F.pct(s.botShare, 0), ...(hasCv ? [isFinite(s.cr) ? F.pct(s.cr, 2) : '—'] : []), isFinite(s.avgDur) ? s.avgDur.toFixed(1) + 's' : '—']), { num: [2, 3, 4, 5] }) : '<p class="muted">No segment stands out.</p>') + '</div>';
+  const nets = flagged.filter(s => s.dim === 'Network').map(s => s.k), uas = Array.from(new Set(flagged.filter(s => s.dim === 'User agent').map(s => { const m = UA.exec(s.raw || s.k); return m ? m[0].toLowerCase() : ''; }).filter(Boolean)));
+  let rules = 'Where each rule can be applied\n\nServer logs, BigQuery with an IP-to-ASN lookup, Cloudflare or other WAF rules\n'; rules += nets.length ? ' - Network or ASN names to review (not proof of automation on their own): ' + nets.join(' | ') + '\n' : ' - No network stands out.\n'; rules += uas.length ? ' - User agent contains (bot-style tokens found in your file): ' + uas.join(' | ') + '\n' : ' - No user agent stands out.\n'; rules += ' - User agent regex, case-insensitive (add the i flag): ' + UA.source + '\n\nGA4\n - GA4 has no network, ISP or user agent dimension, so the network and user agent rules above cannot be built there. Use IP-based internal-traffic filters if you know the addresses.\n - Diagnostic segment only: Engagement time under ' + zs + ' s AND Views per session = 1. Do not exclude on it: legitimate one-page visits can look the same.\n\nUniversal Analytics or Looker Studio filters on the ISP or network field work with the network names above.';
+  h += '<div class="card"><h3>Filter rules</h3><pre class="code" id="rules">' + MT.esc(rules) + '</pre><div class="actions"><button class="btn btn-secondary btn-sm" id="cp" type="button">Copy rules</button></div></div>';
+  h += MT.note('<b>Limits.</b> The hosting list matches network names, not IP ranges, so it catches named clouds and hosts but misses residential proxies and Tor exits. Microsoft, Oracle, Akamai, Cloudflare and Apple relay traffic is not treated as bot traffic because real people use those networks. Visits with a duration of exactly 0 are not judged, because many tools record every one-page visit that way.');
   $('#out').innerHTML = h;
-  C.bars($('#c1'), { title: 'Sessions by class', cats: ['Human', 'Suspect', 'Bot'], series: [{ name: 'Sessions', values: [hum, sus, bot], color: 'var(--series-1)' }], yFmt: v => F.int(v) });
+  C.bars($('#c1'), { title: 'Sessions by class', cats: ['Human', 'Suspect', 'Bot'].concat(cra ? ['Crawler'] : []), series: [{ name: 'Sessions', values: [hum, sus, bot].concat(cra ? [cra] : []), color: 'var(--series-1)' }], yFmt: v => F.int(v) });
   $('#cp').addEventListener('click', e => MT.copy(rules, e.target));
 }
 $('#go').addEventListener('click', run);

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>UTM Governance Auditor | Marketing Tools</title>
-<meta name="description" content="Paste campaign URLs or a traffic export. The tool validates UTM parameters against your naming convention, detects case and spelling variants that split channels, and lists rows to fix.">
+<meta name="description" content="Paste campaign URLs, a landing-page export or a source / medium report. The tool validates UTM parameters against your naming convention, detects case, spelling and synonym variants that split channels, and lists rows to fix with a suggested correction.">
 <style>/* Signal & Serif tokens, shared by every tool */
 :root{
   color-scheme: light;
@@ -225,7 +225,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 <main class="wrap">
   <div class="hero">
     <h1 class="serif">UTM Governance Auditor</h1>
-    <p>Paste campaign URLs or a traffic export. The tool validates UTM parameters against your naming convention, detects case and spelling variants that split channels, and lists rows to fix.</p>
+    <p>Paste campaign URLs, a landing-page export or a source / medium report. The tool validates UTM parameters against your naming convention, detects case, spelling and synonym variants that split channels, and lists rows to fix with a suggested correction.</p>
     <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
   </div>
   <div class="toolbar">
@@ -237,13 +237,13 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
   </div>
 
 <div class="card"><h3>Input</h3>
-  <p class="sub">Paste one URL per line, or upload a CSV with a URL column (optionally with sessions). Rows with sessions weight the impact of each problem.</p>
+  <p class="sub">Paste one URL per line, or upload a CSV: a landing-page export with a URL column, or a GA4 "Session source / medium" report. A sessions column weights each problem by traffic. Comment lines starting with # (GA4 exports) are skipped.</p>
   <div id="drop"></div>
   <div class="field" style="margin-top:.6rem"><label for="paste">URLs or CSV</label><textarea id="paste" rows="7" placeholder="https://example.com/?utm_source=Facebook&utm_medium=cpc&utm_campaign=Summer_Sale"></textarea></div>
-  <div id="colbox" class="row2" style="display:none"><div class="field"><label for="cu">URL column</label><select id="cu"></select></div><div class="field"><label for="cs">Sessions column (optional)</label><select id="cs"></select></div></div>
+  <div id="colbox" class="row2" style="display:none"><div class="field"><label for="cu">URL or source / medium column</label><select id="cu"></select></div><div class="field"><label for="cs">Sessions column (optional)</label><select id="cs"></select></div></div>
 </div>
 <div class="card"><h3>Naming convention</h3><div id="f"></div>
-  <div class="row2"><div class="field"><label for="srcs">Approved sources (comma separated, blank to skip)</label><textarea id="srcs" rows="2">google, facebook, instagram, linkedin, tiktok, bing, youtube, newsletter, x, reddit</textarea></div><div class="field"><label for="meds">Approved mediums</label><textarea id="meds" rows="2">cpc, paid_social, email, organic_social, display, affiliate, referral, video, sms</textarea></div></div>
+  <div class="row2"><div class="field"><label for="f_srcs">Approved sources (comma separated, blank to skip)</label><textarea id="f_srcs" rows="2">google, facebook, instagram, linkedin, tiktok, bing, youtube, newsletter, x, reddit</textarea></div><div class="field"><label for="f_meds">Approved mediums</label><textarea id="f_meds" rows="2">cpc, paid_social, email, organic_social, display, affiliate, referral, video, sms</textarea></div></div>
   <div class="actions"><button class="btn btn-primary" id="go" type="button">Audit</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div><div class="err" id="err"></div></div>
 <div id="out"></div>
 
@@ -298,14 +298,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -315,6 +359,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -336,22 +382,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -359,7 +468,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -639,7 +748,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -697,40 +806,101 @@ https://shop.example.com/?utm_source=newsletter&utm_medium=email
 https://shop.example.com/?utm_source=newsletter&utm_medium=email&utm_campaign=weekly_digest_0912
 https://shop.example.com/?utm_source=linkedin&utm_medium=social&utm_campaign=b2b_launch
 https://shop.example.com/?utm_medium=cpc&utm_campaign=orphan_no_source
-https://shop.example.com/?utm_source=tiktok&utm_medium=paid_social&utm_campaign=ugc%20test&utm_content=Video A`; run(); });
+https://shop.example.com/?utm_source=tiktok&utm_medium=paid_social&utm_campaign=ugc%20test&utm_content=Video A`; detect(); run(); });
 MT.dropzone($('#drop'), t => { $('#paste').value = t; detect(); }); $('#paste').addEventListener('input', MT.debounce(detect, 250));
+const KNOWN_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id', 'utm_source_platform', 'utm_creative_format', 'utm_marketing_tactic'];
+const SRC_FAM = [['facebook', ['facebook', 'fb', 'face_book', 'facebook_ads', 'fb_ads', 'meta', 'meta_ads']], ['instagram', ['instagram', 'ig', 'insta']], ['google', ['google', 'google_ads', 'googleads', 'google_adwords', 'adwords', 'googleadwords']], ['bing', ['bing', 'bing_ads', 'microsoft_ads', 'msads']], ['linkedin', ['linkedin', 'li', 'lnkd', 'linked_in']], ['tiktok', ['tiktok', 'tik_tok', 'tt']], ['youtube', ['youtube', 'yt']], ['twitter', ['twitter', 'x']]];
+const MED_FAM = [['cpc', ['cpc', 'ppc', 'paid_search', 'paidsearch', 'sem']], ['email', ['email', 'e_mail', 'mail']], ['paid_social', ['paid_social', 'paidsocial', 'social_paid']]];
+const KNOWN_MED = ['cpc', 'cpm', 'cpa', 'cpv', 'cpl', 'cpe', 'cps'];
+const nk = v => String(v).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim().replace(/[\s\-]+/g, '_').replace(/^_+|_+$/g, '');
+const fam = (key, v) => { const f = (key === 'utm_source' ? SRC_FAM : key === 'utm_medium' ? MED_FAM : []).find(x => x[1].includes(nk(v))); return f ? f[0] : null; };
+const clean = t => String(t).replace(/^﻿/, '').split(/\r?\n/).filter(l => !/^\s*#/.test(l)).join('\n');
+const looksUrl = v => /^https?:\/\//i.test(v) || /\?utm_/i.test(v) || /^[\w-]+(\.[\w-]+)+\/\S/.test(v);
+const looksSM = v => /\s\/\s/.test(v) && !/^https?:/i.test(v);
 let tab = null;
-function detect() { const t = $('#paste').value; if (/^\s*https?:\/\//im.test(t) && !/,/.test(t.split('\n')[0].replace(/\?[^ ]*/, ''))) { $('#colbox').style.display = 'none'; tab = null; return; } tab = MT.readTable(t, /url|link|landing/i); if (tab.cols.length > 1) { $('#colbox').style.display = ''; MT.fillSelect($('#cu'), tab.cols, /url|link|landing|page/i); MT.fillSelect($('#cs'), tab.cols, /session|visit|click/i, { none: true }); if (!MT.guess(tab.cols, /session|visit|click/i)) $('#cs').value = ''; } else { $('#colbox').style.display = 'none'; tab = null; } }
-function parse(u) { let q = u.split('#')[0]; const i = q.indexOf('?'); const out = {}; if (i < 0) return out; q.slice(i + 1).split('&').forEach(p => { if (!p) return; const j = p.indexOf('='); let k = j < 0 ? p : p.slice(0, j), v = j < 0 ? '' : p.slice(j + 1); try { k = decodeURIComponent(k.replace(/\+/g, ' ')); v = decodeURIComponent(v.replace(/\+/g, ' ')); } catch (e) { } out[k] = v; }); return out; }
+function detect() {
+  const t = clean($('#paste').value), first = (t.split('\n').find(l => l.trim()) || '').trim();
+  if (looksUrl(first.split(/,(?=\s*[\d–-]|\s*$)/)[0]) && !/^[^,]*url[^,]*,/i.test(first)) { $('#colbox').style.display = 'none'; tab = null; return; }
+  tab = MT.readTable(t, /url|link|landing|page|source|medium/i);
+  if (tab.cols.length > 1 || (tab.cols.length === 1 && tab.rows.length)) {
+    $('#colbox').style.display = '';
+    const colVals = c => tab.rows.slice(0, 60).map(r => String(r[c]).trim()).filter(Boolean), share = (c, f) => { const v = colVals(c); return v.length ? v.filter(f).length / v.length : 0; };
+    const pick = tab.cols.find(c => share(c, looksUrl) > 0.5) || tab.cols.find(c => share(c, looksSM) > 0.5) || tab.cols.find(c => /source.*medium|url|link|landing|page/i.test(c)) || tab.cols.find(c => /source/i.test(c)) || tab.cols[0];
+    MT.fillSelect($('#cu'), tab.cols, null); $('#cu').value = pick;
+    const others = tab.cols.filter(c => c !== pick), sg = MT.guess(others, /^sessions?$|session|visit|click/i); MT.fillSelect($('#cs'), tab.cols, null, { none: true }); $('#cs').value = sg || '';
+  } else { $('#colbox').style.display = 'none'; tab = null; }
+}
+/* Returns {p: lower-case param map, dup: [names repeated with different values], upperNames: [], html: bool}. */
+function parse(u) {
+  const html = /&amp;/i.test(u); let q = u.split('#')[0].replace(/&amp;/gi, '&'); const i = q.indexOf('?'), p = {}, seen = {}, dup = [], upperNames = []; if (i < 0) return { p, dup, upperNames, html };
+  q.slice(i + 1).split('&').forEach(x => { if (!x) return; const j = x.indexOf('='); let k = j < 0 ? x : x.slice(0, j), v = j < 0 ? '' : x.slice(j + 1); try { k = decodeURIComponent(k.replace(/\+/g, ' ')); v = decodeURIComponent(v.replace(/\+/g, ' ')); } catch (e) { } const lk = k.toLowerCase(); if (/^utm_/i.test(k) && k !== lk) upperNames.push(k); if (lk in seen && seen[lk] !== v && !dup.includes(lk)) dup.push(lk); if (!(lk in seen)) { seen[lk] = v; p[lk] = v; } });
+  return { p, dup, upperNames, html };
+}
 function lev(a, b) { const m = a.length, n = b.length; if (Math.abs(m - n) > 3) return 9; const d = Array.from({ length: m + 1 }, (_, i) => [i]); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; }
 function run() {
-  $('#err').textContent = ''; let rows = [];
-  if (tab && $('#cu').value) { const cu = $('#cu').value, cs = $('#cs').value; rows = tab.rows.map(r => ({ url: String(r[cu]).trim(), w: cs ? MT.num(r[cs]) || 0 : 1 })); } else rows = $('#paste').value.split('\n').map(s => s.trim()).filter(Boolean).map(u => ({ url: u, w: 1 }));
-  rows = rows.filter(r => /\?/.test(r.url) || /^https?:/.test(r.url)); if (!rows.length) { $('#err').textContent = 'No URLs found.'; return; }
-  const srcOk = $('#srcs').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean), medOk = $('#meds').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean), lc = MT.f('case'), sp = MT.f('sp'), req = MT.f('req'), cont = MT.f('cont'), sep = MT.f('sep'), maxl = MT.f('maxl') || 60;
-  const issues = new Map(), bump = (k, sev) => { const o = issues.get(k) || { k, n: 0, w: 0, sev }; return o; };
-  const res = rows.map(r => { const p = parse(r.url), iss = [], add = (t, s) => iss.push({ t, s });
+  $('#err').textContent = ''; const notes = []; let rows = [], untagged = 0, noUrl = [], unreadable = 0, exactDup = 0;
+  if (tab && $('#cu').value) {
+    const cu = $('#cu').value, cs = $('#cs').value, fmt = cs ? MT.numFmt(tab.rows.map(r => r[cs])) : 'us', seen = new Set();
+    const medC = tab.cols.find(c => /medium/i.test(c) && c !== cu), campC = tab.cols.find(c => /campaign/i.test(c) && c !== cu), srcOnly = /source/i.test(cu) && !/medium/i.test(cu) && medC;
+    tab.rows.forEach(r => {
+      const v = String(r[cu]).trim(); if (!v) return; let w = 1; if (cs) { const n = MT.num(r[cs], fmt); if (isFinite(n)) w = n; else { w = 0; unreadable++; } }
+      const key = v + '|' + (cs ? r[cs] : ''); if (seen.has(key)) exactDup++; seen.add(key);
+      if (looksUrl(v)) { rows.push({ url: v, w }); return; }
+      if (looksSM(v) || srcOnly) { let s, m; if (srcOnly) { s = v; m = String(r[medC]).trim(); } else { const parts = v.split(/\s\/\s/); s = parts[0].trim(); m = parts.slice(1).join(' / ').trim(); }
+        if (/^\(.*\)$/.test(s) || /^\(.*\)$/.test(m) || s === '' || m === '') { untagged += 1; return; }
+        const x = { url: s + ' / ' + m, w, sm: true, p: { utm_source: s, utm_medium: m } }; if (campC && String(r[campC]).trim() && !/^\(.*\)$/.test(String(r[campC]).trim())) x.p.utm_campaign = String(r[campC]).trim(); x.hasCamp = !!campC; rows.push(x); return; }
+      noUrl.push(v);
+    });
+  } else {
+    const lines = clean($('#paste').value).split('\n').map(s => s.trim()).filter(Boolean), seen = new Set();
+    lines.forEach(l => { const m = l.match(/^([^,\s]+),\s*(.*)$/), hasW = m && looksUrl(m[1]); const u = hasW ? m[1] : l; let w = 1; if (hasW) { const n = MT.num(m[2]); if (isFinite(n)) w = n; else { w = 0; unreadable++; } } if (seen.has(l)) exactDup++; seen.add(l); if (looksUrl(u)) rows.push({ url: u, w }); else noUrl.push(l); });
+  }
+  if (noUrl.length) notes.push(`${noUrl.length} row${noUrl.length === 1 ? '' : 's'} left out because the value is not a URL or a source / medium pair (e.g. ${noUrl.slice(0, 2).map(x => x.slice(0, 50)).join(' | ')}).`);
+  if (untagged) notes.push(`${untagged} source / medium row${untagged === 1 ? '' : 's'} left out because ${untagged === 1 ? 'it is a GA4 default' : 'they are GA4 defaults'}, not a tagged link ((direct) / (none), (not set) and similar).`);
+  if (!rows.length) { $('#out').innerHTML = MT.notComputed('Not computed: no URLs or source / medium rows found', ['Paste one URL per line, or upload a CSV with a URL column or a "Session source / medium" column.']) + (notes.length ? MT.note('<b>Data notes</b><ul>' + notes.map(t => '<li>' + MT.esc(t) + '</li>').join('') + '</ul>', 'warn') : ''); return; }
+  const srcOk = $("#f_srcs").value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean), medOk = $("#f_meds").value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean), lc = MT.f('case'), sp = MT.f('sp'), cont = MT.f('cont'), sep = MT.f('sep'), maxl = MT.f('maxl') || 60;
+  const smOnly = rows.every(r => r.sm), req = MT.f('req') && !(smOnly && !rows.some(r => r.hasCamp));
+  if (smOnly && !rows.some(r => r.hasCamp)) notes.push('A source / medium report has no campaign column, so only source and medium are checked.');
+  if (unreadable) notes.push(`${unreadable} row${unreadable === 1 ? ' has' : 's have'} a blank or non-numeric sessions value. ${unreadable === 1 ? 'It is' : 'They are'} still audited but count as 0 sessions in the weighted score.`);
+  if (exactDup) notes.push(`${exactDup} row${exactDup === 1 ? ' is an exact duplicate' : 's are exact duplicates'} of another row (same value and sessions). Duplicates are kept, so check the export if sessions look inflated.`);
+  const res = rows.map(r => { const pr = r.sm ? { p: r.p, dup: [], upperNames: [], html: false } : parse(r.url), p = pr.p, iss = [], add = (t, s, k) => iss.push({ t, s, k: k || t });
     const s = p.utm_source, m = p.utm_medium, c = p.utm_campaign;
-    if (!Object.keys(p).some(k => /^utm_/i.test(k))) add('No UTM parameters', 'high');
+    if (!r.sm && !Object.keys(p).some(k => /^utm_/.test(k))) add('No UTM parameters', 'high');
     else { if (s == null || s === '') add('Missing utm_source', 'high'); if (m == null || m === '') add('Missing utm_medium', 'high'); if (req && (c == null || c === '')) add('Missing utm_campaign', 'high'); if (cont && !p.utm_content && /cpc|paid|display|video/i.test(m || '')) add('Missing utm_content on paid media', 'low'); }
-    Object.keys(p).forEach(k => { if (/^utm_/i.test(k) && k !== k.toLowerCase()) add(`Parameter name "${k}" not lowercase`, 'med'); if (/^utm_/i.test(k) && !['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id'].includes(k.toLowerCase())) add(`Unknown UTM parameter "${k}"`, 'low'); });
-    [['source', s], ['medium', m], ['campaign', c], ['content', p.utm_content], ['term', p.utm_term]].forEach(([n, v]) => { if (v == null || v === '') return; if (lc && v !== v.toLowerCase()) add(`utm_${n} has uppercase ("${v}")`, 'med'); if (sp && /[\s]/.test(v)) add(`utm_${n} contains spaces ("${v}")`, 'high'); if (sp && /[^a-zA-Z0-9_\-.\s]/.test(v)) add(`utm_${n} contains special characters ("${v}")`, 'med'); if (sep && n === 'campaign') { const bad = sep === '_' ? '-' : '_'; if (v.includes(bad)) add(`utm_campaign uses "${bad}" instead of "${sep}"`, 'low'); } });
-    if (s && srcOk.length && !srcOk.includes(s.toLowerCase())) add(`Unapproved source "${s}"`, 'med'); if (m && medOk.length && !medOk.includes(m.toLowerCase().replace(/\s+/g, '_'))) add(`Unapproved medium "${m}"`, 'med'); if (c && c.length > maxl) add(`utm_campaign longer than ${maxl} characters`, 'low');
+    if (pr.html) add('URL contains &amp; (copied from HTML), parameters after the first are not read as UTMs', 'med', 'URL contains &amp;');
+    pr.upperNames.forEach(k => add(`Parameter name "${k}" not lowercase`, 'med', 'Parameter name not lowercase')); pr.dup.forEach(k => add(`${k} appears twice with different values`, 'high', 'Parameter repeated with different values'));
+    Object.keys(p).forEach(k => { if (/^utm_/.test(k) && !KNOWN_PARAMS.includes(k)) add(`Unknown UTM parameter "${k}"`, 'low', 'Unknown UTM parameter'); });
+    [['source', s], ['medium', m], ['campaign', c], ['content', p.utm_content], ['term', p.utm_term]].forEach(([n, v]) => { if (v == null || v === '') return; if (lc && v !== v.toLowerCase()) add(`utm_${n} has uppercase ("${v}")`, 'med', `utm_${n} has uppercase`); if (sp && /[\s]/.test(v)) add(`utm_${n} contains spaces ("${v}")`, 'high', `utm_${n} contains spaces`); if (sp && /[^a-zA-Z0-9_\-.\s]/.test(v)) add(`utm_${n} contains accents or special characters ("${v}")`, 'med', `utm_${n} contains accents or special characters`); if (sep && n === 'campaign') { const bad = sep === '_' ? '-' : '_'; if (v.includes(bad)) add(`utm_campaign uses "${bad}" instead of "${sep}"`, 'low'); } });
+    if (s && srcOk.length && !srcOk.includes(s.toLowerCase())) add(`Unapproved source "${s}"`, 'med', 'Unapproved source'); if (m && medOk.length && !medOk.includes(m.toLowerCase().replace(/\s+/g, '_'))) add(`Unapproved medium "${m}"`, 'med', 'Unapproved medium'); if (c && c.length > maxl) add(`utm_campaign longer than ${maxl} characters`, 'low', 'utm_campaign too long');
     return { r, p, iss }; });
-  // variant groups
-  const groups = (key) => { const m = new Map(); res.forEach(x => { const v = x.p[key]; if (!v) return; const norm = v.toLowerCase().replace(/[\s_\-]+/g, ''); const g = m.get(norm) || new Map(); g.set(v, (g.get(v) || 0) + x.r.w); m.set(norm, g); }); return Array.from(m.entries()).filter(([, g]) => g.size > 1).map(([n, g]) => ({ key, variants: Array.from(g.entries()).sort((a, b) => b[1] - a[1]) })); };
-  const vs = [].concat(groups('utm_source'), groups('utm_medium'), groups('utm_campaign'));
-  ['utm_source', 'utm_medium'].forEach(key => { const vals = Array.from(new Set(res.map(x => x.p[key]).filter(Boolean).map(v => v.toLowerCase()))); for (let i = 0; i < vals.length; i++) for (let j = i + 1; j < vals.length; j++) { if (vals[i].replace(/[\s_\-]+/g, '') === vals[j].replace(/[\s_\-]+/g, '')) continue; if (lev(vals[i], vals[j]) <= 1 && Math.min(vals[i].length, vals[j].length) >= 3) vs.push({ key, variants: [[vals[i], 0], [vals[j], 0]], near: true }); } });
-  const bad = res.filter(x => x.iss.length), high = res.filter(x => x.iss.some(i => i.s === 'high')), totalW = S.sum(res.map(x => x.r.w)), badW = S.sum(bad.map(x => x.r.w)), score = Math.round(100 * (1 - badW / totalW));
-  const tally = new Map(); res.forEach(x => x.iss.forEach(i => { const k = i.t.replace(/"[^"]*"|\([^)]*\)/g, '').replace(/\s+/g, ' ').trim(), o = tally.get(k) || { t: k, s: i.s, n: 0, w: 0 }; o.n++; o.w += x.r.w; tally.set(k, o); }));
+  /* Variant groups: same value in other case, separator or accents, or a known synonym (fb, facebook, meta). */
+  const compact = v => nk(v).replace(/_/g, '');
+  const groups = key => { const m = new Map(); res.forEach(x => { const v = x.p[key]; if (!v) return; const k = fam(key, v) || compact(v), g = m.get(k) || new Map(); g.set(v, (g.get(v) || 0) + x.r.w); m.set(k, g); }); return Array.from(m.entries()).filter(([, g]) => new Set(Array.from(g.keys()).map(nk)).size > 1 || g.size > 1).map(([k, g]) => ({ key, fam: fam(key, Array.from(g.keys())[0]), variants: Array.from(g.entries()).sort((a, b) => b[1] - a[1]) })); };
+  const vs = [].concat(groups('utm_source'), groups('utm_medium'), groups('utm_campaign')); const nearAll = [];
+  ['utm_source', 'utm_medium'].forEach(key => { const ok = key === 'utm_source' ? srcOk : medOk, vals = Array.from(new Set(res.map(x => x.p[key]).filter(Boolean).map(nk))); const inGroup = new Set(); vs.filter(v => v.key === key).forEach(v => v.variants.forEach(x => inGroup.add(nk(x[0]))));
+    for (let i = 0; i < vals.length; i++) for (let j = i + 1; j < vals.length; j++) { const a = vals[i], b = vals[j]; if (a.replace(/_/g, '') === b.replace(/_/g, '') || fam(key, a) && fam(key, a) === fam(key, b)) continue; if (ok.includes(a) && ok.includes(b)) continue; if (KNOWN_MED.includes(a) && KNOWN_MED.includes(b)) continue; const pa = a.replace(/\d+$/, ''), pb = b.replace(/\d+$/, ''); if (pa === pb) continue; if (lev(a, b) <= 1 && Math.min(a.length, b.length) >= 3) nearAll.push({ key, variants: [[a, 0], [b, 0]], near: true }); } });
+  const near = nearAll.slice(0, 30); if (nearAll.length > near.length) notes.push(`Showing 30 of ${nearAll.length} near-miss pairs (values one letter apart).`);
+  const all = vs.concat(near);
+  const canon = v => { const key = v.key, ok = key === 'utm_source' ? srcOk : key === 'utm_medium' ? medOk : []; const names = v.variants.map(x => nk(x[0])); const approved = ok.find(a => names.includes(nk(a)) || (v.fam && fam(key, a) === v.fam)); return approved ? nk(approved) : nk(v.variants[0][0]); };
+  const cm = new Map(); all.forEach(v => { if (!v.near) { const c = canon(v); v.variants.forEach(x => cm.set(v.key + '|' + x[0], c)); } });
+  res.forEach(x => ['utm_source', 'utm_medium', 'utm_campaign'].forEach(k => { const v = x.p[k], c = v ? cm.get(k + '|' + v) : null; if (c && v.trim().toLowerCase() !== c && nk(v) !== c) x.iss.push({ t: `${k} "${v}" is a variant of "${c}"`, s: 'med', k: `${k} is a variant of the main spelling` }); else if (c && v.trim().toLowerCase() !== c && !x.iss.some(i => /uppercase|spaces|special|instead of|Unapproved/.test(i.t))) x.iss.push({ t: `${k} "${v}" differs from "${c}"`, s: 'low', k: `${k} differs from the main spelling` }); }));
+  const bad = res.filter(x => x.iss.length), high = res.filter(x => x.iss.some(i => i.s === 'high')), totalW = S.sum(res.map(x => x.r.w)), badW = S.sum(bad.map(x => x.r.w)), highW = S.sum(high.map(x => x.r.w));
+  const weighted = totalW > 0; if (!weighted) notes.push('No session counts were readable, so every URL counts equally in the score.');
+  const base = weighted ? totalW : res.length, badB = weighted ? badW : bad.length, score = badB > 0 ? Math.min(99, Math.round(100 * (1 - badB / base))) : 100;
+  const tally = new Map(); res.forEach(x => x.iss.forEach(i => { const o = tally.get(i.k) || { t: i.k, s: i.s, n: 0, w: 0 }; o.n++; o.w += x.r.w; tally.set(i.k, o); }));
   const sevTag = s => MT.tag(s === 'high' ? 'High' : s === 'med' ? 'Medium' : 'Low', s === 'high' ? 'bad' : s === 'med' ? 'warn' : '');
-  let h = MT.rag(score >= 90 ? 'green' : score >= 70 ? 'yellow' : 'red', `Governance score ${score} out of 100`, [`${bad.length} of ${res.length} URLs break the convention; ${high.length} have blocking problems.`, vs.length ? `${vs.length} source, medium or campaign values split into variants and fragment reporting.` : 'No variant splits detected.']);
-  h += MT.stats([['URLs audited', F.int(res.length), ''], ['Clean URLs', F.int(res.length - bad.length), F.pct(1 - bad.length / res.length, 0)], ['Blocking issues', F.int(high.length), 'missing or unusable parameters', high.length ? 'bad' : 'good'], ['Variant splits', String(vs.length), 'values needing merge', vs.length ? 'warn' : 'good']]);
-  if (vs.length) h += '<div class="card"><h3>Values that split one channel</h3><p class="sub">Each row is one real thing reported under several spellings. Pick a canonical value and redirect the rest.</p>' + MT.tbl(['Parameter', 'Variants found', 'Suggested canonical'], vs.map(v => [v.key, v.variants.map(x => x[0] + (x[1] ? ' (' + F.int(x[1]) + ')' : '')).join('  |  '), v.variants[0][0].toLowerCase().replace(/[\s\-]+/g, '_')])) + '</div>';
-  h += '<div class="card"><h3>Issue summary</h3>' + MT.tbl(['Issue', 'Severity', 'URLs', ...(res.some(x => x.r.w !== 1) ? ['Weighted volume'] : [])], Array.from(tally.values()).sort((a, b) => b.w - a.w).map(o => [o.t, { h: sevTag(o.s) }, o.n, ...(res.some(x => x.r.w !== 1) ? [F.int(o.w)] : [])]), { num: [2, 3] }) + '</div>';
-  h += '<div class="card"><h3>Rows to fix</h3>' + MT.tbl(['URL', 'Problems'], bad.slice(0, 60).map(x => [x.r.url.length > 90 ? x.r.url.slice(0, 89) + '…' : x.r.url, x.iss.map(i => i.t).join('; ')])) + '<div class="actions"><button class="btn btn-secondary btn-sm" id="dl" type="button">Download audit CSV</button></div></div>';
+  const level = (high.length && score >= 90) || (all.length && score >= 90) ? 'yellow' : score >= 90 ? 'green' : score >= 70 ? 'yellow' : 'red';
+  if (!srcOk.length && !medOk.length) notes.push('No approved lists are set, so source and medium are only checked for spelling, case and known synonym variants. Fill the lists to catch unknown names.');
+  let h = MT.rag(level, `Governance score ${score} out of 100`, [`${bad.length} of ${res.length} URLs break the convention${weighted ? ` (${F.pct(badW / totalW, 1)} of sessions)` : ''}; ${high.length} ${high.length === 1 ? 'has' : 'have'} blocking problems.`, all.length ? `${all.length} source, medium or campaign value${all.length === 1 ? '' : 's'} split into variants and fragment reporting.` : 'No variant splits detected.']);
+  if (notes.length) h += MT.note('<b>Data notes</b><ul>' + notes.map(t => '<li>' + MT.esc(t) + '</li>').join('') + '</ul>', 'warn');
+  h += MT.stats([['Rows audited', F.int(res.length), smOnly ? 'source / medium rows' : 'URLs'], ['Clean rows', F.int(res.length - bad.length), F.pct(1 - bad.length / res.length, 0)], ['Blocking issues', F.int(high.length), 'missing or unusable parameters', high.length ? 'bad' : 'good'], ['Variant splits', String(all.length), 'values needing merge', all.length ? 'warn' : 'good']]);
+  if (all.length) h += '<div class="card"><h3>Values that split one channel</h3><p class="sub">Each row is probably one real thing reported under several spellings or names. Pick a canonical value and redirect the rest. Check before merging: two names can be two real channels (instagram and facebook, for example).</p>' + MT.tbl(['Parameter', 'Variants found', 'Suggested canonical'], all.map(v => [v.key, v.variants.map(x => x[0] + (x[1] ? ' (' + F.int(x[1]) + ')' : '')).join('  |  '), v.near ? 'check if these are one value' : canon(v)])) + '</div>';
+  h += '<div class="card"><h3>Issue summary</h3>' + MT.tbl(['Issue', 'Severity', 'Rows', ...(weighted ? ['Weighted volume'] : [])], Array.from(tally.values()).sort((a, b) => b.w - a.w || b.n - a.n).map(o => [o.t, { h: sevTag(o.s) }, o.n, ...(weighted ? [F.int(o.w)] : [])]), { num: [2, 3] }) + '</div>';
+  const fix = x => { if (x.r.sm) return [x.p.utm_source, x.p.utm_medium].map((v, i) => cm.get((i ? 'utm_medium|' : 'utm_source|') + v) || nk(v)).join(' / '); const u = x.r.url.replace(/&amp;/gi, '&'), hi = u.indexOf('#'), base = hi < 0 ? u : u.slice(0, hi), frag = hi < 0 ? '' : u.slice(hi), qi = base.indexOf('?'); if (qi < 0) return ''; const sepc = sep || '_'; const parts = base.slice(qi + 1).split('&').filter(Boolean).map(pp => { const j = pp.indexOf('='); let k = j < 0 ? pp : pp.slice(0, j), v = j < 0 ? '' : pp.slice(j + 1); try { k = decodeURIComponent(k); v = decodeURIComponent(v.replace(/\+/g, ' ')); } catch (e) { } if (!/^utm_/i.test(k)) return pp; const lk = k.toLowerCase(); let nv = cm.get(lk + '|' + v) || (lc ? nk(v).replace(/_/g, sepc === '-' ? '-' : '_') : v); nv = nv.replace(/[^a-zA-Z0-9_\-.]/g, ''); return lk + '=' + nv; }); return base.slice(0, qi + 1) + parts.join('&') + frag; };
+  const showN = 60;
+  h += '<div class="card"><h3>Rows to fix</h3>' + MT.tbl(['Row', 'Problems'], bad.slice(0, showN).map(x => [x.r.url.length > 90 ? x.r.url.slice(0, 89) + '…' : x.r.url, x.iss.map(i => i.t).join('; ')])) + (bad.length > showN ? `<p class="sub">Showing ${showN} of ${F.int(bad.length)} rows with problems. The CSV below has all of them, with a suggested correction.</p>` : '') + '<div class="actions"><button class="btn btn-secondary btn-sm" id="dl" type="button">Download rows to fix (CSV)</button></div></div>';
   $('#out').innerHTML = h;
-  $('#dl').addEventListener('click', () => MT.download('utm-audit.csv', MT.toCSV([['url', 'weight', 'issues']].concat(res.map(x => [x.r.url, x.r.w, x.iss.map(i => i.t).join('; ')]))), 'text/csv'));
+  $('#dl').addEventListener('click', () => MT.download('utm-audit.csv', MT.toCSV([['row', 'weight', 'issues', 'suggested_correction']].concat(bad.map(x => [x.r.url, x.r.w, x.iss.map(i => i.t).join('; '), fix(x)]))), 'text/csv'));
 }
 $('#go').addEventListener('click', run);
 })();

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Attribution Window Normalizer | Marketing Tools</title>
-<meta name="description" content="Convert conversions reported under different click and view windows to a common window using a conversion-lag curve, then compare normalized CPA and ROAS and see how much platforms overlap against your own total.">
+<meta name="description" content="Convert conversions reported under different click and view windows to a common window using a conversion-lag curve, then compare normalized CPA and ROAS and see how much platforms claim against your own total.">
 <style>/* Signal & Serif tokens, shared by every tool */
 :root{
   color-scheme: light;
@@ -225,7 +225,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 <main class="wrap">
   <div class="hero">
     <h1 class="serif">Attribution Window Normalizer</h1>
-    <p>Convert conversions reported under different click and view windows to a common window using a conversion-lag curve, then compare normalized CPA and ROAS and see how much platforms overlap against your own total.</p>
+    <p>Convert conversions reported under different click and view windows to a common window using a conversion-lag curve, then compare normalized CPA and ROAS and see how much platforms claim against your own total.</p>
     <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
   </div>
   <div class="toolbar">
@@ -237,11 +237,13 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
   </div>
 
 <div class="card"><h3>Platform reporting</h3>
-  <p class="sub">Enter what each platform reports and the window it used. View share is the portion of that platform's reported conversions that came from view-through (leave 0 for search).</p>
+  <p class="sub">Enter what each platform reports and the window it used. View share is the portion of that platform's reported conversions that came from view-through (leave 0 for search). A platform with spend and no conversions stays in the table and ranks last.</p>
   <div id="plat"></div><div class="actions"><button class="btn btn-secondary btn-sm" id="add" type="button">Add platform</button></div>
+  <div class="field" style="margin-top:.6rem"><label for="f_plat">Or paste the platform table (optional)</label><textarea id="f_plat" rows="4" placeholder="platform,spend,conversions,click_window,view_window,view_share_pct&#10;Meta,20000,640,7,1,30"></textarea><span class="hint">Replaces the rows above when you press Normalize. Click window, view window and view share are optional and default to 7, 0 and 0.</span></div>
 </div>
 <div class="card"><h3>Target and lag</h3><div id="f"></div>
-  <div class="field"><label for="lag">Conversion lag data (optional)</label><textarea id="lag" placeholder="days_to_convert,conversions&#10;0,650&#10;1,210&#10;2,90"></textarea><span class="hint">From your CRM or analytics: days between click and conversion, with counts. Without it the tool uses a typical ecommerce curve (65% same day, 88% by day 7, 97% by day 28).</span></div>
+  <div id="drop"></div>
+  <div class="field" style="margin-top:.6rem"><label for="lag">Conversion lag data (optional)</label><textarea id="lag" placeholder="days_to_convert,conversions&#10;0,650&#10;1,210&#10;2,90"></textarea><span class="hint">From your CRM or analytics: days between click and conversion, with counts, from orders old enough to have finished converting. Without it the tool uses a typical ecommerce curve (65% same day, 88% by day 7, 97% by day 28), which is wrong for B2B, automotive, travel and other long sales cycles.</span></div>
   <div class="actions"><button class="btn btn-primary" id="go" type="button">Normalize</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div><div class="err" id="err"></div></div>
 <div id="out"></div>
 
@@ -296,14 +298,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -313,6 +359,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -334,22 +382,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -357,7 +468,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -637,7 +748,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -685,28 +796,99 @@ MT.boot = (slug, template) => {
 (function () {
 const $ = MT.$, F = MT.fmt, S = MT.stat, C = MT.chart;
 let rows = [{ n: 'Meta', sp: 20000, cv: 640, ck: 7, vw: 1, vs: 30 }, { n: 'Google Ads', sp: 30000, cv: 780, ck: 30, vw: 0, vs: 0 }, { n: 'TikTok', sp: 8000, cv: 210, ck: 7, vw: 1, vs: 25 }];
-MT.fields($('#f'), [{ id: 'win', label: 'Target click window (days)', value: 7 }, { id: 'view', label: 'Target view-through', type: 'select', value: 'no', options: [['no', 'Exclude view-through'], ['yes', 'Keep view-through as reported']] }, { id: 'actual', label: 'Your own total conversions for the period (optional)', value: 1100, hint: 'From your CRM or analytics. Used to measure double counting across platforms.' }, { id: 'rev', label: 'Revenue per conversion ($, optional)', value: 90 }], 'g2');
+const CAP = 3, TOL = 0.1;
+MT.fields($('#f'), [{ id: 'win', label: 'Target click window (days)', value: 7 }, { id: 'view', label: 'Target view-through', type: 'select', value: 'no', options: [['no', 'Exclude view-through'], ['yes', 'Keep view-through as reported (not rescaled)']] }, { id: 'actual', label: 'Conversions eligible for paid attribution (optional)', value: 1100, hint: 'Your own deduplicated count of conversions that paid media could have claimed. Leave out organic, direct and email conversions.' }, { id: 'rev', label: 'Revenue per conversion ($, optional)', value: 90 }], 'g2');
 function draw() { $('#plat').innerHTML = `<div class="table-wrap"><table class="t"><thead><tr><th>Platform</th><th>Spend ($)</th><th>Reported conversions</th><th>Click window (days)</th><th>View window (days)</th><th>View share (%)</th><th></th></tr></thead><tbody>${rows.map((r, i) => `<tr><td><input data-i="${i}" data-k="n" value="${MT.esc(r.n)}"></td><td><input type="number" data-i="${i}" data-k="sp" value="${r.sp}"></td><td><input type="number" data-i="${i}" data-k="cv" value="${r.cv}"></td><td><input type="number" data-i="${i}" data-k="ck" value="${r.ck}"></td><td><input type="number" data-i="${i}" data-k="vw" value="${r.vw}"></td><td><input type="number" data-i="${i}" data-k="vs" value="${r.vs}"></td><td><button class="btn btn-ghost btn-sm" data-d="${i}" type="button">Remove</button></td></tr>`).join('')}</tbody></table></div>`; }
-$('#plat').addEventListener('input', e => { const t = e.target; if (t.dataset.i != null) rows[+t.dataset.i][t.dataset.k] = t.dataset.k === 'n' ? t.value : +t.value; });
+$('#plat').addEventListener('input', e => { const t = e.target; if (t.dataset.i != null) rows[+t.dataset.i][t.dataset.k] = t.dataset.k === 'n' ? t.value : (t.value === '' ? NaN : +t.value); });
 $('#plat').addEventListener('click', e => { if (e.target.dataset.d != null) { rows.splice(+e.target.dataset.d, 1); draw(); } });
 $('#add').addEventListener('click', () => { rows.push({ n: 'Platform ' + (rows.length + 1), sp: 0, cv: 0, ck: 7, vw: 0, vs: 0 }); draw(); });
-$('#smp').addEventListener('click', () => { MT.fset('win', 7); MT.fset('view', 'no'); MT.fset('actual', 1100); run(); });
+MT.dropzone($('#drop'), t => { $('#lag').value = t; }, 'Drop a conversion lag CSV here, or click to choose a file');
+$('#smp').addEventListener('click', () => { MT.fset('win', 7); MT.fset('view', 'no'); MT.fset('actual', 1100); $('#f_plat').value = ''; run(); });
 const DEF = [[0, 0.65], [1, 0.75], [3, 0.83], [7, 0.88], [14, 0.93], [28, 0.97], [30, 0.975], [60, 0.995], [90, 1]];
-function curve() { const t = MT.parseCSV($('#lag').value || '').map(r => [MT.num(r[0]), MT.num(r[1])]).filter(r => isFinite(r[0]) && isFinite(r[1]) && r[1] >= 0).sort((a, b) => a[0] - b[0]); if (t.length < 3) return { pts: DEF, src: 'default ecommerce curve' }; const tot = S.sum(t.map(r => r[1])); let c = 0; return { pts: t.map(r => [r[0], (c += r[1]) / tot]), src: 'your lag data (' + F.int(tot) + ' conversions)' }; }
+/* Counts are whole numbers, so "5.200", "5,200" and "5 200" all mean 5200. */
+function count(s) { s = String(s == null ? '' : s).trim().replace(/^"|"$/g, ''); if (/^\d+$/.test(s)) return +s; if (/^\d{1,3}([.,\s '’]\d{3})+$/.test(s)) return +s.replace(/[^\d]/g, ''); const v = MT.num(s); return isFinite(v) && /^[\d.,]+$/.test(s) ? v : NaN; }
+/* Reads the lag box. Returns {pts, src, notes, used}; falls back to the default curve with a visible warning. */
+function curve() {
+  const text = $('#lag').value || '', notes = [];
+  if (!text.trim()) return { pts: DEF, src: 'default ecommerce curve', def: true, notes };
+  const raw = MT.parseCSV(text), hi = raw.findIndex(r => r.filter(c => String(c).trim() !== '').length >= 2);
+  if (hi < 0) return { pts: DEF, src: 'default ecommerce curve', def: true, notes: ['The lag box has no usable rows, so the default ecommerce curve was used.'] };
+  const dayOf = c => { const t = String(c).trim().replace(/^day\s*/i, ''); const tail = /^(\d+)\s*\+$|^>\s*=?\s*(\d+)$/.exec(t); if (tail) return { d: +(tail[1] || tail[2]), tail: true }; return /^\d+(\.\d+)?$/.test(t) ? { d: +t } : null; };
+  const first = dayOf(raw[hi][0]), headerless = !!first && isFinite(count(raw[hi][1]));
+  let ci = 1; if (!headerless) { const h = raw[hi].map(c => String(c)); const g = h.findIndex((c, i) => i > 0 && /order|conv|count|deal|lead|sale|volume|nombre|commande/i.test(c)); if (g > 0) ci = g; }
+  const body = raw.slice(headerless ? hi : hi + 1), pre = hi + (headerless ? 0 : 1), byDay = new Map(), bad = []; let fileTotal = NaN, merged = 0, tailRows = 0;
+  body.forEach(r => {
+    const a = String(r[0]).trim(); if (a === '' && String(r[ci] || '').trim() === '') return;
+    if (/^(total|totaux?|sum|grand total|gesamt|summe)\b/i.test(a)) { fileTotal = count(r[ci]); return; }
+    const d = dayOf(a), n = count(r[ci]);
+    if (!d || !isFinite(n) || n < 0) { bad.push(r.slice(0, 2).join(' | ')); return; }
+    if (d.tail) tailRows += n; if (byDay.has(d.d)) merged++; byDay.set(d.d, (byDay.get(d.d) || 0) + n);
+  });
+  const t = Array.from(byDay.entries()).sort((a, b) => a[0] - b[0]), tot = S.sum(t.map(r => r[1])), used = t.length;
+  if (pre > 0) notes.push(`${pre} line${pre === 1 ? '' : 's'} above the data (title, date or header) skipped.`);
+  if (bad.length) notes.push(`${bad.length} lag row${bad.length === 1 ? '' : 's'} could not be read and ${bad.length === 1 ? 'was' : 'were'} left out (${bad.slice(0, 3).join('; ')}). Rows must start with a day number such as 3, Day 3 or 30+.`);
+  if (merged) notes.push(`${merged} day${merged === 1 ? ' appears' : 's appear'} on more than one row; the counts were added together.`);
+  if (tailRows) notes.push(`A tail row such as "30+" holds ${F.int(tailRows)} conversions and is treated as converting on its day number, which makes the curve look faster than it is.`);
+  if (isFinite(fileTotal) && Math.abs(tot - fileTotal) > Math.max(1, fileTotal * 0.01)) notes.push(`The rows add up to ${F.int(tot)} but the file's own Total row says ${F.int(fileTotal)}. Check for duplicated or misread rows before trusting the curve.`);
+  if (t.length < 3 || !(tot > 0)) return { pts: DEF, src: 'default ecommerce curve', def: true, notes: notes.concat(['Fewer than 3 usable lag rows were found, so the default ecommerce curve was used.']) };
+  let c = 0; return { pts: t.map(r => [r[0], (c += r[1]) / tot]), src: `your lag data (${F.int(tot)} conversions, ${used} day values)`, def: false, notes, tot };
+}
 function cdf(pts, d) { if (d <= pts[0][0]) return pts[0][1]; for (let i = 1; i < pts.length; i++) if (d <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (d - x0) / (x1 - x0); } return 1; }
+function pastePlat() {
+  const t = $('#f_plat').value; if (!t.trim()) return null; const rs = MT.parseCSV(t), out = [], bad = []; if (!rs.length) return null;
+  const head = !isFinite(MT.num(rs[0][1])), body = head ? rs.slice(1) : rs, fmt = MT.numFmt(body.map(r => r[1]).concat(body.map(r => r[2])));
+  body.forEach((r, i) => { const n = String(r[0] || '').trim(), sp = MT.num(r[1], fmt), cv = MT.num(r[2], fmt); if (!n || !isFinite(sp) || !isFinite(cv)) { bad.push(r.join(' | ')); return; } const num = (x, d) => { const v = MT.num(x, fmt); return isFinite(v) ? v : d; }; out.push({ n, sp, cv, ck: num(r[3], 7), vw: num(r[4], 0), vs: num(r[5], 0) }); });
+  return { out, bad };
+}
 function run() {
-  $('#err').textContent = ''; const good = rows.filter(r => r.cv > 0); if (!good.length) { $('#err').textContent = 'Enter conversions for at least one platform.'; return; }
-  const tw = MT.f('win'), keepView = MT.f('view') === 'yes', actual = MT.f('actual'), rev = MT.f('rev'), cv = curve(), Ft = cdf(cv.pts, tw);
-  const out = good.map(r => { const click = r.cv * (1 - r.vs / 100), view = r.cv * r.vs / 100, adj = click * (Ft / Math.max(cdf(cv.pts, r.ck), 1e-9)), viewAdj = keepView ? view * (r.vw > 0 ? Ft / Math.max(cdf(cv.pts, Math.max(r.vw, 0.01)), 1e-9) : 1) : 0, n = Math.min(adj, click * 3) + viewAdj; return { r, n, cpa: r.sp / n, rcpa: r.sp / r.cv, roas: rev ? n * rev / r.sp : NaN, chg: n / r.cv - 1 }; });
-  const sumN = S.sum(out.map(o => o.n)), sumR = S.sum(good.map(r => r.cv)), best = out.reduce((b, o) => o.cpa < b.cpa ? o : b, out[0]), worst = out.reduce((b, o) => o.cpa > b.cpa ? o : b, out[0]), rank = a => a.slice().sort((x, y) => x.cpa - y.cpa).map(o => o.r.n).join(' < '), rankR = a => a.slice().sort((x, y) => x.rcpa - y.rcpa).map(o => o.r.n).join(' < ');
-  const flip = rank(out) !== rankR(out);
-  let h = MT.verdict(flip ? 'neg' : 'info', flip ? 'Normalizing changes which platform looks cheapest' : `${best.r.n} has the lowest normalized CPA at ${F.money(best.cpa, 2)}`, `On a ${tw}-day click window${keepView ? ' with view-through kept' : ' without view-through'}, CPA ranks ${rank(out)}. As reported it ranks ${rankR(out)}. Platforms report ${F.int(sumR)} conversions in total; normalized they report ${F.int(sumN)}.`);
-  h += MT.stats([['Reported total', F.int(sumR), 'sum across platforms'], ['Normalized total', F.int(sumN), F.spct(sumN / sumR - 1, 0) + ' vs reported'], actual > 0 ? ['Your actual total', F.int(actual), `platforms claim ${(sumN / actual).toFixed(2)}x of it`, sumN / actual > 1.15 ? 'bad' : 'good'] : ['Lag curve', cv.src, `${F.pct(Ft, 0)} converted by day ${tw}`], ['Cheapest / dearest', `${best.r.n} / ${worst.r.n}`, `${F.money(best.cpa, 0)} vs ${F.money(worst.cpa, 0)}`]]);
-  h += '<div class="card"><h3>Normalized comparison</h3>' + MT.tbl(['Platform', 'Spend', 'Reported conv.', 'Reported CPA', 'Normalized conv.', 'Normalized CPA', 'Change', ...(rev ? ['Normalized ROAS'] : [])], out.map(o => [o.r.n, F.money(o.r.sp, 0), F.int(o.r.cv), F.money(o.rcpa, 2), F.int(o.n), F.money(o.cpa, 2), F.spct(o.chg, 0), ...(rev ? [o.roas.toFixed(2) + 'x'] : [])]), { num: [1, 2, 3, 4, 5, 6, 7] }) + '</div><div class="card"><div id="c1"></div></div>';
-  if (actual > 0) h += MT.note(`<b>Overlap.</b> Each platform credits itself, so the sum of claimed conversions (${F.int(sumN)}) exceeds your own total (${F.int(actual)}) by ${F.pct(Math.max(0, sumN / actual - 1), 0)}. Treat platform CPAs as relative signals. For budget decisions, weight them against a holdout or geo test.`);
-  h += MT.note(`<b>Method.</b> Conversions inside a window are scaled by F(target) / F(reported window), where F is the cumulative share of conversions occurring within d days (${MT.esc(cv.src)}). Windows longer than the target shrink; shorter ones grow, capped at 3x. This assumes lag is similar across platforms and that view-through conversions follow the same curve. Treat the output as a directional adjustment, not a reconstruction.`);
+  $('#err').textContent = ''; const notes = [], pp = pastePlat();
+  if (pp) { if (!pp.out.length) { $('#err').textContent = 'No platform rows could be read from the pasted table. Use platform,spend,conversions on each line.'; return; } rows = pp.out; draw(); if (pp.bad.length) notes.push(`${pp.bad.length} pasted row${pp.bad.length === 1 ? '' : 's'} could not be read and ${pp.bad.length === 1 ? 'was' : 'were'} left out (${pp.bad.slice(0, 3).join('; ')}).`); }
+  const tw = MT.f('win'), keepView = MT.f('view') === 'yes', actual = MT.f('actual'), rev = MT.f('rev'), errs = [];
+  if (!isFinite(tw) || tw <= 0) errs.push('Enter a target click window above 0 days.');
+  const live = rows.filter(r => (r.n || '').trim() || r.sp > 0 || r.cv > 0), idle = rows.filter(r => !((r.n || '').trim() || r.sp > 0 || r.cv > 0)).length;
+  live.forEach((r, i) => { const nm = (r.n || '').trim() || 'Platform ' + (i + 1); r.n = nm;
+    if (!(r.sp >= 0)) errs.push(`${nm}: spend must be 0 or more.`); if (!(r.cv >= 0)) errs.push(`${nm}: conversions must be 0 or more.`);
+    if (r.cv > 0 && !(r.sp > 0)) errs.push(`${nm}: enter its spend, otherwise CPA cannot be computed.`);
+    if (!(r.ck > 0)) errs.push(`${nm}: click window must be above 0 days.`); if (!(r.vw >= 0)) errs.push(`${nm}: view window cannot be negative.`);
+    if (!(r.vs >= 0 && r.vs <= 100)) errs.push(`${nm}: view share must be between 0 and 100 percent.`); });
+  const good = live.filter(r => r.sp > 0 || r.cv > 0);
+  if (!good.length) errs.push('Enter spend and conversions for at least one platform.');
+  if (errs.length) { $('#err').innerHTML = errs.map(MT.esc).join('<br>'); return; }
+  if (idle) notes.push(`${idle} empty row${idle === 1 ? '' : 's'} (no name, spend or conversions) ignored.`);
+  const cv = curve(), Ft = cdf(cv.pts, tw); cv.notes.forEach(n => notes.push(n));
+  if (cv.def) notes.unshift('Using the built-in ecommerce lag curve (65% same day, 88% by day 7, 97% by day 28). If your sales cycle runs longer than a few days (B2B, automotive, travel, lead generation), paste your own lag data or treat these numbers as illustrative only.');
+  else notes.push('Lag exports built from recent orders understate long lags, because slow conversions have not happened yet. Use orders old enough to have finished converting.');
+  const out = good.map(r => {
+    const click = r.cv * (1 - r.vs / 100), view = r.cv * r.vs / 100, sc = Ft / Math.max(cdf(cv.pts, r.ck), 1e-9), capped = sc > CAP, scUse = Math.min(sc, CAP);
+    const adj = click * scUse, viewAdj = keepView ? view : 0, n = adj + viewAdj;
+    return { r, n, sc, capped, wEff: adj - click, vEff: viewAdj - view, cpa: n > 0 ? r.sp / n : Infinity, rcpa: r.cv > 0 ? r.sp / r.cv : Infinity, roas: rev && n > 0 ? n * rev / r.sp : NaN, chg: r.cv > 0 ? n / r.cv - 1 : NaN, none: r.cv <= 0 };
+  });
+  const ranked = out.filter(o => !o.none && !o.capped && isFinite(o.cpa)), zero = out.filter(o => o.none), capd = out.filter(o => o.capped);
+  const sumN = S.sum(out.map(o => o.n)), sumR = S.sum(good.map(r => r.cv)), sumSp = S.sum(good.map(r => r.sp)), wE = S.sum(out.map(o => o.wEff)), vE = S.sum(out.map(o => o.vEff));
+  const rank = a => a.slice().sort((x, y) => x.cpa - y.cpa), rankR = a => a.slice().sort((x, y) => x.rcpa - y.rcpa);
+  if (capd.length) notes.push(`The 3x cap applies to ${capd.map(o => `${o.r.n} (needs ${o.sc.toFixed(1)}x)`).join(', ')}: the platform's window is far shorter than the target, so its result is only a lower bound. ${capd.length === 1 ? 'It is' : 'They are'} left out of the cheapest and dearest ranking.`);
+  if (zero.length) notes.push(`${zero.map(o => `${o.r.n} (${F.money(o.r.sp, 0)})`).join(', ')} reported no conversions. ${zero.length === 1 ? 'It is' : 'They are'} kept in the table and the spend total, with CPA undefined.`);
+  let h;
+  if (!ranked.length) h = MT.notComputed('No platform can be ranked', ['Every platform either has no conversions or needs more than the 3x cap to reach the target window.', 'Use a shorter target window or paste lag data that matches your sales cycle.']);
+  else {
+    const rn = rank(ranked), rr = rankR(ranked), best = rn[0], bestRep = rr[0], second = rn[1], worstRank = rn[rn.length - 1];
+    const gap = bestRep.r.n !== best.r.n ? bestRep.cpa / best.cpa - 1 : 0, flip = bestRep.r.n !== best.r.n && gap > TOL, near = second && second.cpa / best.cpa - 1 < TOL;
+    const eff = `Of the change in conversions, the attribution window moves ${F.spct(wE / sumR, 0)} and ${keepView ? 'view-through is kept as reported' : 'removing view-through moves ' + F.spct(vE / sumR, 0)}.`;
+    if (flip) h = MT.verdict('neg', 'Normalizing changes which platform looks cheapest', `As reported, ${bestRep.r.n} looks cheapest. On a ${tw}-day click window ${keepView ? 'with view-through kept' : 'without view-through'}, ${best.r.n} is cheapest at ${F.money(best.cpa, 2)}, and ${bestRep.r.n} is ${F.pct(gap, 0)} dearer. ${eff} Platform-reported numbers carry no margin of error, so treat gaps under ${F.pct(TOL, 0)} as ties.`);
+    else h = MT.verdict('info', near ? `${best.r.n} and ${second.r.n} are within ${F.pct(TOL, 0)} on normalized CPA` : `${best.r.n} has the lowest normalized CPA at ${F.money(best.cpa, 2)}`, `On a ${tw}-day click window${keepView ? ' with view-through kept' : ' without view-through'}, CPA ranks ${rn.map(o => o.r.n).join(' < ')}. ${near ? 'A gap that small is inside the noise of platform reporting, so do not move budget on it. ' : ''}${eff} Platforms report ${F.int(sumR)} conversions in total; normalized they report ${F.int(sumN)}.`);
+    out._best = best; out._worst = zero.length ? zero.slice().sort((a, b) => b.r.sp - a.r.sp)[0] : worstRank;
+  }
+  if (notes.length) h += MT.note('<b>Data notes</b><ul>' + notes.map(t => '<li>' + MT.esc(t) + '</li>').join('') + '</ul>', 'warn');
+  const best = out._best, worst = out._worst, ov = actual > 0 ? sumN / actual : NaN;
+  h += MT.stats([['Reported total', F.int(sumR), 'sum across platforms'], ['Normalized total', F.int(sumN), F.spct(sumR > 0 ? sumN / sumR - 1 : NaN, 0) + ' vs reported'], actual > 0 ? ['Platforms claim', F.int(sumN) + ' of ' + F.int(actual), ov.toFixed(2) + 'x your eligible total', ov > 1.15 ? 'bad' : ''] : ['Lag curve', cv.src, `${F.pct(Ft, 0)} converted by day ${tw}`], ['Cheapest / dearest', best ? (worst === best ? best.r.n : `${best.r.n} / ${worst.r.n}`) : 'not ranked', best ? (worst === best ? F.money(best.cpa, 0) + ', only platform ranked' : `${F.money(best.cpa, 0)} vs ${worst.none ? 'no conversions' : F.money(worst.cpa, 0)}`) : '']]);
+  const money = v => isFinite(v) ? F.money(v, 2) : 'No conversions';
+  h += '<div class="card"><h3>Normalized comparison</h3>' + MT.tbl(['Platform', 'Spend', 'Reported conv.', 'Reported CPA', 'Window scale', 'Normalized conv.', 'Normalized CPA', 'Change', ...(rev ? ['Normalized ROAS'] : []), 'Note'], out.map(o => [o.r.n, F.money(o.r.sp, 0), F.int(o.r.cv), money(o.rcpa), o.none ? '—' : o.sc.toFixed(2) + 'x', F.int(o.n), money(o.cpa), o.none ? '—' : F.spct(o.chg, 0), ...(rev ? [isFinite(o.roas) ? o.roas.toFixed(2) + 'x' : '—'] : []), { h: o.none ? MT.tag('No conversions', 'bad') : o.capped ? MT.tag('Capped at 3x, not ranked', 'warn') : '' }]), { num: [1, 2, 3, 4, 5, 6, 7, ...(rev ? [8] : [])] }) + '</div>';
+  const cc = out.filter(o => isFinite(o.cpa) && isFinite(o.rcpa));
+  if (cc.length) h += '<div class="card"><div id="c1"></div></div>';
+  if (actual > 0) h += MT.note(ov > 1 ? `<b>Overlap.</b> Platforms together claim ${F.int(sumN)} conversions against your ${F.int(actual)} eligible conversions, ${F.pct(ov - 1, 0)} more than exist. Some conversions are being counted by more than one platform. Treat platform CPAs as relative signals and check them against a holdout or geo test.` : `<b>Overlap.</b> Platforms together claim ${F.int(sumN)} conversions, ${F.pct(ov, 0)} of your ${F.int(actual)} eligible conversions. A ratio under 100% does not show that nothing is double counted: some conversions may be credited twice while others are credited to no platform. This is only meaningful if your total excludes organic, direct and email conversions.`);
+  h += MT.note(`<b>Method.</b> Click conversions inside a window are scaled by F(target) / F(reported window), where F is the cumulative share of conversions occurring within d days (${MT.esc(cv.src)}). Windows longer than the target shrink, shorter ones grow, capped at 3x (capped platforms are flagged and not ranked). View-through conversions are either dropped or kept exactly as reported. One lag curve is applied to every platform and no margin of error is estimated, so treat the output as a directional adjustment, not a reconstruction.`);
   $('#out').innerHTML = h;
-  C.bars($('#c1'), { title: 'CPA: reported vs normalized', cats: out.map(o => o.r.n), series: [{ name: 'Reported CPA', values: out.map(o => o.rcpa), color: 'var(--series-2)' }, { name: 'Normalized CPA', values: out.map(o => o.cpa), color: 'var(--series-1)' }], yFmt: v => F.money(v, 0) });
+  if (cc.length) C.bars($('#c1'), { title: 'CPA: reported vs normalized', cats: cc.map(o => o.r.n), series: [{ name: 'Reported CPA', values: cc.map(o => o.rcpa), color: 'var(--series-2)' }, { name: 'Normalized CPA', values: cc.map(o => o.cpa), color: 'var(--series-1)' }], yFmt: v => F.money(v, 0) });
 }
 draw(); $('#go').addEventListener('click', run);
 })();

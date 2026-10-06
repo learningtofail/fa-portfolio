@@ -294,14 +294,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -311,6 +355,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -332,22 +378,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -355,7 +464,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -635,7 +744,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -684,29 +793,41 @@ MT.boot = (slug, template) => {
 const $ = MT.$, F = MT.fmt, C = MT.chart;
 MT.fields($('#f1'), [{ id: 'price', label: 'Regular price ($)', value: 60 }, { id: 'cogs', label: 'COGS per order ($)', value: 21 }, { id: 'ship', label: 'Shipping per order ($)', value: 6 }, { id: 'pick', label: 'Pick and pack per order ($)', value: 2.5 }, { id: 'fee', label: 'Payment fee (%)', value: 2.9 }, { id: 'base', label: 'Baseline orders per day', value: 150 }], 'g2');
 MT.fields($('#f2'), [{ id: 'disc', label: 'Discount (%)', value: 30 }, { id: 'mult', label: 'Expected order volume multiple', value: 2.5, hint: '2.5 means 2.5 times baseline orders.' }, { id: 'days', label: 'Promo duration (days)', value: 4 }, { id: 'mkt', label: 'Extra marketing cost ($)', value: 6000 }, { id: 'pull', label: 'Pull-forward (% of extra orders taken from later weeks)', value: 30 }, { id: 'ret', label: 'Return rate during promo (%)', value: 14 }, { id: 'ret0', label: 'Baseline return rate (%)', value: 9 }], 'g2');
-MT.fields($('#f3'), [{ id: 'wh', label: 'Max orders shipped per day', value: 420 }, { id: 'tk', label: 'Support tickets per 100 orders (baseline)', value: 7 }, { id: 'tkm', label: 'Ticket rate multiple during promo', value: 1.4 }, { id: 'tkc', label: 'Cost per ticket ($)', value: 4.5 }, { id: 'sc', label: 'Support capacity (tickets per day)', value: 55 }], 'g2');
+MT.fields($('#f3'), [{ id: 'wh', label: 'Max orders shipped per day', value: 420, hint: 'For a service, read this as appointments per day.' }, { id: 'tk', label: 'Support tickets per 100 orders (baseline)', value: 7 }, { id: 'tkm', label: 'Ticket rate multiple during promo', value: 1.4 }, { id: 'tkc', label: 'Cost per ticket ($)', value: 4.5 }, { id: 'sc', label: 'Support capacity (tickets per day)', value: 55 }, { id: 'peak', label: 'Launch-day peak (times the average promo day)', value: 1, hint: 'Email-led launches often run 1.4 to 2 times the average on day one. 1 means no peak.' }, { id: 'stock', label: 'Orders you can fill from stock (optional)', value: '', hint: 'Leave blank if you do not know. Without it, inventory is not checked.' }], 'g2');
 function calc(o) {
   const disc = o.disc / 100, pp = o.price * (1 - disc);
   const mBase = o.price * (1 - o.ret0 / 100) - o.cogs * 1 - o.ship - o.pick - o.price * o.fee / 100 - o.tk / 100 * o.tkc;
   const mPromo = pp * (1 - o.ret / 100) - o.cogs - o.ship - o.pick - pp * o.fee / 100 - o.tk * o.tkm / 100 * o.tkc;
-  const orders = o.base * o.mult, baseTot = o.base * o.days * mBase, promoTot = orders * o.days * mPromo - o.mkt, pullLoss = o.pull / 100 * (orders - o.base) * o.days * mBase;
+  const orders = o.base * o.mult, baseTot = o.base * o.days * mBase, promoTot = orders * o.days * mPromo - o.mkt, pullLoss = o.pull / 100 * Math.max(0, orders - o.base) * o.days * mBase;
   return { mBase, mPromo, orders, baseTot, promoTot, pullLoss, incr: promoTot - baseTot - pullLoss };
 }
+const REQ = [['price', 'Regular price', 0.01, 1e9], ['cogs', 'COGS per order', 0, 1e9], ['ship', 'Shipping per order', 0, 1e9], ['pick', 'Pick and pack per order', 0, 1e9], ['fee', 'Payment fee', 0, 100], ['base', 'Baseline orders per day', 0.01, 1e9], ['disc', 'Discount', 0, 99.99], ['mult', 'Expected order volume multiple', 0.01, 1000], ['days', 'Promo duration (days)', 0.01, 3650], ['mkt', 'Extra marketing cost', 0, 1e9], ['pull', 'Pull-forward', 0, 100], ['ret', 'Return rate during promo', 0, 100], ['ret0', 'Baseline return rate', 0, 100], ['tk', 'Support tickets per 100 orders', 0, 1e6], ['tkm', 'Ticket rate multiple', 0, 1000], ['tkc', 'Cost per ticket', 0, 1e9], ['peak', 'Launch-day peak', 0.01, 100]];
+const FRACTION = [['fee', 'Payment fee', 0.5], ['disc', 'Discount', 1], ['pull', 'Pull-forward', 1], ['ret', 'Return rate', 1], ['ret0', 'Baseline return rate', 1]];
 function run() {
-  const o = {}; ['price', 'cogs', 'ship', 'pick', 'fee', 'base', 'disc', 'mult', 'days', 'mkt', 'pull', 'ret', 'ret0', 'wh', 'tk', 'tkm', 'tkc', 'sc'].forEach(k => o[k] = MT.f(k));
-  const r = calc(o), utilW = r.orders / o.wh, tickets = r.orders * o.tk * o.tkm / 100, utilS = tickets / o.sc, compress = 1 - r.mPromo / r.mBase;
+  const o = {}; REQ.forEach(r => o[r[0]] = MT.f(r[0])); ['wh', 'sc', 'stock'].forEach(k => o[k] = MT.f(k));
+  const bad = []; REQ.forEach(([k, l, lo, hi]) => { if (!isFinite(o[k])) bad.push(`${l} is blank or not a number.`); else if (o[k] < lo || o[k] > hi) bad.push(`${l} must be ${lo > 0 ? 'above 0' : 'at least 0'}${hi < 1e5 ? ' and at most ' + Math.floor(hi * 100) / 100 : ''}.`); });
+  FRACTION.forEach(([k, l, t]) => { if (isFinite(o[k]) && o[k] > 0 && o[k] < t) bad.push(`${l} is ${o[k]}%. If you meant ${+(o[k] * 100).toPrecision(6)}%, type ${+(o[k] * 100).toPrecision(6)}, not ${o[k]}. Percent fields take whole percent numbers.`); });
+  ['wh', 'sc', 'stock'].forEach(k => { const v = $('#f_' + k).value.trim(); if (v !== '' && (!isFinite(o[k]) || o[k] <= 0)) bad.push(`${{ wh: 'Max orders shipped per day', sc: 'Support capacity', stock: 'Orders you can fill from stock' }[k]} must be a positive number, or left blank.`); });
+  if (bad.length) { $('#out').innerHTML = MT.notComputed('Not computed: check your inputs', bad); return; }
+  ['wh', 'sc', 'stock'].forEach(k => { if (!(o[k] > 0)) o[k] = NaN; });
+  const r = calc(o), hasW = isFinite(o.wh), hasS = isFinite(o.sc), hasI = isFinite(o.stock), utilW = hasW ? r.orders / o.wh : NaN, utilWpk = hasW ? utilW * o.peak : NaN, tickets = r.orders * o.tk * o.tkm / 100, utilS = hasS ? tickets / o.sc : NaN, compress = 1 - r.mPromo / r.mBase;
   const den = o.base * o.days * (r.mPromo - o.pull / 100 * r.mBase), kStar = den > 0 ? (o.mkt + o.base * o.days * r.mBase * (1 - o.pull / 100)) / den : Infinity;
-  const red = [], yel = [];
-  if (r.mPromo < 0) red.push(`Each promo order loses ${F.money(-r.mPromo, 2)}.`); if (r.incr < 0) red.push(`The promotion destroys ${F.money(-r.incr, 0)} of contribution versus not running it.`); else if (r.incr < 0.2 * Math.max(1, r.baseTot)) yel.push(`Incremental contribution of ${F.money(r.incr, 0)} is thin against a baseline of ${F.money(r.baseTot, 0)}.`);
-  if (utilW > 1) red.push(`Warehouse demand is ${F.pct(utilW, 0)} of daily shipping capacity.`); else if (utilW > 0.8) yel.push(`Warehouse runs at ${F.pct(utilW, 0)} of capacity.`);
-  if (utilS > 1) red.push(`Support demand is ${F.pct(utilS, 0)} of daily ticket capacity.`); else if (utilS > 0.8) yel.push(`Support runs at ${F.pct(utilS, 0)} of capacity.`);
+  const need = r.orders * o.days, stockDays = hasI ? o.stock / r.orders : NaN;
+  const red = [], yel = [], skipped = [];
+  if (r.mPromo < 0) red.push(`Each promo order loses ${F.money(-r.mPromo, 2)}.`); if (r.incr < 0) red.push(`The promotion costs ${F.money(-r.incr, 0)} of contribution versus not running it.`); else if (r.incr < 0.2 * Math.max(1, r.baseTot)) yel.push(`Incremental contribution of ${F.money(r.incr, 0)} is thin against a baseline of ${F.money(r.baseTot, 0)}.`);
+  if (hasW) { if (utilW > 1) red.push(`Order volume is ${F.pct(utilW, 0)} of daily shipping capacity.`); else if (utilWpk > 1) yel.push(`The average promo day fits (${F.pct(utilW, 0)} of capacity) but a launch-day peak would reach ${F.pct(utilWpk, 0)}.`); else if (utilW > 0.8) yel.push(`Shipping runs at ${F.pct(utilW, 0)} of capacity.`); } else skipped.push('shipping capacity');
+  if (hasS) { if (utilS > 1) red.push(`Support demand is ${F.pct(utilS, 0)} of daily ticket capacity.`); else if (utilS > 0.8) yel.push(`Support runs at ${F.pct(utilS, 0)} of capacity.`); } else skipped.push('support capacity');
+  if (hasI) { if (stockDays < o.days) red.push(`Stock covers ${stockDays.toFixed(1)} of ${o.days} promo days at the planned volume (${F.int(o.stock)} orders in stock, ${F.int(need)} needed). It runs out on day ${Math.floor(stockDays) + 1}.`); }
   if (compress > 0.5 && r.mPromo >= 0) yel.push(`Margin per order falls ${F.pct(compress, 0)}.`); if (o.mult < kStar && isFinite(kStar)) (r.incr < 0 ? red : yel).push(`You need ${kStar.toFixed(2)}x volume to break even and are planning ${o.mult}x.`);
-  const level = red.length ? 'red' : yel.length ? 'yellow' : 'green', reasons = red.concat(yel); if (!reasons.length) reasons.push('Margin, warehouse and support all stay within safe limits.');
-  let h = MT.rag(level, level === 'red' ? 'Red: do not launch as planned' : level === 'yellow' ? 'Yellow: launch only with mitigations' : 'Green: viable as planned', reasons);
-  h += MT.stats([['Margin per order', `${F.money(r.mBase, 2)} to ${F.money(r.mPromo, 2)}`, 'compression ' + F.pct(compress, 0), r.mPromo > 0 ? '' : 'bad'], ['Incremental contribution', F.money(r.incr, 0), 'after marketing and pull-forward', r.incr >= 0 ? 'good' : 'bad'], ['Break-even volume multiple', isFinite(kStar) ? kStar.toFixed(2) + 'x' : 'unreachable', 'planned ' + o.mult + 'x'], ['Warehouse utilization', F.pct(utilW, 0), F.int(r.orders) + ' of ' + F.int(o.wh) + ' orders/day', MT.tone(utilW, 0.8, 1, true)], ['Support utilization', F.pct(utilS, 0), F.int(tickets) + ' of ' + F.int(o.sc) + ' tickets/day', MT.tone(utilS, 0.8, 1, true)], ['Pull-forward cost', F.money(r.pullLoss, 0), F.pct(o.pull / 100, 0) + ' of extra orders']]);
+  if (skipped.length) yel.push(`Not checked because the field is blank: ${skipped.join(', ')}.`);
+  const level = red.length ? 'red' : yel.length ? 'yellow' : 'green', reasons = red.concat(yel); if (!reasons.length) reasons.push('Margin, shipping and support stay within the limits you entered.'); if (!hasI) reasons.push('Stock was not checked: enter the orders you can fill to test for a stockout.');
+  let h = MT.rag(level, level === 'red' ? 'Red: do not launch as planned' : level === 'yellow' ? (!red.length && skipped.length && yel.length === 1 ? 'Yellow: incomplete check' : 'Yellow: launch only with mitigations') : 'Green: margin and capacity look fine', reasons);
+  const low = calc(Object.assign({}, o, { mult: Math.max(0.01, o.mult * 0.75) })).incr;
+  h += MT.stats([['Margin per order', `${F.money(r.mBase, 2)} to ${F.money(r.mPromo, 2)}`, compress > 1 ? 'promo orders lose money' : 'compression ' + F.pct(compress, 0), r.mPromo > 0 ? '' : 'bad'], ['Incremental contribution', F.money(r.incr, 0), 'after marketing and pull-forward', r.incr >= 0 ? 'good' : 'bad'], ['If volume is 25% below plan', F.money(low, 0), `${(o.mult * 0.75).toFixed(2)}x instead of ${o.mult}x`, low >= 0 ? 'good' : 'bad'], ['Break-even volume multiple', isFinite(kStar) ? kStar.toFixed(2) + 'x' : 'unreachable', 'planned ' + o.mult + 'x'], ['Shipping utilization', hasW ? F.pct(utilW, 0) : 'Not checked', hasW ? F.int(r.orders) + ' of ' + F.int(o.wh) + ' orders/day' : 'capacity left blank', hasW ? MT.tone(utilW, 0.8, 1, true) : ''], ['Support utilization', hasS ? F.pct(utilS, 0) : 'Not checked', hasS ? (tickets < 20 ? tickets.toFixed(1) : F.int(tickets)) + ' of ' + F.int(o.sc) + ' tickets/day' : 'capacity left blank', hasS ? MT.tone(utilS, 0.8, 1, true) : ''], ['Stock cover', hasI ? stockDays.toFixed(1) + ' days' : 'Not checked', hasI ? 'of ' + o.days + ' promo days' : 'stock left blank', hasI ? (stockDays >= o.days ? 'good' : 'bad') : ''], ['Pull-forward cost', F.money(r.pullLoss, 0), F.pct(o.pull / 100, 0) + ' of extra orders']]);
   h += '<div class="card"><div id="ch"></div></div>';
   const discs = [10, 15, 20, 25, 30, 40, 50], mults = [1.5, 2, 2.5, 3, 4, 5];
-  h += '<div class="card"><h3>Incremental contribution: discount vs volume multiple</h3><p class="sub">Green is above zero, amber is up to 20% of baseline contribution, red is a loss. Other inputs as entered.</p>' + MT.tbl(['Discount \\ Volume'].concat(mults.map(m => m + 'x')), discs.map(d => [d + '%'].concat(mults.map(m => { const x = calc(Object.assign({}, o, { disc: d, mult: m })).incr, t = x < 0 ? 'bad' : x < 0.2 * Math.max(1, r.baseTot) ? 'warn' : 'good'; return { h: `<span style="display:block;padding:.15rem .3rem;${MT.cellTone(t)}">${F.money(x, 0)}</span>`, cls: 'c' }; }))), { cls: 'heat' }) + '</div>';
+  h += '<div class="card"><h3>Incremental contribution: discount vs volume multiple</h3><p class="sub">Green is above zero, amber is up to 20% of baseline contribution, red is a loss. Other inputs as entered. Cells marked * need more orders per day than your shipping capacity or stock allows. Volume is entered by hand for each cell: a deeper discount does not raise it automatically.</p>' + MT.tbl(['Discount \\ Volume'].concat(mults.map(m => m + 'x')), discs.map(d => [d + '%'].concat(mults.map(m => { const x = calc(Object.assign({}, o, { disc: d, mult: m })).incr, t = x < 0 ? 'bad' : x < 0.2 * Math.max(1, r.baseTot) ? 'warn' : 'good', over = (hasW && o.base * m > o.wh) || (hasI && o.base * m * o.days > o.stock); return { h: `<span style="display:block;padding:.15rem .3rem;${MT.cellTone(t)}${over ? ';opacity:.45' : ''}">${F.money(x, 0)}${over ? ' *' : ''}</span>`, cls: 'c' }; }))), { cls: 'heat' }) + '</div>';
+  h += MT.note('<b>What this checks.</b> Margin, shipping and support load, and stock if you entered it. It does not model repeat purchases from new customers, subscriptions, or advertising rules for discounts in regulated sectors. Support tickets usually arrive a few days after the orders, so the real peak can land after the promo ends. Returned orders are treated as refunded revenue with product and shipping cost lost, and the payment fee is not refunded.');
   $('#out').innerHTML = h;
   C.bars($('#ch'), { title: 'Contribution over the promo window', cats: ['Baseline (no promo)', 'Promo, gross', 'Promo, net of pull-forward'], series: [{ name: 'Contribution ($)', values: [r.baseTot, r.promoTot, r.promoTot - r.pullLoss], color: 'var(--series-1)' }], yFmt: v => F.money(v, 0) });
 }

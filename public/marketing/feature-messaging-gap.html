@@ -237,8 +237,8 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 
 <div class="split">
 <div>
-  <div class="card"><h3>Release notes</h3><p class="sub">One feature per line or bullet. Headings and blank lines are ignored.</p><div class="field"><textarea id="notes" rows="10" placeholder="- Added bulk CSV export for reports&#10;- New role-based permissions for team workspaces"></textarea></div></div>
-  <div class="card"><h3>Marketing copy</h3><div class="field"><textarea id="copy" rows="10" placeholder="Paste the launch email, landing page or announcement copy."></textarea></div>
+  <div class="card"><h3>Release notes</h3><p class="sub">One feature per line or bullet. Headings and blank lines are ignored. Bug fixes, internal work, known issues, sub-bullets and duplicates are left out and listed in the results.</p><div class="field"><textarea id="f_notes" rows="10" placeholder="- Added bulk CSV export for reports&#10;- New role-based permissions for team workspaces"></textarea></div></div>
+  <div class="card"><h3>Marketing copy</h3><div class="field"><textarea id="f_copy" rows="10" placeholder="Paste the launch email, landing page or announcement copy."></textarea></div>
     <div class="row2"><div class="field"><label for="thr">Match strictness</label><select id="thr"><option value="0.34">Loose (34% of feature terms)</option><option value="0.5" selected>Balanced (50%)</option><option value="0.67">Strict (67%)</option></select></div></div>
     <div class="actions"><button class="btn btn-primary" id="go" type="button">Analyze coverage</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div></div>
 </div>
@@ -295,14 +295,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -312,6 +356,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -333,22 +379,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -356,7 +465,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -636,7 +745,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -683,33 +792,66 @@ MT.boot = (slug, template) => {
 <script>
 (function () {
 const $ = MT.$, F = MT.fmt, C = MT.chart;
-const BEN = /\b(save|saves|saving|faster|quicker|easier|easy|simpler|reduce|reduces|cut|cuts|increase|increases|boost|grow|avoid|prevent|eliminate|without|so you can|so that|helps? you|lets? you|allows? you|never have to|no more|instantly|in seconds|in minutes|hours|effortless|confidence|control|peace of mind)\b/i;
-const FILL = new Set(['added', 'add', 'new', 'now', 'improved', 'improve', 'improvements', 'updated', 'update', 'support', 'supports', 'fixed', 'fix', 'feature', 'features', 'release', 'launch', 'launched', 'introducing', 'enhanced', 'enhancement', 'ability', 'option', 'options', 'also', 'users', 'user', 'can', 'more']);
-const terms = s => Array.from(new Set(MT.tokens(s).map(MT.stem).filter(w => w.length > 2 && !FILL.has(w))));
+const rx = src => new RegExp('(^|[^\\p{L}])(?:' + src + ')(?![\\p{L}])', 'iu');
+/* Benefit words must sit in the same sentence as the feature. "hours", "control" and "confidence" are too loose to count. */
+const BEN = rx('save|saves|saving|faster|quicker|easier|easy|simpler|reduce|reduces|cut|cuts|increase|increases|boost|grow|avoid|prevent|eliminate|without|so you|before you|so that|so every|so they|so your|so teams?|so donors?|so customers?|helps? you|lets? you|allows? you|never have to|no more|instantly|in seconds|in minutes|effortless|peace of mind|get paid'),
+  BEN_FR = rx('économis\\w*|economis\\w*|gagn\\w*|plus (?:rapide|simple|facile|vite)\\w*|sans|évit\\w*|evit\\w*|réduis\\w*|reduis\\w*|réduit\\w*|pour que|afin de|instantané\\w*|en quelques (?:secondes|minutes)|facilit\\w*|simplifi\\w*');
+const FILL = new Set(['added', 'add', 'adds', 'new', 'now', 'improved', 'improve', 'improvements', 'improvement', 'updated', 'update', 'updates', 'support', 'supports', 'fixed', 'fix', 'feature', 'features', 'release', 'launch', 'launched', 'introducing', 'introduces', 'introduced', 'enhanced', 'enhancement', 'enhancements', 'ability', 'option', 'options', 'also', 'users', 'user', 'can', 'more', 'ajout', 'ajoute', 'nouveau', 'nouvelle', 'nouvelles', 'nouveaux', 'amelioration', 'ameliorations', 'ameliore', 'mise', 'jour']);
+const FR_STOP = new Set('le la les un une des du de d l et ou en au aux pour par sur dans avec chez est sont ce ces cet cette qui que sans vos votre vous nous notre nos leur leurs mode a vers selon tout tous toute toutes chaque plus'.split(' '));
+const SKIPSEC = /bug|fix|under the hood|internal|known issue|technical|maintenance|chore|deprecat|correctif|correction|problèmes? connus|interne|sous le capot/i;
+const LEFT = /^(fixed|fix|fixes|bugfix|resolved|upgraded|upgrade to|migrated|bump|bumped|refactor|refactored|chore|corrig|correctif|mis à jour|mise à jour de|migr|known issue)/i;
+/* Common abbreviations are expanded on both sides so "SSO" and "single sign-on" match. */
+const ABBR = [[/\bsso\b/g, 'single sign on'], [/\b2fa\b|\bmfa\b/g, 'two factor authentication'], [/\bp2p\b/g, 'peer to peer']];
+const norm = s => ABBR.reduce((t, [re, to]) => t.replace(re, to), String(s || '').toLowerCase()).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’‘]/g, "'");
+function stem(w) { if (w.length < 4 || !/^[a-z]+$/.test(w)) return w; let x = w; if (/ies$/.test(x)) x = x.slice(0, -3) + 'y'; else if (!/(ss|us|is)$/.test(x) && /s$/.test(x)) x = x.slice(0, -1); if (x.length > 5 && /ing$/.test(x)) { x = x.slice(0, -3); if (/([^aeiou])\1$/.test(x)) x = x.slice(0, -1); } return x.replace(/e$/, ''); }
+const terms = s => Array.from(new Set((norm(s).match(/[\p{L}\p{N}]+/gu) || []).filter(w => w.length > 1 && !MT.stop.has(w) && !FR_STOP.has(w) && !FILL.has(w)).map(stem)));
+const isFrench = t => { const w = norm(t).match(/[\p{L}]+/gu) || [], fr = w.filter(x => ['le', 'la', 'les', 'des', 'pour', 'dans', 'avec', 'une', 'est', 'et', 'du', 'au', 'aux', 'sur', 'vous', 'nous', 'vos', 'votre'].includes(x)).length, en = w.filter(x => ['the', 'and', 'to', 'of', 'is', 'you', 'your', 'with', 'for', 'in'].includes(x)).length; return fr > en; };
+function parseNotes(text) {
+  const out = [], left = [], seen = new Set(); let skipSec = false, prevIndent = -1;
+  text.split(/\r?\n/).forEach(l0 => {
+    if (!l0.trim()) return;
+    const hm = l0.match(/^\s*#{1,6}\s*(.*)$/); if (hm) { skipSec = SKIPSEC.test(hm[1]); prevIndent = -1; return; }
+    const indent = l0.match(/^\s*/)[0].replace(/\t/g, '  ').length;
+    const s = l0.replace(/^\s*(?:[-*•▪◦]\s+|\d+[.)]\s+)/, '').replace(/[*_`]+/g, '').replace(/\s*\((?:\d{4}-\d{2}-\d{2}|v?\d[\d.]*)\)\s*$/, '').trim();
+    if (!s) return;
+    if (skipSec) { left.push([s, 'Under a bug fix, internal or known-issues heading']); return; }
+    if (prevIndent >= 0 && indent > prevIndent) { left.push([s, 'Sub-bullet of the line above, not counted separately']); return; }
+    if (LEFT.test(s)) { left.push([s, 'Fix or internal work']); return; }
+    const t = terms(s); if (!t.length) { left.push([s, 'No content words to match']); return; }
+    const key = t.slice().sort().join(' '); if (seen.has(key)) { left.push([s, 'Duplicate of an earlier line']); return; } seen.add(key);
+    out.push(s); prevIndent = indent;
+  });
+  return { lines: out, left };
+}
 function run() {
-  const lines = $('#notes').value.split('\n').map(s => s.replace(/^\s*([-*•]|\d+[.)])\s*/, '').trim()).filter(s => s && !/^#{1,6}\s/.test(s) && s.length > 6), copy = $('#copy').value.trim(), thr = +$('#thr').value;
-  if (!lines.length || !copy) { $('#out').innerHTML = '<div class="card"><p class="muted">Paste release notes and marketing copy to see coverage.</p></div>'; return; }
-  const sents = copy.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(Boolean), st = sents.map(s => new Set(terms(s))), all = new Set(terms(copy)), df = new Map(); st.forEach(set => set.forEach(w => df.set(w, (df.get(w) || 0) + 1)));
-  const res = lines.map(f => { const ft = terms(f); if (!ft.length) return { f, status: 'skip' }; let best = -1, bs = 0, bhits = []; st.forEach((set, i) => { const hits = ft.filter(w => set.has(w)), s = hits.length / ft.length; if (s > bs || (s === bs && hits.length > bhits.length)) { bs = s; best = i; bhits = hits; } }); const anywhere = ft.filter(w => all.has(w)).length / ft.length; const covered = bs >= thr, benefit = covered && (BEN.test(sents[best]) || (sents[best + 1] && BEN.test(sents[best + 1]) && bs >= thr)); return { f, ft, best: covered ? sents[best] : '', bs, anywhere, status: !covered ? (anywhere >= thr ? 'scattered' : 'missing') : benefit ? 'covered' : 'feature' }; }).filter(r => r.status !== 'skip');
+  const notesTxt = $("#f_notes").value, copy = $("#f_copy").value.trim(), thr = +$('#thr').value;
+  if (!notesTxt.trim() || !copy) { $('#out').innerHTML = MT.notComputed('Paste both texts', ['Nothing was analysed. Paste the release notes and the marketing copy.']); return; }
+  const pn = parseNotes(notesTxt), lines = pn.lines;
+  if (!lines.length) { $('#out').innerHTML = MT.notComputed('No customer-facing features found', ['Every line was a heading, fix, internal item, sub-bullet or duplicate. ' + pn.left.length + ' line' + (pn.left.length === 1 ? '' : 's') + ' left out.']); return; }
+  const fr = isFrench(copy) || isFrench(notesTxt), benRe = s => BEN.test(s) || (fr && BEN_FR.test(s));
+  const sents = copy.replace(/([.!?])\s+/g, '$1\u0001').split(/\u0001|\n+/).map(s => s.trim()).filter(Boolean), st = sents.map(s => new Set(terms(s))), all = new Set(terms(copy));
+  const res = lines.map(f => { const ft = terms(f); let best = -1, bs = 0, bhits = []; st.forEach((set, i) => { const hits = ft.filter(w => set.has(w)), sc = hits.length / ft.length; if (sc > bs || (sc === bs && hits.length > bhits.length)) { bs = sc; best = i; bhits = hits; } }); const anywhere = ft.filter(w => all.has(w)).length / ft.length, covered = bs >= thr, benefit = covered && ft.length > 1 && benRe(sents[best]); return { f, ft, best: covered ? sents[best] : '', bs, anywhere, one: ft.length === 1, status: !covered ? (anywhere >= thr ? 'scattered' : 'missing') : benefit ? 'covered' : 'feature' }; });
   const c = k => res.filter(r => r.status === k).length, n = res.length, miss = c('missing'), sc = c('scattered');
-  const cov = (c('covered') + c('feature')) / n;
-  let h = MT.rag(miss + sc === 0 && c('feature') === 0 ? 'green' : cov < 0.6 ? 'red' : 'yellow', `${F.pct(cov, 0)} of ${n} features appear in the copy; ${c('covered')} with a benefit`, [`${miss} missing entirely, ${sc} spread across sentences without one clear mention, ${c('feature')} named without a customer benefit.`]);
-  h += MT.stats([['Features', String(n), ''], ['Covered with benefit', String(c('covered')), F.pct(c('covered') / n, 0), 'good'], ['Feature only', String(c('feature')), 'no benefit language', c('feature') ? 'warn' : ''], ['Scattered', String(sc), 'terms present, no single mention', sc ? 'warn' : ''], ['Missing', String(miss), 'not in the copy', miss ? 'bad' : 'good']]);
-  const tg = { covered: MT.tag('Covered', 'good'), feature: MT.tag('Feature only', 'warn'), scattered: MT.tag('Scattered', 'warn'), missing: MT.tag('Missing', 'bad') }, ord = { missing: 0, scattered: 1, feature: 2, covered: 3 };
-  h += '<div class="card"><h3>Coverage matrix</h3>' + MT.tbl(['Feature', 'Status', 'Match', 'Best matching sentence'], res.slice().sort((a, b) => ord[a.status] - ord[b.status]).map(r => [r.f, { h: tg[r.status] }, F.pct(r.status === 'scattered' ? r.anywhere : r.bs, 0), r.best || '—']), { num: [2] }) + '<div class="actions"><button class="btn btn-secondary btn-sm" id="dl" type="button">Download CSV</button></div></div>';
+  const cov = (c('covered') + c('feature')) / n, shown = r => r.status === 'scattered' ? r.anywhere : r.bs;
+  let h = MT.rag(miss + sc === 0 && c('feature') === 0 && !fr ? 'green' : cov < 0.6 ? 'red' : 'yellow', `${F.pct(cov, 0)} of ${n} features appear in the copy; ${c('covered')} with benefit wording`, [`${miss} missing entirely, ${sc} spread across sentences without one clear mention, ${c('feature')} named without benefit wording. ${pn.left.length ? pn.left.length + ' note line' + (pn.left.length === 1 ? '' : 's') + ' left out (fixes, internal work, duplicates; listed below).' : ''}`]);
+  h += MT.stats([['Features', String(n), pn.left.length + ' lines left out'], ['Benefit wording found', String(c('covered')), F.pct(c('covered') / n, 0) + ', not verified', 'good'], ['Feature only', String(c('feature')), 'no benefit wording', c('feature') ? 'warn' : ''], ['Scattered', String(sc), 'terms present, no single mention', sc ? 'warn' : ''], ['Missing', String(miss), 'not in the copy', miss ? 'bad' : 'good']]);
+  if (fr) h += MT.note('<b>French text detected.</b> Matching ignores accents and common French words, but synonyms and word forms (for example exportation and exportez) will not match, and benefit wording is checked with a short French list. Read every Missing and Feature only row yourself.', 'warn');
+  const tg = { covered: MT.tag('Benefit wording', 'good'), feature: MT.tag('Feature only', 'warn'), scattered: MT.tag('Scattered', 'warn'), missing: MT.tag('Missing', 'bad') }, ord = { missing: 0, scattered: 1, feature: 2, covered: 3 };
+  h += '<div class="card"><h3>Coverage matrix</h3>' + MT.tbl(['Feature', 'Status', 'Match', 'Best matching sentence'], res.slice().sort((a, b) => ord[a.status] - ord[b.status]).map(r => [r.f, { h: tg[r.status] + (r.one && r.status !== 'missing' && r.status !== 'scattered' ? ' ' + MT.tag('One-word match, check', 'warn') : '') }, F.pct(shown(r), 0), r.best || 'None']), { num: [2] }) + '<div class="actions"><button class="btn btn-secondary btn-sm" id="dl" type="button">Download CSV</button></div></div>';
+  if (pn.left.length) h += '<div class="card"><h3>Lines left out (' + pn.left.length + ')</h3><p class="sub">These were not counted as features. If one is a real feature, rewrite it without a leading "Fixed" or "Upgraded" or move it out of the fixes section.</p>' + MT.tbl(['Line', 'Why'], pn.left.map(x => [x[0], x[1]])) + '</div>';
   const need = res.filter(r => r.status === 'missing' || r.status === 'scattered' || r.status === 'feature');
   if (need.length) h += '<div class="card"><h3>Copy to write</h3><p class="sub">Each line is a prompt for a benefit sentence. Fill in the outcome your customer gets.</p>' + MT.tbl(['Feature', 'Suggested pattern'], need.map(r => [r.f, r.status === 'feature' ? `Add the outcome to the existing line: "${r.best}" plus "so you can [result]".` : `New line: "[Who] can now [do this], so [benefit]." Base it on: ${r.f}`])) + '</div>';
-  h += MT.note('<b>Method.</b> Each feature line is reduced to stemmed content terms. A feature counts as covered when one sentence of the copy contains at least the strictness share of its terms. Benefit language is detected by outcome words such as save, faster, reduce, without or so you can in that sentence or the next. Keyword overlap misses paraphrases, so review Missing rows for synonyms before adding copy.');
-  $('#out').innerHTML = h; $('#dl').addEventListener('click', () => MT.download('messaging-gap.csv', MT.toCSV([['feature', 'status', 'match', 'best_sentence']].concat(res.map(r => [r.f, r.status, (r.bs || 0).toFixed(2), r.best]))), 'text/csv'));
+  h += MT.note('<b>Method.</b> Each feature line is reduced to content words (plurals, accents and hyphens ignored). A feature counts as covered when one sentence of the copy contains at least the strictness share of its terms. Benefit wording is a hint, not proof: an outcome word such as save, faster, reduce, without or so you can has to sit in that same sentence. Keyword overlap misses paraphrases and brand names for a feature, so review Missing rows for synonyms before adding copy.');
+  $('#out').innerHTML = h; $('#dl').addEventListener('click', () => MT.download('messaging-gap.csv', MT.toCSV([['feature', 'status', 'match', 'best_sentence']].concat(res.map(r => [r.f, r.status, shown(r).toFixed(2), r.best]))), 'text/csv'));
 }
-$('#smp').addEventListener('click', () => { $('#notes').value = `## Release 4.2
+$('#smp').addEventListener('click', () => { $("#f_notes").value = `## Release 4.2
 - Added bulk CSV export for reports
 - New role-based permissions for team workspaces
 - Scheduled report delivery to Slack
 - Two-factor authentication with authenticator apps
 - Dark mode for the dashboard
 - Audit log with 12-month retention
-- API rate limits raised to 600 requests per minute`; $('#copy').value = `Meet 4.2, our biggest release for growing teams. Export any report to CSV in bulk, so you can hand finance the numbers in seconds instead of hours. Give every teammate the right access with role-based permissions for each workspace. Reports now land in Slack on a schedule. Protect every login with two-factor authentication. Nights are easier on the eyes too.`; run(); });
+- API rate limits raised to 600 requests per minute`; $("#f_copy").value = `Meet 4.2, our biggest release for growing teams. Export any report to CSV in bulk, so you can hand finance the numbers in seconds instead of hours. Give every teammate the right access with role-based permissions for each workspace. Reports now land in Slack on a schedule. Protect every login with two-factor authentication. Nights are easier on the eyes too.`; run(); });
 $('#go').addEventListener('click', run);
 })();
 </script>
