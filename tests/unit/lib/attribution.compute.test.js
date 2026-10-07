@@ -1,21 +1,14 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import Papa from "papaparse";
 import {
   computeAttribution,
   creditFor,
-  detectRevenueIssues,
-  groupJourneys,
-  HALF_LIFE_DAYS,
+  DEFAULT_HALF_LIFE_DAYS,
   MODELS,
-  normalizeTouchpoint,
-  revenueWarnings,
+  POSITION_WEIGHTS,
 } from "../../../src/lib/attribution/compute.js";
-import { lowercaseKeys } from "../../../src/lib/csv.js";
+import { analyzeFixture, analyzeText } from "./attributionHelpers.js";
 
-const rowsFrom = (text) => Papa.parse(text, { header: true, skipEmptyLines: true }).data.map(lowercaseKeys);
-const load = (name) => computeFrom(readFileSync(path.join(process.cwd(), "tests/fixtures", name), "utf8"));
-const computeFrom = (text) => computeAttribution(groupJourneys(rowsFrom(text)).journeys);
+const load = (name) => analyzeFixture(name).result;
+const computeFrom = (text, options) => analyzeText(text, options).result;
 const near = (actual, expected) => expect(actual).toBeCloseTo(expected, 10);
 
 describe("golden: the hand-verified sample (docs/history.md)", () => {
@@ -71,47 +64,18 @@ describe("golden: one three-touch journey worth 90", () => {
     expect(r.totalValue).toBe(90);
   });
 
-  it("uses a 7 day half-life", () => expect(HALF_LIFE_DAYS).toBe(7));
-});
+  it("uses a 7 day half-life by default and 40/20/40 position weights", () => {
+    expect(DEFAULT_HALF_LIFE_DAYS).toBe(7);
+    expect(POSITION_WEIGHTS).toEqual({ first: 0.4, middle: 0.2, last: 0.4, two: 0.5 });
+  });
 
-describe("normalizeTouchpoint", () => {
-  it("accepts journey and channel aliases and defaults the channel", () => {
-    expect(normalizeTouchpoint({ journeyid: "j", touchpoint: "tv" }, 0)).toMatchObject({
-      journeyId: "j",
-      channel: "tv",
+  it("applies a custom half-life", () => {
+    // j1: email 7 days before paid. With a 14 day half-life email weighs 2^-0.5 against 1.
+    const r = computeFrom("journey_id,channel,timestamp\nj1,email,2026-01-01\nj1,paid,2026-01-08\n", {
+      halfLifeDays: 14,
     });
-    expect(normalizeTouchpoint({ journey: "j" }, 0)).toMatchObject({ journeyId: "j", channel: "(unknown)" });
-    expect(normalizeTouchpoint({}, 0).journeyId).toBe("");
-  });
-
-  it("falls back to row order when the timestamp is missing or unparseable", () => {
-    const missing = normalizeTouchpoint({ journey_id: "j" }, 3);
-    expect(missing).toMatchObject({ timeIsFallback: true, time: 3 * 86400000 });
-    expect(normalizeTouchpoint({ journey_id: "j", timestamp: "garbage" }, 1).timeIsFallback).toBe(true);
-    expect(normalizeTouchpoint({ journey_id: "j", timestamp: "2026-01-01" }, 1).timeIsFallback).toBe(false);
-  });
-
-  it("reads revenue only when it is a number", () => {
-    expect(normalizeTouchpoint({ revenue: "12.5" }, 0).revenue).toBe(12.5);
-    expect(normalizeTouchpoint({ revenue: "" }, 0).revenue).toBeNull();
-    expect(normalizeTouchpoint({ revenue: "n/a" }, 0).revenue).toBeNull();
-    expect(normalizeTouchpoint({}, 0).revenue).toBeNull();
-  });
-});
-
-describe("groupJourneys", () => {
-  it("skips rows with no journey id and reports revenue and timestamp fallbacks", () => {
-    const { journeys, anyRevenue, anyFallbackTime } = groupJourneys(
-      rowsFrom("journey_id,channel,revenue\nj1,a,5\n,b,\nj1,c,\n"),
-    );
-    expect([...journeys.keys()]).toEqual(["j1"]);
-    expect(journeys.get("j1")).toHaveLength(2);
-    expect(anyRevenue).toBe(true);
-    expect(anyFallbackTime).toBe(true);
-  });
-
-  it("is empty when no row has a journey id", () => {
-    expect(groupJourneys(rowsFrom("channel\nemail\n")).journeys.size).toBe(0);
+    const w = Math.pow(2, -0.5);
+    near(creditFor(r, "Time-decay", "email"), w / (1 + w));
   });
 });
 
@@ -134,32 +98,21 @@ describe("computeAttribution edge cases", () => {
     expect(r.journeyCount).toBe(1);
     near(creditFor(r, "First-touch", name), 1);
   });
-});
 
-describe("revenue issues (D9)", () => {
-  const issuesFor = (text) => detectRevenueIssues(groupJourneys(rowsFrom(text)).journeys);
-
-  it("flags a journey that repeats one revenue figure on several rows", () => {
-    expect(issuesFor("journey_id,channel,revenue\nj,a,100\nj,b,100\n")).toMatchObject({
-      repeatedRevenueJourneys: 1,
-      mixedUnits: false,
-    });
+  it("skips journeys with no touches and scores nothing for an empty list", () => {
+    const r = computeAttribution([{ id: "j", value: 5, touches: [] }]);
+    expect(r).toMatchObject({ journeyCount: 0, touchpointCount: 0, totalValue: 0, channels: [] });
   });
 
-  it("does not flag distinct revenue values or a single revenue row", () => {
-    expect(issuesFor("journey_id,channel,revenue\nj,a,100\nj,b,50\nk,a,10\n").repeatedRevenueJourneys).toBe(0);
-  });
-
-  it("flags journeys with and without revenue together", () => {
-    expect(issuesFor("journey_id,channel,revenue\nj,a,100\nk,b,\n")).toMatchObject({
-      journeysWithRevenue: 1,
-      journeysWithoutRevenue: 1,
-      mixedUnits: true,
-    });
-  });
-
-  it("turns issues into warnings, and none for clean input", () => {
-    expect(revenueWarnings(issuesFor("journey_id,channel,revenue\nj,a,100\nj,b,100\nk,b,\n"))).toHaveLength(2);
-    expect(revenueWarnings(issuesFor("journey_id,channel\nj,a\n"))).toEqual([]);
+  it("conserves value for a 4-touch journey under every model", () => {
+    const r = computeFrom(
+      "journey_id,channel,timestamp,revenue\nj,a,2026-01-01,\nj,b,2026-01-02,\nj,c,2026-01-03,\nj,d,2026-01-04,100\n",
+    );
+    for (const model of MODELS)
+      near(
+        r.channels.reduce((s, c) => s + creditFor(r, model, c), 0),
+        100,
+      );
+    near(creditFor(r, "Position-based", "b"), 10);
   });
 });

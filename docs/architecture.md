@@ -17,21 +17,18 @@
 
 ## Tools
 
-Each tool is a pure module in `src/lib/` plus a thin React island:
+Two Astro tools remain; the UTM, GTM and CAC tools were retired in favor of the marketing tools (decision 0008). Each tool is a pure module in `src/lib/` plus a thin React island:
 
-| Tool                           | Logic                                | Island                                   |
-| ------------------------------ | ------------------------------------ | ---------------------------------------- |
-| UTM Governance Auditor         | `lib/utm/audit.js`                   | `components/tools/UtmAuditor.jsx`        |
-| GTM Container Auditor          | `lib/gtm/audit.js`                   | `components/tools/GtmAuditor.jsx`        |
-| Multi-Touch Attribution        | `lib/attribution/compute.js`         | `components/tools/AttributionTool.jsx`   |
-| Disclosure Language Checker    | `lib/disclosure/{rulesets,check}.js` | `components/tools/DisclosureChecker.jsx` |
-| CAC / LTV / Payback Calculator | `lib/cac/calc.js`                    | `components/tools/CacCalculator.jsx`     |
+| Tool                        | Logic                                | Island                                   |
+| --------------------------- | ------------------------------------ | ---------------------------------------- |
+| Multi-Touch Attribution     | `lib/attribution/` (see below)       | `components/tools/AttributionTool.jsx`   |
+| Disclosure Language Checker | `lib/disclosure/{rulesets,check}.js` | `components/tools/DisclosureChecker.jsx` |
 
 Shared CSV handling is `lib/csv.js` (`parseCsvFile`, `lowercaseKeys` with prototype-free rows). The kit in `components/kit/` supplies the dropzone (`FileDropzone` over `useFileInput`), `StatRow` (owns the `aria-live` region), `StatCard`, `DataTable`, `ToolShell`, `ErrorNotice` and `useFileAnalysis` (file name, result and error state around an async analysis). Charts are in `components/charts/` (D3; `useChartWidth` redraws on resize and series colors come from CSS classes).
 
 Pages: `src/pages/tools/[slug].astro` calls `getStaticPaths` over `data/tools.js` and wraps the island in `layouts/ToolLayout.astro`. Astro cannot hydrate a component chosen at runtime, so the island per slug is named explicitly in that file.
 
-The attribution tool's credit math is pinned by golden tests built from hand-computed values (`tests/fixtures/attribution-*-golden.csv`, `tests/unit/lib/attribution.compute.test.js`).
+The attribution tool's credit math (`compute.js`) is pinned by golden tests built from hand-computed values (`tests/fixtures/attribution-*-golden.csv`, `tests/unit/lib/attribution.compute.test.js`). Everything that turns a CSV into journeys lives beside it in `lib/attribution/`: `columns.js` (header aliases and the column mapper), `numbers.js` (money parsing and per-column decimal locale), `dates.js` (UTC parsing, day-first or month-first per file, French month names), `order.js` (time order with undated touches kept in file order), `channels.js` (case and spacing merge), `revenue.js` (one value per journey), `prepare.js` (`analyzeRows`: dedupe, conversion rule, view-through filter, lookback, and the data-quality report), `notes.js` (the sentences shown in the Data quality panel), `output.js` (shares, rank by model, CSV). The island is `AttributionTool.jsx` plus `components/tools/attribution/` (workspace, options panel, quality panel, result tables); it re-analyzes the parsed rows live when an option changes. Golden tests on the review samples are in `tests/unit/lib/attribution.review.test.js` over `tests/fixtures/attribution-review/`.
 
 ## Styles
 

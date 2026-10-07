@@ -1,4 +1,10 @@
-import { describeParseWarnings, lowercaseKeys, parseCsvFile, readFileText } from "../../../src/lib/csv.js";
+import {
+  describeParseWarnings,
+  lowercaseKeys,
+  normalizeHeader,
+  parseCsvFile,
+  readFileText,
+} from "../../../src/lib/csv.js";
 
 describe("lowercaseKeys", () => {
   it("trims and lowercases headers", () => {
@@ -44,6 +50,14 @@ describe("parseCsvFile and readFileText", () => {
       { name: "b", value: "2" },
     ]);
     expect(warning).toBe("");
+  });
+
+  it("returns the normalized headers, strips a BOM and reads semicolons", async () => {
+    const file = new File(["\uFEFFJourney ID ;Value\nj;1\n"], "x.csv", { type: "text/csv" });
+    const { rows, headers } = await parseCsvFile(file);
+    expect(headers).toEqual(["journey id", "value"]);
+    expect({ ...rows[0] }).toEqual({ "journey id": "j", value: "1" });
+    expect(normalizeHeader("\uFEFF Name ")).toBe("name");
   });
 
   it("reports a malformed row as a warning", async () => {

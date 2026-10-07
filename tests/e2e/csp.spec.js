@@ -11,10 +11,7 @@ const fixture = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.met
 const PAGES = [
   ["/", null],
   ["/tools/", null],
-  ["/tools/utm-auditor/", "utm.csv"],
-  ["/tools/gtm-auditor/", "gtm.json"],
   ["/tools/attribution/", "attribution.csv"],
-  ["/tools/cac-calculator/", null],
   ["/tools/disclosure-check/", null],
 ];
 
@@ -47,7 +44,6 @@ for (const [path, upload] of PAGES) {
       await page.setInputFiles('input[type="file"]', fixture(upload));
       await expect(page.locator(".stat-card").first()).toBeVisible();
     }
-    if (path === "/tools/cac-calculator/") await expect(page.getByText("$250.00")).toBeVisible();
     expect(problems).toEqual([]);
   });
 }

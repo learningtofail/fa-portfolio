@@ -1,0 +1,66 @@
+.attribution__panel {
+  margin-block: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-input);
+}
+
+.attribution__panel-title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.attribution__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.attribution__check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.attribution__notes {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.attribution__note--warning {
+  color: var(--warning);
+}
+
+.attribution__note--info {
+  color: var(--ink-soft);
+}
+
+.attribution__button {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+}
+
+.attribution__unreliable {
+  margin-block: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-input);
+  color: var(--warning);
+  font-size: 0.9rem;
+}
+
+.data-table__cell--total {
+  font-weight: 600;
+}
+
+.data-table__cell--number {
+  text-align: right;
+}

@@ -1,0 +1,11 @@
+journey_id,channel,timestamp,revenue
+T1,Paid Social,2026-05-01 10:00:00,
+T1,Email,2026-05-01 10:00:00,
+T1,Direct,2026-05-01 10:00:00,100
+T2,Direct,2026-05-01 10:00:00,
+T2,Email,2026-05-01 10:00:00,
+T2,Paid Social,2026-05-01 10:00:00,100
+anon-ios-77,Paid Social,2026-05-02 08:00:00,
+anon-ios-77,Email,2026-05-02 20:00:00,
+anon-desktop-77,Organic Search,2026-05-04 09:00:00,
+user-77,Direct,2026-05-05 09:00:00,200
