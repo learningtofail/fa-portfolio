@@ -2,14 +2,8 @@ import { tools } from "../../src/data/tools.js";
 import { contact, experience, skills, summary } from "../../src/data/resume.js";
 
 describe("tools catalog", () => {
-  it("holds the five locked slugs in order", () => {
-    expect(tools.map((t) => t.slug)).toEqual([
-      "utm-auditor",
-      "gtm-auditor",
-      "cac-calculator",
-      "attribution",
-      "disclosure-check",
-    ]);
+  it("holds the two remaining locked slugs in order", () => {
+    expect(tools.map((t) => t.slug)).toEqual(["attribution", "disclosure-check"]);
   });
 
   it("marks every tool live with a name and description", () => {

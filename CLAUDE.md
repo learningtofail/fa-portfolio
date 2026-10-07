@@ -11,8 +11,8 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 
 ## Repo map
 
-- `src/pages/`: `index.astro` (resume) and `tools/index.astro`; `tools/[slug].astro` builds one page per live tool from `src/data/tools.js` through `src/layouts/ToolLayout.astro`. URLs stay `/tools/<slug>/`.
-- `src/lib/`: pure, unit-tested logic with JSDoc types: `csv.js`, `download.js` (injected file download), `utm/audit.js`, `gtm/audit.js`, `attribution/` (`compute.js` credit math; `prepare.js` rows to journeys and the data-quality report; `columns.js`, `numbers.js`, `dates.js`, `order.js`, `channels.js`, `revenue.js`, `notes.js`, `output.js`, `inputs.js`), `disclosure/{rulesets,check}.js`, `cac/calc.js`. No DOM, no React.
+- `src/pages/`: `index.astro` (resume) and `tools/index.astro`; `tools/[slug].astro` builds one page per live tool from `src/data/tools.js` through `src/layouts/ToolLayout.astro`. URLs stay `/tools/<slug>/`. Two Astro tools remain (attribution, disclosure-check). `/tools/utm-auditor/`, `/tools/gtm-auditor/` and `/tools/cac-calculator/` are redirects to the marketing pages (`astro.config.mjs`, decision 0008).
+- `src/lib/`: pure, unit-tested logic with JSDoc types: `csv.js`, `download.js` (injected file download), `attribution/` (`compute.js` credit math; `prepare.js` rows to journeys and the data-quality report; `columns.js`, `numbers.js`, `dates.js`, `order.js`, `channels.js`, `revenue.js`, `notes.js`, `output.js`, `inputs.js`), `disclosure/{rulesets,check}.js`. No DOM, no React.
 - `src/components/`: `tools/` (one thin component per tool, roughly 60 to 100 lines; the attribution tool splits its parts into `tools/attribution/`), `kit/` (FileDropzone, StatCard, StatRow, DataTable, ToolShell, ErrorNotice, useFileInput, useFileAnalysis), `charts/` (D3 charts and `useChartWidth`).
 - `src/data/`: `resume.js` (page and PDF content), `tools.js` (tool catalog with title, intro and meta description), `years.js` (years of experience, computed from 2004 at build time).
 - `src/styles/`: `orchis.tokens.css` (vendored, never hand-edit, pinned by `orchis.tokens.manifest.json`), `site.tokens.css` (semantic aliases and the only other place raw colors may live), `base.css`, `layout.css` (`.page`), `resume.css` (index page), `components/*.css` (BEM component styles, imported through `components.css`).
@@ -31,16 +31,6 @@ Astro 7 static site with React 19 islands. See `docs/architecture.md` for the cu
 2. Add a thin component in `src/components/tools/` built from the kit (`ToolShell`, `FileDropzone`, `useFileAnalysis`, `StatRow`, `DataTable`). It should stay well under 150 lines.
 3. Add an entry to `src/data/tools.js` (slug, name, title, description, intro, metaDescription) and one line in `src/pages/tools/[slug].astro`.
 4. Add the tool's e2e and axe cases to `tests/e2e/site.spec.js`.
-
-## Adding the A/B experiment analyzer
-
-This is the planned sixth tool. Follow "Adding a tool" with these specifics:
-
-- Lib module `src/lib/experiment/analyze.js`: pure functions taking per-variant visitors and conversions (from a CSV parsed by `src/lib/csv.js`) and returning rate, relative lift, a two-proportion z-test p-value and confidence interval, and a plain warning list (sample too small, unequal split). Use `Map` for variant names, since they are user data.
-- Tests in `tests/unit/lib/experiment.test.js` with hand-checked values and edge cases (zero visitors, one variant, identical rates). Keep `src/lib` coverage at 90 percent.
-- Component `src/components/tools/ExperimentAnalyzer.jsx` from the kit (`ToolShell`, `FileDropzone`, `useFileAnalysis`, `StatRow`, `DataTable`).
-- Catalog entry in `src/data/tools.js` with `live: true`, one line in `src/pages/tools/[slug].astro`, e2e and axe cases, and a row in `docs/monitoring.md`. Mirror the catalog entry in fa-www by hand.
-- Client-side only (`docs/decisions/0002-client-side-tools-privacy.md`).
 
 ## Conventions
 
