@@ -7,6 +7,8 @@ const hydrated = (page) => page.waitForFunction(() => !document.querySelector("a
 
 const fixture = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url));
 
+const reviewFixture = (name) => fileURLToPath(new URL(`../fixtures/attribution-review/${name}`, import.meta.url));
+
 const TOOL_PAGES = [
   { slug: "utm-auditor", heading: /UTM/i },
   { slug: "gtm-auditor", heading: /GTM/i },
@@ -103,7 +105,7 @@ test.describe("prototype-colliding user data (D2)", () => {
     await page.goto("/tools/attribution/");
     await hydrated(page);
     await page.setInputFiles('input[type="file"]', fixture("constructor-attribution.csv"));
-    await expect(page.getByRole("table")).toBeVisible({ timeout: 3000 });
+    await expect(page.getByRole("table").first()).toBeVisible({ timeout: 3000 });
     expect(errors).toEqual([]);
   });
 });
@@ -133,7 +135,7 @@ test.describe("styling rules (Phase 3)", () => {
     await page.goto("/tools/attribution/");
     await hydrated(page);
     await page.setInputFiles('input[type="file"]', fixture("attribution.csv"));
-    await expect(page.getByRole("table")).toBeVisible();
+    await expect(page.getByRole("table").first()).toBeVisible();
     expect(await page.locator("[style]").count()).toBe(0);
     expect(await page.locator('svg [fill^="#"], svg [stroke^="#"]').count()).toBe(0);
     // Series colors resolve from the site tokens through classes.
@@ -177,6 +179,94 @@ test.describe("accessibility with results on screen", () => {
     await hydrated(page);
     await page.getByPlaceholder("One piece of copy per line...").fill("Great blender #ad\nPlain copy");
     await expect(page.getByRole("cell", { name: "Missing disclosure" })).toBeVisible();
+    const results = await new AxeBuilder({ page: /** @type {any} */ (page) }).analyze();
+    expect(results.violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+  });
+});
+
+test.describe("attribution controls", () => {
+  const open = async (page, file) => {
+    await page.goto("/tools/attribution/");
+    await hydrated(page);
+    await page.setInputFiles('input[type="file"]', file);
+    await expect(page.getByRole("heading", { name: "Data quality" })).toBeVisible();
+  };
+  const creditTable = (page) => page.getByRole("table").first();
+
+  test("counts a repeated revenue once, and the sum mode marks the totals unreliable", async ({ page }) => {
+    await open(page, reviewFixture("03-trap-repeated-revenue-automotive.csv"));
+    await expect(page.getByText("Credit is measured in revenue")).toBeVisible();
+    await expect(creditTable(page).locator("tr", { hasText: "Total" }).first()).toContainText("8,920.00");
+    await expect(page.getByRole("status", { name: "Totals warning" })).toHaveCount(0);
+    await page.getByLabel("Revenue per journey").selectOption("sum");
+    await expect(creditTable(page).locator("tr", { hasText: "Total" }).first()).toContainText("35,430.00");
+    await expect(page.getByRole("status", { name: "Totals warning" })).toContainText("Totals are unreliable");
+  });
+
+  test("maps a 'Journey ID' header and reads a decimal comma", async ({ page }) => {
+    await open(page, reviewFixture("02b-dirty-headers-spaces.csv"));
+    await expect(page.getByLabel(/Journey ID column/)).toHaveValue("journey id");
+    await open(page, reviewFixture("02c-semicolon-eu-export.csv"));
+    await expect(creditTable(page).locator("tr", { hasText: "Paid Search" })).toContainText("100.50");
+  });
+
+  test("lists the headers seen when a required column is missing", async ({ page }) => {
+    await page.goto("/tools/attribution/");
+    await hydrated(page);
+    await page.setInputFiles('input[type="file"]', {
+      name: "odd.csv",
+      mimeType: "text/csv",
+      buffer: Buffer.from("who,where\nj1,email\n"),
+    });
+    await expect(page.getByRole("alert")).toContainText("Headers seen: who, where");
+    await page.getByLabel(/Journey ID column/).selectOption("who");
+    await page.getByLabel(/Channel column/).selectOption("where");
+    await expect(page.getByRole("heading", { name: "Data quality" })).toBeVisible();
+  });
+
+  test("view-through, lookback, half-life and conversion controls change the result", async ({ page }) => {
+    await open(page, fixture("attribution-controls.csv"));
+    await expect(
+      page.getByText("2 journeys did not convert").or(page.getByText("1 journey did not convert")),
+    ).toBeVisible();
+    await expect(creditTable(page).locator("tr", { hasText: "Display" })).toBeVisible();
+    await page.getByLabel(/Keep view-through touches/).uncheck();
+    await expect(page.getByText(/2 view-through touches excluded/)).toBeVisible();
+    await expect(creditTable(page).locator("tr", { hasText: "Display" })).toHaveCount(0);
+    await page.getByLabel(/Lookback window/).fill("20");
+    await expect(page.getByText(/Lookback 20 days/)).toBeVisible();
+    await page.getByLabel(/Time-decay half-life/).fill("30");
+    await expect(page.getByText(/every 30 days/)).toBeVisible();
+    await page.getByLabel("Only journeys with revenue count as conversions").uncheck();
+    await expect(page.getByRole("status", { name: "Totals warning" })).toBeVisible();
+  });
+
+  test("shows shares, ranks and a labelled chart axis", async ({ page }) => {
+    await open(page, reviewFixture("01-ecommerce-clean.csv"));
+    await expect(page.getByRole("heading", { name: "Rank by model" })).toBeVisible();
+    await expect(page.getByRole("table")).toHaveCount(3);
+    await expect(page.locator(".chart__axis-title")).toContainText("Credit (revenue");
+  });
+
+  test("downloads the matrix and shares as CSV", async ({ page }) => {
+    await open(page, reviewFixture("01-ecommerce-clean.csv"));
+    const [download] = await Promise.all([
+      page.waitForEvent("download"),
+      page.getByRole("button", { name: /Download credit and shares as CSV/ }).click(),
+    ]);
+    expect(download.suggestedFilename()).toBe("attribution-credit.csv");
+  });
+
+  test("has no axe violations with warnings and every control on screen", async ({ page }) => {
+    await open(page, reviewFixture("02-b2b-saas-messy.csv"));
+    const results = await new AxeBuilder({ page: /** @type {any} */ (page) }).analyze();
+    expect(results.violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+    expect(await page.locator("[style]").count()).toBe(0);
+  });
+
+  test("has no axe violations with the unreliable-totals banner and the view-through control", async ({ page }) => {
+    await open(page, fixture("attribution-controls.csv"));
+    await page.getByLabel("Only journeys with revenue count as conversions").uncheck();
     const results = await new AxeBuilder({ page: /** @type {any} */ (page) }).analyze();
     expect(results.violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
   });
