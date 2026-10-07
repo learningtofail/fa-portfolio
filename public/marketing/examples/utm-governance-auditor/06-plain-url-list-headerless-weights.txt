@@ -1,0 +1,9 @@
+https://shop.example.com/?utm_source=google&utm_medium=cpc&utm_campaign=brand_search,5000
+https://shop.example.com/?utm_source=google&utm_medium=cpc&utm_campaign=brand_search,1,234
+https://shop.example.com/?utm_source=Google&utm_medium=cpc&utm_campaign=brand_search,400
+https://shop.example.com/?UTM_Source=google&UTM_Medium=cpc&utm_campaign=brand_search,300
+https://shop.example.com/?utm_source=google&utm_source=bing&utm_medium=cpc&utm_campaign=brand_search,250
+https://shop.example.com/?utm_source=facebook&amp;utm_medium=paid_social&amp;utm_campaign=summer_2026,900
+https://shop.example.com/?utm_source=tiktok&utm_medium=paid_social&utm_campaign=ugc_test&utm_source_platform=tiktok_ads&utm_creative_format=video,120
+shop.example.com/pricing,60
+this line is not a url,10

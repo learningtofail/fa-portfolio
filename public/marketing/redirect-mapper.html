@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Bulk Redirect Mapper &amp; Loop Validator | Marketing Tools</title>
-<meta name="description" content="Paste or upload a two-column redirect map. The tool builds a directed graph, finds loops, chains, self-references, conflicting duplicates and invalid targets, then outputs a consolidated 1-to-1 map for .htaccess, Nginx, Cloudflare, Netlify or CSV.">
+<meta name="description" content="Paste or upload a two-column redirect map. The tool builds a directed graph that follows how a server matches host, path and query, finds loops, chains, self-references, conflicting duplicates and invalid targets, then outputs a consolidated 1-to-1 map for .htaccess, Nginx, Cloudflare, Netlify or CSV.">
 <style>/* Signal & Serif tokens, shared by every tool */
 :root{
   color-scheme: light;
@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -225,7 +238,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 <main class="wrap">
   <div class="hero">
     <h1 class="serif">Bulk Redirect Mapper &amp; Loop Validator</h1>
-    <p>Paste or upload a two-column redirect map. The tool builds a directed graph, finds loops, chains, self-references, conflicting duplicates and invalid targets, then outputs a consolidated 1-to-1 map for .htaccess, Nginx, Cloudflare, Netlify or CSV.</p>
+    <p>Paste or upload a two-column redirect map. The tool builds a directed graph that follows how a server matches host, path and query, finds loops, chains, self-references, conflicting duplicates and invalid targets, then outputs a consolidated 1-to-1 map for .htaccess, Nginx, Cloudflare, Netlify or CSV.</p>
     <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
   </div>
   <div class="toolbar">
@@ -235,12 +248,13 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">9</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Nonprofit relaunch</b></div><p class="example__note">36 rows with one real two-step chain. The correct result is a warning to collapse the chain, with nothing else wrong.</p><table class="t example__values"><tbody><tr><th scope="row">Site host</th><td>www.harbourlight.example</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/01-nonprofit-relaunch-clean.csv" download>Download 01-nonprofit-relaunch-clean.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Bilingual clinic site</b></div><p class="example__note">A header row inside the data, accented and encoded duplicates, wildcard rows and a real loop between /en/careers and /en/jobs. Review the wildcard rows by hand, because they are not real patterns here.</p><table class="t example__values"><tbody><tr><th scope="row">Site host</th><td>www.clinique.example</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/02-healthcare-bilingual-messy.csv" download>Download 02-healthcare-bilingual-messy.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Domain move, path to full URL</b></div><p class="example__note">Moving a path to the same path on a new domain is valid. All 9 rules are good and none is a self-reference.</p><table class="t example__values"><tbody><tr><th scope="row">Site host</th><td>www.oldvoyages.example</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/03a-trap-travel-domain-move-path-to-absolute.csv" download>Download 03a-trap-travel-domain-move-path-to-absolute.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Loops hidden by query strings</b></div><p class="example__note">Three redirects loop once the query string is added. Do not deploy this map even if the check shows no loops.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/03b-trap-ecommerce-loop-hidden-by-query-string.csv" download>Download 03b-trap-ecommerce-loop-hidden-by-query-string.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Multi-region sites, same path</b></div><p class="example__note">The same path redirects differently on different domains. These 5 rules are fine, not conflicts.</p><table class="t example__values"><tbody><tr><th scope="row">Site host</th><td>www.example-brand.com</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/03c-trap-multi-region-same-path.csv" download>Download 03c-trap-multi-region-same-path.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Normalisation rows</b></div><p class="example__note">Rows that fix slashes, capitals, http to https and www. These are normal and flagging them as errors is a false alarm.</p><table class="t example__values"><tbody><tr><th scope="row">Site host</th><td>www.example-shop.com</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/03d-trap-legit-normalisation-rows-flagged-as-errors.csv" download>Download 03d-trap-legit-normalisation-rows-flagged-as-errors.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Two rules for /team</b></div><p class="example__note">Two rules send /team to different places. Set trailing slash to &quot;different&quot; and case to &quot;sensitive&quot;: a clean report would be wrong because the second rule can never run.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/03e-trap-strict-mode-silent-conflict.csv" download>Download 03e-trap-strict-mode-silent-conflict.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Large migration, first 1,500 rows</b></div><p class="example__note">A larger map to see how the tool handles volume. Long result tables may be shortened on screen.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/04-large-migration-first-1500-rows.csv" download>Download 04-large-migration-first-1500-rows.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Excel export with accents</b></div><p class="example__note">A file saved in the older Windows encoding. If an accented letter shows as a question mark, save it as UTF-8 and try again.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/redirect-mapper/05-windows-1252-export-mojibake.csv" download>Download 05-windows-1252-export-mojibake.csv</a></p></li></ul></details>
 
 <div class="card"><h3>Redirect map</h3>
-  <p class="sub">Two columns: legacy source URL, destination URL. A header row is optional. Sources can be full URLs or paths. Wildcards and regex rules are not evaluated; rows are treated as exact matches.</p>
+  <p class="sub">Two columns: legacy source URL, destination URL. A header row is optional. Sources can be full URLs or paths. Wildcard and regex rows are listed as findings and left out of the export. A third column is ignored.</p>
   <div id="drop"></div>
   <div class="field" style="margin-top:.6rem"><label for="paste">Or paste rows</label><textarea id="paste" rows="8" placeholder="/old-page,/new-page&#10;https://example.com/a,https://example.com/b"></textarea></div>
-  <div class="row3"><div class="field"><label for="host">Site host (to shorten same-site targets)</label><input id="host" type="text" placeholder="www.example.com"></div><div class="field"><label for="tsl">Trailing slash</label><select id="tsl"><option value="ignore" selected>Treat /a and /a/ as the same</option><option value="strict">Treat as different</option></select></div><div class="field"><label for="qs">Query strings</label><select id="qs"><option value="keep" selected>Keep in matching</option><option value="ignore">Ignore in matching</option></select></div></div>
+  <div class="row3"><div class="field"><label for="f_host">Site host (the domain these rules run on)</label><input id="f_host" type="text" placeholder="www.example.com"><span class="hint">Path-only rows belong to this host. Left blank, it is taken from the most common host in the source column.</span></div><div class="field"><label for="tsl">Trailing slash</label><select id="tsl"><option value="ignore" selected>Treat /a and /a/ as the same</option><option value="strict">Treat as different</option></select></div><div class="field"><label for="qs">Query strings</label><select id="qs"><option value="keep" selected>Keep in matching</option><option value="ignore">Ignore in matching</option></select></div></div>
   <div class="row3"><div class="field"><label for="code">Status code</label><select id="code"><option value="301" selected>301 permanent</option><option value="302">302 temporary</option><option value="308">308 permanent</option></select></div><div class="field"><label for="cs">Case</label><select id="cs"><option value="ci" selected>Case-insensitive paths</option><option value="cs">Case-sensitive paths</option></select></div></div>
   <div class="actions"><button class="btn btn-primary" id="go" type="button">Validate and consolidate</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div><div class="err" id="err"></div>
 </div>
@@ -298,14 +312,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -315,6 +373,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -336,22 +396,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -359,7 +482,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -639,7 +762,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -703,45 +826,97 @@ $('#smp').addEventListener('click', () => { $('#paste').value = `source,target
 https://www.example.com/contact-us,https://www.example.com/contact
 /contact,/contact-us
 /landing/summer,https://partner.example.org/summer
-/old-shop,/shop`; $('#host').value = 'www.example.com'; run(); });
-const cfg = () => ({ tsl: $('#tsl').value, qs: $('#qs').value, cs: $('#cs').value, host: $('#host').value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '') });
-function key(u, c) { let s = u.trim(); let host = '', path = s, q = ''; const m = s.match(/^(https?:)\/\/([^\/?#]+)(.*)$/i); if (m) { host = m[2].toLowerCase(); path = m[3] || '/'; } path = path.split('#')[0]; const qi = path.indexOf('?'); if (qi >= 0) { q = path.slice(qi); path = path.slice(0, qi); } if (!path) path = '/'; if (c.tsl === 'ignore' && path.length > 1) path = path.replace(/\/+$/, ''); if (c.cs === 'ci') path = path.toLowerCase(); return { host, path, q: c.qs === 'keep' ? q : '', k: path + (c.qs === 'keep' ? q : '') }; }
-function valid(u) { const s = u.trim(); if (!s) return 'Empty value'; if (/^[a-z][a-z0-9+.\-]*:/i.test(s) && !/^https?:/i.test(s)) return 'Invalid protocol (' + s.split(':')[0] + ')'; if (!/^https?:\/\//i.test(s) && !s.startsWith('/')) return 'Not an absolute URL or a path starting with /'; if (/\s/.test(s)) return 'Contains whitespace'; return ''; }
+/old-shop,/shop`; $("#f_host").value = 'www.example.com'; run(); });
+const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
+const urlish = s => /^\//.test(s) || /^https?:\/\//i.test(s) || /^[\w-]+(\.[\w-]+)+\//.test(s);
+const PATTERN = /\(\.[*+]\)|\.\*|\*|\$\d|\(\?|\[\^|\\[dwsDWS]|\^|\$$/;
+function cfg() { return { tsl: $('#tsl').value, qs: $('#qs').value, cs: $('#cs').value, host: $("#f_host").value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '') }; }
+/* Splits text into lines that keep their file line numbers, then reads each line as a row. */
+function readRows(text) {
+  const lines = String(text).replace(/^﻿/, '').split(/\r?\n/), first = lines.find(l => l.trim()) || '', cnt = { ',': 0, '\t': 0, ';': 0 };
+  let q = false; for (const ch of first) { if (ch === '"') q = !q; else if (!q && ch in cnt) cnt[ch]++; }
+  const delim = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0], d = cnt[delim] ? delim : ',', rows = [];
+  lines.forEach((l, i) => { if (!l.trim()) return; const r = MT.parseCSV(l, d)[0]; if (r) rows.push({ ln: i + 1, cells: r.map(x => String(x).trim()) }); });
+  return rows;
+}
+/* One URL as the server sees it: host, decoded path, query. */
+function parseUrl(u, c, site) {
+  let s = u.trim().replace(/ /g, '%20'), proto = '', host = '', explicit = false, path = s, q = ''; const m = s.match(/^(https?):\/\/([^\/?#]+)(.*)$/i);
+  if (m) { proto = m[1].toLowerCase(); host = m[2].toLowerCase(); explicit = true; path = m[3] || '/'; } else if (/^[\w-]+(\.[\w-]+)+\//.test(s)) { const j = s.indexOf('/'); host = s.slice(0, j).toLowerCase(); explicit = true; path = s.slice(j); }
+  path = path.split('#')[0]; const qi = path.indexOf('?'); if (qi >= 0) { q = path.slice(qi + 1); path = path.slice(0, qi); } if (!path) path = '/';
+  let p = dec(path).normalize('NFC'); const strictP = p; if (c.cs === 'ci') p = p.toLowerCase(); if (c.tsl === 'ignore' && p.length > 1) p = p.replace(/\/+$/, '') || '/';
+  const h = host || site, qk = c.qs === 'keep' ? q : '';
+  return { proto, host: h, explicit, path: p, decoded: strictP, q: qk, rawQ: q, key: h + '|' + p + '|' + qk, strict: h + '|' + strictP + '|' + qk, raw: s };
+}
+function valid(u) { const s = u.trim(); if (!s) return 'Empty value'; if (/^[a-z][a-z0-9+.\-]*:/i.test(s) && !/^https?:/i.test(s)) return 'Invalid protocol (' + s.split(':')[0] + ')'; if (!urlish(s)) return 'Not an absolute URL or a path starting with /'; return ''; }
 function run() {
-  $('#err').textContent = ''; const c = cfg(); let raw = MT.parseCSV($('#paste').value).filter(r => r.length >= 2 && (r[0] || r[1])); if (raw.length && /^(source|from|old|legacy|url)/i.test(String(raw[0][0]).trim()) && !/^\/|^https?:/i.test(String(raw[0][0]).trim())) raw = raw.slice(1);
-  if (!raw.length) { $('#err').textContent = 'No rows found.'; return; }
-  const iss = [], rows = [], seen = new Map();
-  raw.forEach((r, i) => { const s = String(r[0]).trim(), t = String(r[1]).trim(), ln = i + 1; let bad = valid(s) && ('Source: ' + valid(s)) || valid(t) && ('Target: ' + valid(t)); if (bad) { iss.push({ ln, s, t, type: 'Invalid', sev: 'high', msg: bad }); return; } const ks = key(s, c), kt = key(t, c); if (ks.host && c.host && ks.host !== c.host && ks.host !== 'www.' + c.host && 'www.' + ks.host !== c.host) iss.push({ ln, s, t, type: 'Foreign source host', sev: 'med', msg: `Source host ${ks.host} differs from ${c.host}. A server only redirects its own host.` });
-    if (seen.has(ks.k)) { const p = seen.get(ks.k); if (p.t === t || key(p.t, c).k === kt.k && key(p.t, c).host === kt.host) iss.push({ ln, s, t, type: 'Duplicate', sev: 'low', msg: `Repeats line ${p.ln}. Removed.` }); else iss.push({ ln, s, t, type: 'Conflict', sev: 'high', msg: `Same source as line ${p.ln} with a different target (${p.t}). First rule kept.` }); return; }
-    if (ks.k === kt.k && (!kt.host || !ks.host || kt.host === ks.host)) { iss.push({ ln, s, t, type: 'Self-reference', sev: 'high', msg: 'Source and target are the same URL.' }); seen.set(ks.k, { t, ln }); return; }
-    seen.set(ks.k, { t, ln }); rows.push({ ln, s, t, ks, kt }); });
-  const map = new Map(rows.map(r => [r.ks.k, r])), finals = [], loopRows = new Set();
-  const tkey = r => (r.kt.host && (!c.host || (r.kt.host !== c.host && r.kt.host !== 'www.' + c.host && 'www.' + r.kt.host !== c.host)) ? null : r.kt.k);
-  rows.forEach(r => { const path = [r.ks.k]; let cur = r, hops = 1, loop = false, term = r.t; const vis = new Set([r.ks.k]);
-    for (;;) { const nk = tkey(cur); if (nk == null || !map.has(nk)) { term = cur.t; break; } if (vis.has(nk)) { loop = true; path.push(nk); break; } vis.add(nk); path.push(nk); cur = map.get(nk); hops++; term = cur.t; if (hops > 500) { loop = true; break; } }
-    if (loop) { loopRows.add(r.ln); iss.push({ ln: r.ln, s: r.s, t: r.t, type: 'Loop', sev: 'high', msg: 'Redirect cycle: ' + path.join(' \u2192 ') }); } else { if (hops > 1) iss.push({ ln: r.ln, s: r.s, t: r.t, type: 'Chain', sev: 'med', msg: `${hops} hops. Collapsed to ${term}.` }); finals.push({ ln: r.ln, s: r.s, t: term, hops, ks: r.ks }); } });
+  $('#err').textContent = ''; const c = cfg(), all = readRows($('#paste').value), notes = [];
+  let rows0 = all; if (rows0.length && !urlish(rows0[0].cells[0]) && !urlish(rows0[0].cells[1] || '')) rows0 = rows0.slice(1);
+  if (!rows0.length) { $('#out').innerHTML = MT.notComputed('Not computed: no rows found', ['Paste or upload a two-column map: legacy source, then destination.']); return; }
+  if (/�/.test($('#paste').value)) notes.push('Some characters could not be decoded (they show as a replacement symbol). Save the file as UTF-8 and load it again, or accented URLs will not match.');
+  if (rows0.some(r => r.cells.length > 2 && r.cells.slice(2).some(x => x))) notes.push('A third column was found and ignored. The status code comes from the Status code box and applies to every rule.');
+  const srcHosts = new Map(); rows0.forEach(r => { const m = (r.cells[0] || '').match(/^https?:\/\/([^\/?#]+)/i); if (m) srcHosts.set(m[1].toLowerCase(), (srcHosts.get(m[1].toLowerCase()) || 0) + 1); });
+  const site = c.host || (Array.from(srcHosts.entries()).sort((a, b) => b[1] - a[1])[0] || [''])[0]; if (!c.host && site) notes.push(`Site host taken from the source column: ${site}. Set it above if that is wrong.`);
+  const iss = [], rows = [], seen = new Map(), add = (ln, s, t, type, sev, msg) => iss.push({ ln, s, t, type, sev, msg });
+  rows0.forEach(r => { const s = r.cells[0] || '', t = r.cells[1] || '', ln = r.ln;
+    if (!s && !t) return; if (!s) { add(ln, s, t, 'Invalid', 'high', 'Source: Empty value. The row has a target but no source.'); return; } if (!t) { add(ln, s, t, 'Invalid', 'high', 'Target: Empty value. The row has a source but no target.'); return; }
+    const bad = valid(s) && ('Source: ' + valid(s)) || valid(t) && ('Target: ' + valid(t)); if (bad) { add(ln, s, t, 'Invalid', 'high', bad); return; }
+    if (PATTERN.test(s) || /\$\d/.test(t)) { add(ln, s, t, 'Pattern', 'med', 'Wildcard or regex rule. Not evaluated and left out of the export: write it as a server rule by hand.'); return; }
+    const ks = parseUrl(s, c, site), kt = parseUrl(t, c, site); if (/ /.test(s + t)) add(ln, s, t, 'Spaces encoded', 'low', 'Spaces were replaced with %20.');
+    if (ks.explicit && site && ks.host !== site && ks.host !== 'www.' + site && 'www.' + ks.host !== site) add(ln, s, t, 'Other host', 'low', `Rule is scoped to ${ks.host}. Deploy it on the server that answers for that host.`);
+    if (ks.key === kt.key) {
+      if (ks.proto !== kt.proto && ks.proto && kt.proto) add(ln, s, t, 'Protocol change', 'low', 'http to https is a server or CDN setting (Always Use HTTPS), not a path rule. Left out of the export.');
+      else if (ks.strict !== kt.strict) add(ln, s, t, 'Normalisation', 'low', 'Differs only by letter case or trailing slash, which this map treats as the same URL, so a rule would loop. Left out of the export. Set Case or Trailing slash to the strict option if your server tells them apart.');
+      else add(ln, s, t, 'Self-reference', 'high', 'Source and target are the same URL.');
+      return; }
+    if (seen.has(ks.key)) { const p = seen.get(ks.key); if (p.t === t || p.kt.key === kt.key) add(ln, s, t, 'Duplicate', 'low', `Repeats line ${p.ln}. Removed.`); else add(ln, s, t, 'Conflict', 'high', `Same source as line ${p.ln} with a different target (${p.t}). First rule kept.`); return; }
+    const row = { ln, s, t, ks, kt }; seen.set(ks.key, row); rows.push(row); });
+  if (c.tsl === 'strict' || c.cs === 'cs') { const loose = new Map(); rows.forEach(r => { const k = r.ks.host + '|' + r.ks.decoded.toLowerCase().replace(/\/+$/, '') + '|' + r.ks.q; if (loose.has(k) && loose.get(k).kt.key !== r.kt.key) add(r.ln, r.s, r.t, 'Ambiguous', 'med', `Differs from line ${loose.get(k).ln} only by letter case or trailing slash, and goes to a different target. Many servers and CDNs treat these as one URL, so only one rule would apply. Confirm yours tells them apart.`); else if (!loose.has(k)) loose.set(k, r); }); }
+  /* A server applies the rule for host + path + query first, then the rule for host + path alone (a query-less source matches any query). */
+  const map = new Map(rows.map(r => [r.ks.key, r])), nxt = r => { const k = r.kt; return map.get(k.key) || (k.q ? map.get(k.host + '|' + k.path + '|') : null) || null; };
+  const res = new Map(), onStack = new Set();
+  rows.forEach(r0 => { if (res.has(r0)) return; const stack = []; let cur = r0;
+    while (cur && !res.has(cur) && !onStack.has(cur)) { onStack.add(cur); stack.push(cur); cur = nxt(cur); }
+    if (cur && onStack.has(cur)) { const i = stack.indexOf(cur), cyc = stack.slice(i).map(x => x.s); stack.forEach((n, j) => res.set(n, { loop: true, cycle: j >= i ? cyc : null, entry: cyc })); }
+    else if (cur && res.get(cur).loop) stack.forEach(n => res.set(n, { loop: true, cycle: null, entry: res.get(cur).entry }));
+    else { for (let j = stack.length - 1; j >= 0; j--) { const n = stack[j], below = j === stack.length - 1 ? (cur ? res.get(cur) : null) : res.get(stack[j + 1]); res.set(n, below ? { final: below.final, hops: below.hops + 1 } : { final: n.t, hops: 1 }); } }
+    stack.forEach(n => onStack.delete(n)); });
+  const finals = [], loopRows = new Set();
+  rows.forEach(r => { const o = res.get(r); if (o.loop) { loopRows.add(r.ln); add(r.ln, r.s, r.t, 'Loop', 'high', o.cycle ? 'Redirect cycle: ' + o.cycle.concat(o.cycle[0]).join(' → ') + (r.kt.q && !map.has(r.kt.key) ? '. The target adds a query string but the rule for the path still matches it.' : '') : 'Leads into a redirect cycle (' + o.entry.concat(o.entry[0]).join(' → ') + ').'); }
+    else { if (o.hops > 1) add(r.ln, r.s, r.t, 'Chain', 'med', `${o.hops} hops. Collapsed to ${o.final}.`); finals.push({ ln: r.ln, s: r.s, t: o.final, hops: o.hops, ks: r.ks }); } });
   const cnt = t => iss.filter(i => i.type === t).length, high = iss.filter(i => i.sev === 'high').length;
-  const sh = u => { const k = key(u, { tsl: 'strict', qs: 'keep', cs: 'cs' }); const pth = k.path.length > 1 ? k.path.replace(/\/+$/, '') : k.path; return (c.host && (k.host === c.host || k.host === 'www.' + c.host)) || !k.host ? pth + k.q : u.trim(); };
-  const code = $('#code').value, pairs = finals.map(f => ({ from: sh(f.s), to: /^https?:/i.test(f.t) && c.host && ((key(f.t, { tsl: 'strict', qs: 'keep', cs: 'cs' }).host === c.host)) ? f.t : f.t }));
-  const esc = { ht: s => s.replace(/ /g, '%20') };
+  const code = $('#code').value, order = finals.slice().sort((a, b) => (a.ks.q ? 0 : 1) - (b.ks.q ? 0 : 1) || a.ln - b.ln), ci = c.cs === 'ci';
+  const tgt = t => t.replace(/ /g, '%20'), eph = f => encodeURI(f.ks.decoded).replace(/[?#]/g, x => encodeURIComponent(x)), pathPat = f => { let p = f.ks.decoded; if (c.tsl === 'ignore' && p.length > 1) p = p.replace(/\/+$/, ''); return p; };
+  const shown = f => f.ks.decoded + (f.ks.rawQ ? '?' + f.ks.rawQ : '');
+  const ap = f => { const p = pathPat(f), body = esc(p.replace(/^\//, '')).replace(/ /g, '\\ '), pat = '^' + body + (c.tsl === 'ignore' && p !== '/' ? '/?' : '') + '$', flags = ['R=' + code, 'L'].concat(ci ? ['NC'] : [], f.ks.q && !/\?/.test(f.t) ? ['QSD'] : []);
+    return (f.ks.explicit ? `RewriteCond %{HTTP_HOST} ^${esc(f.ks.host)}$ [NC]\n` : '') + (f.ks.q ? `RewriteCond %{QUERY_STRING} ^${esc(f.ks.q)}$\n` : '') + `RewriteRule ${pat} ${tgt(f.t)} [${flags.join(',')}]`; };
+  const nrx = (f, useReq) => { const host = f.ks.explicit ? esc(f.ks.host) : '[^/]+', p = useReq ? eph(f) : pathPat(f), body = esc(p).replace(/"/g, '\\"'); return `"~${ci ? '*' : ''}^${host}${body}${useReq ? '\\?' + esc(f.ks.q).replace(/"/g, '\\"') : (c.tsl === 'ignore' && p !== '/' ? '/?' : '')}$" "${tgt(f.t).replace(/"/g, '\\"')}";`; };
+  const nq = order.filter(f => f.ks.q), np = order.filter(f => !f.ks.q), hostOf = f => f.ks.host, noHost = !site && order.some(f => !f.ks.explicit);
+  const cfRows = order.filter(f => f.ks.explicit || site), cfSkipped = order.length - cfRows.length;
   const out = {
-    htaccess: '# Generated redirect map (' + pairs.length + ' rules)\nRewriteEngine On\n' + pairs.map(p => { const [pa, qa] = p.from.split('?'); return (qa ? `RewriteCond %{QUERY_STRING} ^${qa.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$\n` : '') + `RewriteRule ^${pa.replace(/^\//, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/?$ ${p.to}${qa ? '?' : ''} [R=${code},L${qa ? ',QSD' : ''}]`; }).join('\n'),
-    nginx: '# Place the map block in http {} and the if-block in your server {}\nmap $request_uri $redirect_target {\n    default "";\n' + pairs.map(p => `    "${p.from.replace(/"/g, '\\"')}" "${p.to.replace(/"/g, '\\"')}";`).join('\n') + '\n}\n\n# server {\n#     if ($redirect_target) { return ' + code + ' $redirect_target; }\n# }',
-    cloudflare: MT.toCSV([['source_url', 'target_url', 'status_code', 'preserve_query_string', 'include_subdomains', 'subpath_matching', 'preserve_path_suffix']].concat(pairs.map(p => [(c.host || 'example.com') + p.from, /^https?:/i.test(p.to) ? p.to : 'https://' + (c.host || 'example.com') + p.to, code, 'FALSE', 'FALSE', 'FALSE', 'FALSE']))),
-    netlify: '# _redirects\n' + pairs.map(p => `${p.from}  ${p.to}  ${code}`).join('\n'),
-    csv: MT.toCSV([['source', 'final_target', 'status_code']].concat(pairs.map(p => [p.from, p.to, code])))
+    htaccess: '# Generated redirect map (' + order.length + (order.length === 1 ? ' rule' : ' rules') + '). Rules with a query string come first so they are not shadowed.\nRewriteEngine On\n' + order.map(ap).join('\n'),
+    nginx: '# Place the map blocks in http {} and the if-blocks in your server {}.\n# Keys are regular expressions on host + path' + (ci ? ' (case-insensitive)' : '') + '. Rules whose source has a query string use host + request URI.\n' + (nq.length ? 'map "$host$request_uri" $redirect_target_q {\n    default "";\n' + nq.map(f => '    ' + nrx(f, true)).join('\n') + '\n}\n\n' : '') + 'map "$host$uri" $redirect_target {\n    default "";\n' + np.map(f => '    ' + nrx(f, false)).join('\n') + '\n}\n\n# server {\n' + (nq.length ? '#     if ($redirect_target_q) { return ' + code + ' $redirect_target_q; }\n' : '') + '#     if ($redirect_target) { return ' + code + ' $redirect_target; }\n# }',
+    cloudflare: cfRows.length ? MT.toCSV([['source_url', 'target_url', 'status_code', 'preserve_query_string', 'include_subdomains', 'subpath_matching', 'preserve_path_suffix']].concat(cfRows.map(f => [f.ks.host + shown(f), /^https?:/i.test(f.t) ? tgt(f.t) : 'https://' + (f.ks.explicit ? f.ks.host : site) + tgt(f.t), code, 'FALSE', 'FALSE', 'FALSE', 'FALSE']))) : '# Cloudflare bulk redirects need the full host. Set the Site host above and validate again.',
+    netlify: '# _redirects\n' + order.map(f => `${f.ks.explicit ? 'https://' + f.ks.host : ''}${shown(f).replace(/ /g, '%20')}  ${tgt(f.t)}  ${code}${ci ? '' : ''}`).join('\n'),
+    csv: MT.toCSV([['source', 'final_target', 'status_code']].concat(order.map(f => [(f.ks.explicit ? f.ks.host : '') + shown(f), f.t, code])))
   };
-  let h = MT.rag(high ? 'red' : cnt('Chain') ? 'yellow' : 'green', high ? `${high} blocking problems in ${raw.length} rows` : cnt('Chain') ? 'No loops; chains were collapsed to single hops' : 'Map is clean', [`${finals.length} rules are ready to deploy.`, `${cnt('Loop')} loop rows, ${cnt('Chain')} chains, ${cnt('Self-reference')} self-references, ${cnt('Conflict')} conflicts, ${cnt('Invalid')} invalid rows.`]);
-  h += MT.stats([['Input rows', String(raw.length), ''], ['Deployable rules', String(finals.length), 'single hop each', 'good'], ['Loops', String(cnt('Loop')), 'cannot resolve', cnt('Loop') ? 'bad' : 'good'], ['Chains collapsed', String(cnt('Chain')), 'longer than 1 hop', cnt('Chain') ? 'warn' : 'good'], ['Conflicts', String(cnt('Conflict')), 'same source, two targets', cnt('Conflict') ? 'bad' : 'good']]);
+  if (cfSkipped && order.length) notes.push(`${cfSkipped} path-only rule${cfSkipped === 1 ? '' : 's'} cannot go in the Cloudflare CSV without a site host. Set the Site host above.`);
+  const dropped = cnt('Invalid') + cnt('Pattern');
+  let h = MT.rag(high ? 'red' : (cnt('Chain') || cnt('Ambiguous') || dropped || cnt('Normalisation') || cnt('Protocol change')) ? 'yellow' : 'green', high ? `${high} blocking problem${high === 1 ? '' : 's'} in ${rows0.length} rows` : cnt('Chain') ? 'No loops; chains were collapsed to single hops' : cnt('Ambiguous') ? 'No loops, but some rules may clash on your server' : dropped || cnt('Normalisation') || cnt('Protocol change') ? 'No loops; some rows were left out of the export' : 'Map is clean', [`${finals.length} rule${finals.length === 1 ? ' is' : 's are'} ready to deploy.`, `${cnt('Loop')} rows in loops, ${cnt('Chain')} chains, ${cnt('Self-reference')} self-references, ${cnt('Conflict')} conflicts, ${cnt('Invalid')} invalid rows, ${cnt('Pattern')} wildcard or regex rows left out.`, 'Test the rules on a staging server before going live; this tool checks the map, it does not run your server.']);
+  if (notes.length) h += MT.note('<b>Data notes</b><ul>' + notes.map(t => '<li>' + MT.esc(t) + '</li>').join('') + '</ul>', 'warn');
+  h += MT.stats([['Input rows', String(rows0.length), ''], ['Deployable rules', String(finals.length), 'single hop each', 'good'], ['Rows in loops', String(cnt('Loop')), 'cannot resolve', cnt('Loop') ? 'bad' : 'good'], ['Chains collapsed', String(cnt('Chain')), 'longer than 1 hop', cnt('Chain') ? 'warn' : 'good'], ['Conflicts', String(cnt('Conflict')), 'same source, two targets', cnt('Conflict') ? 'bad' : 'good']]);
   const sevTag = s => MT.tag(s === 'high' ? 'High' : s === 'med' ? 'Medium' : 'Low', s === 'high' ? 'bad' : s === 'med' ? 'warn' : '');
-  h += '<div class="card"><h3>Findings</h3>' + (iss.length ? MT.tbl(['Line', 'Type', 'Severity', 'Source', 'Detail'], iss.sort((a, b) => ({ high: 0, med: 1, low: 2 })[a.sev] - ({ high: 0, med: 1, low: 2 })[b.sev] || a.ln - b.ln).map(i => [i.ln, i.type, { h: sevTag(i.sev) }, i.s, i.msg]), { num: [0] }) : '<p class="muted">No issues.</p>') + '</div>';
-  h += '<div class="card"><h3>Consolidated 1-to-1 map</h3>' + (finals.length ? MT.tbl(['Source', 'Final target', 'Hops removed'], finals.slice(0, 200).map(f => [sh(f.s), f.t, Math.max(0, f.hops - 1)]), { num: [2] }) : '<p class="muted">Nothing deployable. Fix the blocking problems first.</p>') + '</div>';
+  const sorted = iss.slice().sort((a, b) => ({ high: 0, med: 1, low: 2 })[a.sev] - ({ high: 0, med: 1, low: 2 })[b.sev] || a.ln - b.ln), FN = 300;
+  h += '<div class="card"><h3>Findings</h3>' + (iss.length ? MT.tbl(['Line', 'Type', 'Severity', 'Source', 'Detail'], sorted.slice(0, FN).map(i => [i.ln, i.type, { h: sevTag(i.sev) }, i.s, i.msg]), { num: [0] }) + (iss.length > FN ? `<p class="sub">Showing the first ${FN} of ${F.int(iss.length)} findings, most serious first. Download the CSV for all of them.</p><div class="actions"><button class="btn btn-secondary btn-sm" id="dlf" type="button">Download all findings (CSV)</button></div>` : '') : '<p class="muted">No issues.</p>') + '</div>';
+  h += '<div class="card"><h3>Consolidated 1-to-1 map</h3>' + (finals.length ? MT.tbl(['Source', 'Final target', 'Hops removed'], order.slice(0, 200).map(f => [(f.ks.explicit ? f.ks.host : '') + shown(f), f.t, Math.max(0, f.hops - 1)]), { num: [2] }) + (finals.length > 200 ? `<p class="sub">Showing 200 of ${F.int(finals.length)} rules. The export below has all of them.</p>` : '') : '<p class="muted">Nothing deployable. Fix the blocking problems first.</p>') + '</div>';
   h += '<div class="card"><h3>Export</h3><div class="row3"><div class="field"><label for="fmt">Format</label><select id="fmt"><option value="htaccess">.htaccess (Apache mod_rewrite)</option><option value="nginx">Nginx map</option><option value="cloudflare">Cloudflare bulk redirect CSV</option><option value="netlify">Netlify / Cloudflare Pages _redirects</option><option value="csv">Plain CSV</option></select></div></div><pre class="code" id="cfg"></pre><div class="actions"><button class="btn btn-secondary btn-sm" id="cp" type="button">Copy</button><button class="btn btn-secondary btn-sm" id="dl" type="button">Download</button></div></div>';
-  h += MT.note('<b>Rules applied.</b> Chains resolve to the final target. Loop rows and self-references are excluded from the export. When one source has two targets the first row wins. Matching ignores fragments. Fix loops at the source by deciding the canonical URL, then rerun.');
+  h += MT.note('<b>Rules applied.</b> Chains resolve to the final target. A server applies the rule for the exact path and query first, then the rule for the path alone, and the tool follows the same order, so a target with a query string can still loop. Loop rows, self-references, wildcard rows and rows that only change case, trailing slash or protocol are left out of the export. When one source has two targets the first row wins. Matching ignores fragments and compares paths after decoding %-encoding. Rules with a query string are written first so they are not shadowed. Fix loops at the source by deciding the canonical URL, then rerun.');
   $('#out').innerHTML = h;
   const show = () => { $('#cfg').textContent = out[$('#fmt').value]; }; $('#fmt').addEventListener('change', show); show();
   $('#cp').addEventListener('click', e => MT.copy(out[$('#fmt').value], e.target));
   $('#dl').addEventListener('click', () => { const f = $('#fmt').value; MT.download({ htaccess: '.htaccess', nginx: 'redirects.nginx.conf', cloudflare: 'cloudflare-bulk-redirects.csv', netlify: '_redirects', csv: 'redirects.csv' }[f], out[f], 'text/plain'); });
+  const dlf = $('#dlf'); if (dlf) dlf.addEventListener('click', () => MT.download('redirect-findings.csv', MT.toCSV([['line', 'type', 'severity', 'source', 'target', 'detail']].concat(sorted.map(i => [i.ln, i.type, i.sev, i.s, i.t, i.msg]))), 'text/csv'));
 }
 $('#go').addEventListener('click', run);
 })();

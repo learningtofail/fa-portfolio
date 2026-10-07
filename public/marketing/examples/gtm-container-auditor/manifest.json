@@ -1,0 +1,32 @@
+[
+  {
+    "file": "01-ecommerce-clean-web-container.json",
+    "label": "Clean ecommerce container",
+    "kind": "happy",
+    "note": "Ten tags that are wired correctly, with consent mode set up. A correct result has no real findings and a health score near 100."
+  },
+  {
+    "file": "01b-ecommerce-clean-camelcase-enums.json",
+    "label": "Same container, camelCase export",
+    "kind": "happy",
+    "note": "The same container written with camelCase values. It should give the same result as the first file."
+  },
+  {
+    "file": "02-b2b-saas-messy-agency-container.json",
+    "label": "Messy agency container",
+    "kind": "messy",
+    "note": "Old Universal Analytics tags, a true duplicate event, an orphan tag and insecure scripts. A setup tag and similar click triggers that differ only by filter are fine and should not be flagged."
+  },
+  {
+    "file": "03-trap-trigger-group-healthcare-booking.json",
+    "label": "Trigger group for a booking conversion",
+    "kind": "trap",
+    "note": "Two triggers that look unused are the parts of a trigger group that fires the booking event. Do not delete them."
+  },
+  {
+    "file": "04-server-side-container-publisher.json",
+    "label": "Server-side container",
+    "kind": "trap",
+    "note": "A server container with clients and transformations. A score of 100 is not meaningful because those parts are not audited, so review them by hand."
+  }
+]

@@ -1,0 +1,10 @@
+## Wheelhouse 7.0 release notes
+
+- Added saved search alerts by email and push notification
+- New VIN lookup with accident history report
+- Dealer inventory sync via CSV and API feed
+- Price drop badges on listings
+- Financing pre-qualification without a credit score hit
+- Virtual 360 degree photo tours
+- Messaging between buyers and sellers inside the app
+- Verified dealer badge on dealership profiles

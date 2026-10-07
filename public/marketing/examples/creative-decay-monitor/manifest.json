@@ -1,0 +1,38 @@
+[
+  {
+    "file": "01-happy-dtc-skincare-meta.csv",
+    "label": "Skincare on Meta, four creatives",
+    "kind": "happy",
+    "note": "One creative burns out, one is starting to fatigue, one is healthy and one is too new to judge. Use the audience size 330000 if asked."
+  },
+  {
+    "file": "02-messy-quebec-travel-fr-semicolon.csv",
+    "label": "Quebec travel agency export",
+    "kind": "messy",
+    "note": "French headers, semicolons, decimal commas, duplicates and a gap. Pick the columns by hand and compare with the clean copy below: Vidéo is burned out, Fjord is healthy, and Caraïbes was paused so there is nothing to act on."
+  },
+  {
+    "file": "02b-control-same-data-clean-iso-dot-decimal.csv",
+    "label": "Same data, cleaned up",
+    "kind": "happy",
+    "note": "The same numbers as the messy file with ISO dates and dot decimals. Use it to see what the result should look like."
+  },
+  {
+    "file": "03-trap-b2b-linkedin-lowvolume-flat-truth.csv",
+    "label": "Low-volume LinkedIn ads",
+    "kind": "trap",
+    "note": "Six creatives with about 2,200 impressions a day and one sale a day. Nothing is really decaying, so a \"retire now\" label here is noise."
+  },
+  {
+    "file": "04-trap-meta-daily-frequency-true-decay.csv",
+    "label": "Daily frequency column",
+    "kind": "trap",
+    "note": "The frequency numbers are per day, not cumulative, so they say nothing about saturation. Rely on click rate and cost trends instead."
+  },
+  {
+    "file": "05-trap-ctr-only-scaling-not-fatigue.csv",
+    "label": "Click rate dropped after a budget increase",
+    "kind": "trap",
+    "note": "The budget went up four times on day 20 and the click rate fell. That is a delivery change, not fatigue, so the honest result is inconclusive."
+  }
+]

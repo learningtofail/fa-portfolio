@@ -18,7 +18,7 @@ The 21 vendored marketing tools (served from `/marketing/`, shown in www's Marke
 
 | Monitor name                               | URL                                                                                | Keyword                                                  |
 | ------------------------------------------ | ---------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| marketing ad-claims-flagger                | `https://portfolio.faysalahmed.ca/marketing/ad-claims-flagger.html`                | `Ad Claims Substantiation & Compliance Flagger`          |
+| marketing ad-claims-flagger                | `https://portfolio.faysalahmed.ca/marketing/ad-claims-flagger.html`                | `Ad Claims Flagger`                                      |
 | marketing affiliate-concentration-analyzer | `https://portfolio.faysalahmed.ca/marketing/affiliate-concentration-analyzer.html` | `Affiliate Revenue Concentration Risk Analyzer`          |
 | marketing affiliate-margin-calculator      | `https://portfolio.faysalahmed.ca/marketing/affiliate-margin-calculator.html`      | `Affiliate Commission & Margin Viability Calculator`     |
 | marketing attribution-window-normalizer    | `https://portfolio.faysalahmed.ca/marketing/attribution-window-normalizer.html`    | `Attribution Window Normalizer`                          |
@@ -31,7 +31,7 @@ The 21 vendored marketing tools (served from `/marketing/`, shown in www's Marke
 | marketing feature-messaging-gap            | `https://portfolio.faysalahmed.ca/marketing/feature-messaging-gap.html`            | `Feature-to-Messaging Gap Analyzer`                      |
 | marketing gtm-container-auditor            | `https://portfolio.faysalahmed.ca/marketing/gtm-container-auditor.html`            | `GTM Container Auditor`                                  |
 | marketing promo-capacity-checker           | `https://portfolio.faysalahmed.ca/marketing/promo-capacity-checker.html`           | `Promotional Capacity Sanity-Checker`                    |
-| marketing quality-score-scorer             | `https://portfolio.faysalahmed.ca/marketing/quality-score-scorer.html`             | `Paid Ad Quality Score & Landing Page Checklist Scorer`  |
+| marketing quality-score-scorer             | `https://portfolio.faysalahmed.ca/marketing/quality-score-scorer.html`             | `Ad Copy & Landing Page Readiness Checklist`             |
 | marketing redirect-mapper                  | `https://portfolio.faysalahmed.ca/marketing/redirect-mapper.html`                  | `Bulk Redirect Mapper & Loop Validator`                  |
 | marketing scv-gap-calculator               | `https://portfolio.faysalahmed.ca/marketing/scv-gap-calculator.html`               | `Single Customer View Gap Calculator`                    |
 | marketing seasonality-visualizer           | `https://portfolio.faysalahmed.ca/marketing/seasonality-visualizer.html`           | `Paid Search Seasonality Demand Curve Visualizer`        |

@@ -1,0 +1,66 @@
+[
+  {
+    "label": "Skincare brand, healthy margins",
+    "kind": "happy",
+    "note": "Commission is reversed on returns. The highest safe commission is about 31.9% and all four tiers (10 to 18%) are viable.",
+    "values": {
+      "Retail price ($)": "64",
+      "COGS per unit ($)": "14.5",
+      "Payment fee (%)": "2.9",
+      "Payment fee fixed ($)": "0.3",
+      "Shipping and packaging per order ($)": "6.2",
+      "Return rate (%)": "6",
+      "Returned units resold (%)": "60",
+      "Customer discount via affiliate (%)": "15",
+      "Target contribution margin (% of kept revenue)": "25",
+      "Flat payout per order to test ($)": "8",
+      "Commission is reversed on returns": "Checked",
+      "Partner tier 1": "Micro creators, 15 orders per month, 10% commission",
+      "Partner tier 2": "Mid bloggers, 80 orders per month, 12% commission",
+      "Partner tier 3": "Top reviewers, 300 orders per month, 15% commission",
+      "Partner tier 4": "Elite partners, 1200 orders per month, 18% commission"
+    }
+  },
+  {
+    "label": "At-home lab kit, regulated",
+    "kind": "messy",
+    "note": "Returned kits cannot be resold and the network pays on gross sales. Expect a highest safe commission near 28.9%, the 30% coupon tier below target, and ignore the blank-name row.",
+    "values": {
+      "Retail price ($)": "129",
+      "COGS per unit ($)": "41",
+      "Payment fee (%)": "2.9",
+      "Payment fee fixed ($)": "0.3",
+      "Shipping and packaging per order ($)": "11",
+      "Return rate (%)": "3",
+      "Returned units resold (%)": "0",
+      "Customer discount via affiliate (%)": "20",
+      "Target contribution margin (% of kept revenue)": "15",
+      "Flat payout per order to test ($)": "25",
+      "Commission is reversed on returns": "Unchecked",
+      "Partner tier 1": "Clinic referrals, 12 orders per month, 20% commission",
+      "Partner tier 2": "Wellness blogs, 60 orders per month, 25% commission",
+      "Partner tier 3": "Coupon portal, 400 orders per month, 30% commission",
+      "Partner tier 4": "(blank name), 0 orders per month, 0% commission"
+    }
+  },
+  {
+    "label": "Coupon and cashback partners",
+    "kind": "trap",
+    "note": "Every tier looks viable, but that assumes every order is new. If only 25 to 50 percent of coupon and cashback orders are truly new, these tiers lose money, so test that assumption before you sign.",
+    "values": {
+      "Retail price ($)": "120",
+      "COGS per unit ($)": "38",
+      "Payment fee (%)": "2.9",
+      "Payment fee fixed ($)": "0.3",
+      "Shipping and packaging per order ($)": "9",
+      "Return rate (%)": "22",
+      "Returned units resold (%)": "85",
+      "Customer discount via affiliate (%)": "25",
+      "Target contribution margin (% of kept revenue)": "15",
+      "Flat payout per order to test ($)": "10",
+      "Commission is reversed on returns": "Checked",
+      "Partner tier 1": "Cashback portal, 900 orders per month, 12% commission",
+      "Partner tier 2": "Coupon aggregator, 2400 orders per month, 9% commission"
+    }
+  }
+]

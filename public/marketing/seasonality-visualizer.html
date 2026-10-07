@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Paid Search Seasonality Demand Curve Visualizer | Marketing Tools</title>
-<meta name="description" content="Upload daily or monthly search volume, clicks or conversions. The tool runs a multiplicative decomposition, plots the seasonal curve, and converts the indices into dampened bid and budget multipliers.">
+<meta name="description" content="Upload daily or monthly search volume, clicks or conversions. The tool runs a multiplicative decomposition, tests whether the seasonal pattern is real, plots the curve, and shows starting-point bid adjustments.">
 <style>/* Signal & Serif tokens, shared by every tool */
 :root{
   color-scheme: light;
@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -225,7 +238,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 <main class="wrap">
   <div class="hero">
     <h1 class="serif">Paid Search Seasonality Demand Curve Visualizer</h1>
-    <p>Upload daily or monthly search volume, clicks or conversions. The tool runs a multiplicative decomposition, plots the seasonal curve, and converts the indices into dampened bid and budget multipliers.</p>
+    <p>Upload daily or monthly search volume, clicks or conversions. The tool runs a multiplicative decomposition, tests whether the seasonal pattern is real, plots the curve, and shows starting-point bid adjustments.</p>
     <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
   </div>
   <div class="toolbar">
@@ -235,12 +248,13 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">14</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Gift retailer, three years daily</b></div><p class="example__note">Daily revenue with a clear holiday peak. December is about 163, November 146 and January 79, and the yearly trend is about +9%.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/01-happy-gift-ecommerce-daily-3y.csv" download>Download 01-happy-gift-ecommerce-daily-3y.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">French month names</b></div><p class="example__note">Month labels like &quot;janv. 2022&quot; and numbers like &quot;1 598,00&quot;. Pick the value column by hand; the real peak is June and the low is December.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/02a-messy-fr-month-names-quebec-moving.csv" download>Download 02a-messy-fr-month-names-quebec-moving.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Day-first dates</b></div><p class="example__note">The same data with dates like 01/05/2022. If it reports only a few months of data, the dates were read the wrong way round.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/02b-messy-dd-mm-yyyy-quebec-moving.csv" download>Download 02b-messy-dd-mm-yyyy-quebec-moving.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Day-first, month-end dates</b></div><p class="example__note">Dates like 31/01/2022. A confident curve here may be wrong, so check that the number of years matches what you uploaded.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/02c-messy-dd-mm-yyyy-month-end-dates.csv" download>Download 02c-messy-dd-mm-yyyy-month-end-dates.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Daily, day-first dates</b></div><p class="example__note">Daily moving searches with a strong May and June peak. A result that says there is no seasonality means the dates were misread.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/02d-messy-daily-dd-mm-yyyy-quebec-moving.csv" download>Download 02d-messy-daily-dd-mm-yyyy-quebec-moving.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Ski travel, Canada</b></div><p class="example__note">Winter peak in the northern hemisphere. A clean, single-region curve.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/03a-travel-ski-resort-canada-only.csv" download>Download 03a-travel-ski-resort-canada-only.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Ski travel, Australia</b></div><p class="example__note">Winter in Australia runs June to August, so the peak is in the middle of the year.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/03b-travel-ski-resort-australia-only.csv" download>Download 03b-travel-ski-resort-australia-only.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Canada and Australia combined</b></div><p class="example__note">Adding two opposite seasons produces a curve that is wrong for both. Always analyze regions separately.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/03c-trap-multi-region-combined-ca-plus-au.csv" download>Download 03c-trap-multi-region-combined-ca-plus-au.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Short history with strong growth</b></div><p class="example__note">15 months of steady growth with no real seasons. The honest result is inconclusive, and the peak month it names is only the growth.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/04-trap-short-history-growth-saas-signups.csv" download>Download 04-trap-short-history-growth-saas-signups.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Travel around Lunar New Year</b></div><p class="example__note">The holiday moves each year, so a fixed monthly curve misses it. The January and February split changes year to year.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/05-trap-lunar-new-year-moving-holiday-travel.csv" download>Download 05-trap-lunar-new-year-moving-holiday-travel.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Hourly timestamps in UTC</b></div><p class="example__note">Hourly rows treated as daily show almost no weekday pattern. Total the data by day in your own time zone first.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/06-trap-hourly-utc-timestamps-publisher.csv" download>Download 06-trap-hourly-utc-timestamps-publisher.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Missing months and a zero month</b></div><p class="example__note">Three months are missing and one month is zero because ads were paused. Fill the gaps before trusting the result.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/07-edge-missing-months-and-zero-month-local-services.csv" download>Download 07-edge-missing-months-and-zero-month-local-services.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Random noise, 36 months</b></div><p class="example__note">There is no real pattern in this data. Any peak the tool names is chance.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/08-trap-pure-noise-36-months.csv" download>Download 08-trap-pure-noise-36-months.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Flat daily rate, monthly totals</b></div><p class="example__note">The daily rate never changes, but monthly totals differ because months have different lengths. That is not seasonality.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/seasonality-visualizer/09-trap-flat-daily-rate-monthly-totals.csv" download>Download 09-trap-flat-daily-rate-monthly-totals.csv</a></p></li></ul></details>
 
 <div class="card"><h3>Demand history</h3>
-  <p class="sub">Daily or monthly rows with a date and a value (search volume, clicks, conversions or revenue). Two or more years give reliable monthly indices. Daily data adds weekday indices.</p>
+  <p class="sub">Daily or monthly rows with a date and a value (search volume, clicks, conversions or revenue). Three or more years are needed for a tested result; under two years the tool will not draw a seasonal curve. Use one region and one language per file. Daily data adds weekday indices.</p>
   <div id="drop"></div>
   <div class="field" style="margin-top:.6rem"><label for="paste">Or paste CSV</label><textarea id="paste" placeholder="date,value"></textarea></div>
-  <div class="row3"><div class="field"><label for="cd">Date</label><select id="cd"></select></div><div class="field"><label for="cv">Value</label><select id="cv"></select></div><div class="field"><label for="damp">Bid response strength</label><select id="damp"><option value="0.5">Cautious (50% of index)</option><option value="0.75" selected>Balanced (75%)</option><option value="1">Full (100%)</option></select></div></div>
+  <div class="row3"><div class="field"><label for="cd">Date</label><select id="cd"></select></div><div class="field"><label for="cv">Value</label><select id="cv"></select></div><div class="field"><label for="dfm">Date format</label><select id="dfm"><option value="auto" selected>Detect (day/month or month/day)</option><option value="dmy">Day first (31/01/2025)</option><option value="mdy">Month first (01/31/2025)</option></select></div><div class="field"><label for="damp">Bid response strength</label><select id="damp"><option value="0.5">Cautious (50% of index)</option><option value="0.75" selected>Balanced (75%)</option><option value="1">Full (100%)</option></select></div></div>
   <div class="actions"><button class="btn btn-primary" id="go" type="button">Decompose</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div><div class="err" id="err"></div>
 </div>
 <div id="out"></div>
@@ -299,14 +313,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -316,6 +374,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -337,22 +397,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -360,7 +483,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -640,7 +763,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -688,44 +811,134 @@ MT.boot = (slug, template) => {
 (function () {
 const $ = MT.$, F = MT.fmt, S = MT.stat, C = MT.chart; let tab = null;
 const MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], DN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-function load(t) { tab = MT.readTable(t, /date|day|month/i); MT.fillSelect($('#cd'), tab.cols, /date|day|month/i); MT.fillSelect($('#cv'), tab.cols, /value|volume|clicks|conv|revenue|sessions/i); }
+const MON = { jan: 0, janv: 0, january: 0, janvier: 0, enero: 0, januar: 0, feb: 1, fev: 1, fevr: 1, febr: 1, february: 1, fevrier: 1, febrero: 1, februar: 1, mar: 2, mars: 2, march: 2, marzo: 2, marz: 2, maerz: 2, apr: 3, avr: 3, april: 3, avril: 3, abr: 3, abril: 3, may: 4, mai: 4, mayo: 4, jun: 5, juin: 5, june: 5, junio: 5, juni: 5, jul: 6, juil: 6, july: 6, juillet: 6, julio: 6, juli: 6, aug: 7, aout: 7, august: 7, ago: 7, agosto: 7, sep: 8, sept: 8, september: 8, septembre: 8, septiembre: 8, oct: 9, october: 9, octobre: 9, octubre: 9, okt: 9, oktober: 9, nov: 10, november: 10, novembre: 10, noviembre: 10, dec: 11, december: 11, decembre: 11, dez: 11, dezember: 11, dic: 11, diciembre: 11 };
+const mi = w => { const k = w.toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MON ? MON[k] : -1; };
+const W = '([A-Za-zÀ-ÿ.]+)';
+/* Strict date parser: unknown month words and impossible days give NaN instead of a silent guess. */
+function parseD(s, order) {
+  s = String(s == null ? '' : s).trim(); if (!s) return NaN; let m, y, mo, d;
+  if (/^\d{4}-\d{1,2}-\d{1,2}[T ]/.test(s)) return MT.parseDate(s);
+  if (/[A-Za-zÀ-ÿ]/.test(s)) {
+    if ((m = s.match(new RegExp('^(\\d{1,2})\\s+' + W + '\\s+(\\d{4})$')))) { d = +m[1]; mo = mi(m[2]); y = +m[3]; }
+    else if ((m = s.match(new RegExp('^' + W + '\\s+(\\d{1,2}),?\\s+(\\d{4})$')))) { mo = mi(m[1]); d = +m[2]; y = +m[3]; }
+    else if ((m = s.match(new RegExp('^' + W + '[\\s,.-]+(\\d{4})$')))) { mo = mi(m[1]); d = 1; y = +m[2]; }
+    else if ((m = s.match(new RegExp('^(\\d{4})\\s+' + W + '$')))) { y = +m[1]; mo = mi(m[2]); d = 1; }
+    else return NaN;
+    if (mo < 0 || d < 1 || d > 31) return NaN; const t = Date.UTC(y, mo, d); return new Date(t).getUTCMonth() === mo ? t : NaN;
+  }
+  if (!/[-\/.]/.test(s) && !/^\d{8}$/.test(s)) return NaN;
+  const t = MT.parseDate(s, order); return isFinite(t) ? t : NaN;
+}
+const looksDate = v => /\d{4}-\d|\d[\/.]\d|[A-Za-zÀ-ÿ]{3}/.test(v) && isFinite(parseD(v));
+function isDateCol(rows, c) { const v = rows.map(r => String(r[c]).trim()).filter(x => x !== ''); return v.length > 0 && v.filter(looksDate).length >= v.length * 0.8; }
+function isNumCol(rows, c) { const v = rows.map(r => String(r[c]).trim()).filter(x => x !== ''); return v.length > 0 && v.filter(x => isFinite(MT.num(x))).length >= v.length * 0.8; }
+function load(t) {
+  tab = MT.readTable(t, /date|day|month|mois|jour|time|period|week/i);
+  const c = tab.cols; MT.fillSelect($('#cd'), c, /date|day|month|mois|jour|time|period|week|semaine/i, { choose: true });
+  if (!$('#cd').value) { const g = c.find(x => isDateCol(tab.rows, x)); if (g) $('#cd').value = g; }
+  const rest = c.filter(x => x !== $('#cd').value);
+  MT.fillSelect($('#cv'), c, null, { choose: true });
+  const g = MT.guess(rest, /value|volume|clicks|conv|revenue|sessions|search|recherche|signups|bookings|leads|pageviews|orders|visits|views|count/i) || rest.find(x => isNumCol(tab.rows, x) && !isDateCol(tab.rows, x));
+  if (g) $('#cv').value = g;
+}
 MT.dropzone($('#drop'), t => { $('#paste').value = t; load(t); }); $('#paste').addEventListener('input', MT.debounce(() => load($('#paste').value), 250));
 $('#smp').addEventListener('click', () => { const r = MT.rng(21), rows = [['date', 'value']], seas = [0.9, 0.85, 0.95, 1.0, 1.05, 0.95, 0.85, 0.9, 1.0, 1.1, 1.35, 1.25], dow = [1.05, 1.08, 1.06, 1.02, 0.95, 0.85, 0.9]; for (let d = 0; d < 1096; d++) { const dt = new Date(Date.UTC(2023, 0, 1 + d)), m = dt.getUTCMonth(), w = (dt.getUTCDay() + 6) % 7, tr = 1000 * (1 + 0.0004 * d); rows.push([F.date(+dt), Math.round(tr * seas[m] * dow[w] * (0.94 + 0.12 * r.u()))]); } const t = MT.toCSV(rows); $('#paste').value = t; load(t); run(); });
+const lab = k => Math.floor(k / 12) + '-' + String(k % 12 + 1).padStart(2, '0');
+const dim = k => new Date(Date.UTC(Math.floor(k / 12), k % 12 + 1, 0)).getUTCDate();
+const notesBlock = notes => notes.length ? MT.note('<b>Data notes</b><ul>' + notes.map(t => '<li>' + MT.esc(t) + '</li>').join('') + '</ul>', 'warn') : '';
 function run() {
   $('#err').textContent = ''; if (!tab) { $('#err').textContent = 'Paste or upload data first.'; return; }
-  const pts = tab.rows.map(r => ({ d: MT.parseDate(r[$('#cd').value]), v: MT.num(r[$('#cv').value]) })).filter(p => isFinite(p.d) && isFinite(p.v)).sort((a, b) => a.d - b.d);
-  if (pts.length < 12) { $('#err').textContent = 'Need at least 12 rows.'; return; }
-  const gaps = []; for (let i = 1; i < pts.length; i++) gaps.push((pts[i].d - pts[i - 1].d) / 864e5); const medGap = S.median(gaps), daily = medGap <= 1.5, damp = +$('#damp').value;
-  // monthly totals (mean per day for daily data to control month length)
-  const mm = new Map(); pts.forEach(p => { const dt = new Date(p.d), k = dt.getUTCFullYear() * 12 + dt.getUTCMonth(); const o = mm.get(k) || { s: 0, n: 0 }; o.s += p.v; o.n++; mm.set(k, o); });
-  const keys = Array.from(mm.keys()).sort((a, b) => a - b), mv = keys.map(k => daily ? mm.get(k).s / mm.get(k).n : mm.get(k).s / mm.get(k).n), months = keys.length;
-  if (months < 12) { $('#err').textContent = `Only ${months} months of data. Need at least 12 for a seasonal curve.`; return; }
-  // centered 2x12 MA
-  const ma = mv.map((_, i) => { if (i < 6 || i > months - 7) return NaN; let s = 0; for (let j = -5; j <= 5; j++) s += mv[i + j]; s += 0.5 * mv[i - 6] + 0.5 * mv[i + 6]; return s / 12; });
-  const ratio = Array.from({ length: 12 }, () => []); mv.forEach((v, i) => { if (isFinite(ma[i])) ratio[keys[i] % 12].push(v / ma[i]); });
-  let usedMA = ratio.every(a => a.length >= 1), idx;
-  if (usedMA) idx = ratio.map(a => S.mean(a)); else { const avg = S.mean(mv), by = Array.from({ length: 12 }, () => []); mv.forEach((v, i) => by[keys[i] % 12].push(v / avg)); idx = by.map(a => a.length ? S.mean(a) : 1); }
-  const norm = S.mean(idx); idx = idx.map(x => x / norm);
-  const cnt = ratio.map(a => a.length), yrs = months / 12, weak = usedMA ? yrs < 2 : true;
-  // dow
-  let dIdx = null; if (daily && pts.length >= 56) { const by = Array.from({ length: 7 }, () => []); const dv = pts.map(p => p.v), m7 = dv.map((_, i) => i < 3 || i > dv.length - 4 ? NaN : S.mean(dv.slice(i - 3, i + 4))); pts.forEach((p, i) => { if (isFinite(m7[i]) && m7[i] > 0) by[(new Date(p.d).getUTCDay() + 6) % 7].push(p.v / m7[i]); }); dIdx = by.map(a => a.length ? S.mean(a) : 1); const n7 = S.mean(dIdx); dIdx = dIdx.map(x => x / n7); }
-  const deseason = mv.map((v, i) => v / idx[keys[i] % 12]), fit = S.ols(deseason.map((_, i) => [1, i]), deseason), trendPerYr = fit.beta[1] * 12 / Math.max(S.mean(deseason), 1e-9);
-  const seasVar = S.variance(mv.map((v, i) => Math.log(v))) > 0 ? 1 - S.variance(mv.map((v, i) => Math.log(v / idx[keys[i] % 12]))) / S.variance(mv.map(v => Math.log(v))) : 0;
-  const peak = idx.indexOf(Math.max(...idx)), trough = idx.indexOf(Math.min(...idx)), mult = x => 1 + (x - 1) * damp;
-  let h = MT.verdict('info', `Peak demand in ${MN[peak]} at ${(idx[peak] * 100).toFixed(0)}% of average, trough in ${MN[trough]} at ${(idx[trough] * 100).toFixed(0)}%`, `The seasonal swing from trough to peak is ${F.pct(idx[peak] / idx[trough] - 1, 0)}. Seasonality explains about ${F.pct(Math.max(0, seasVar), 0)} of month-to-month variation, and the underlying trend runs ${F.spct(trendPerYr, 1)} per year.`);
-  h += MT.stats([['Months of history', String(months), yrs.toFixed(1) + ' years'], ['Granularity', daily ? 'Daily' : 'Monthly', daily ? 'weekday indices included' : 'no weekday view'], ['Peak month', MN[peak], (idx[peak] * 100).toFixed(0) + ' index'], ['Trough month', MN[trough], (idx[trough] * 100).toFixed(0) + ' index'], ['Annual trend', F.spct(trendPerYr, 1), 'de-seasonalized']]);
-  if (weak) h += MT.note('<b>Short history.</b> With under two full years each month index rests on a single observation and mixes seasonality with trend. Treat the multipliers as a starting point.');
+  const cdn = $('#cd').value, cvn = $('#cv').value, damp = +$('#damp').value, notes = [];
+  if (!cdn || !cvn) { $('#err').textContent = 'Choose the date column and the value column.'; return; }
+  if (cdn === cvn) { $('#err').textContent = 'The date and value columns must be different.'; return; }
+  const raw = tab.rows.map(r => String(r[cdn]).trim()).filter(x => x !== ''), fmtSel = $('#dfm').value, hasTime = raw.some(x => /\d[T ]\d{1,2}:\d{2}/.test(x));
+  // readTable already rewrote ambiguous dd/mm vs mm/dd columns as month-first ISO dates; a swap of month and day undoes that.
+  const amb = MT.dq.items.some(i => i.kind === 'dates' && i.text.indexOf('"' + cdn + '"') >= 0 && i.text.indexOf('ambiguous') >= 0);
+  const swap = x => x.replace(/^(\d{4})-(\d{2})-(\d{2})$/, (_, y, m, d) => y + '-' + d + '-' + m), pd = (x, o) => parseD(amb && o === 'dmy' ? swap(x) : x);
+  let order = 'mdy';
+  if (amb) {
+    const cnt = o => new Set(raw.map(x => pd(x, o)).filter(isFinite).map(t => { const d = new Date(t); return d.getUTCFullYear() * 12 + d.getUTCMonth(); })).size;
+    const a = cnt('dmy'), b = cnt('mdy'); order = fmtSel === 'auto' ? (a > b ? 'dmy' : 'mdy') : fmtSel;
+    notes.push(`Dates like 01/02/2022 can be read two ways. Read as ${order === 'dmy' ? 'day/month/year' : 'month/day/year'}${fmtSel === 'auto' && a !== b ? ', because that gives a regular series (' + Math.max(a, b) + ' months against ' + Math.min(a, b) + ')' : ''}. Change the Date format box if that is wrong.`);
+  }
+  const fmtN = MT.numFmt(tab.rows.map(r => r[cvn])), byDay = new Map(), badD = [], badV = []; let dupRows = 0;
+  tab.rows.forEach(r => {
+    const sd = String(r[cdn]).trim(), sv = r[cvn]; if (sd === '' && String(sv).trim() === '') return;
+    const d = pd(sd, order), v = MT.num(sv, fmtN);
+    if (!isFinite(d)) { badD.push(sd || '(blank)'); return; } if (!isFinite(v)) { badV.push(sd); return; }
+    const o = byDay.get(d) || { s: 0, n: 0 }; o.s += v; o.n++; byDay.set(d, o); if (o.n > 1) dupRows++;
+  });
+  if (badD.length) notes.push(`${badD.length} row${badD.length === 1 ? '' : 's'} left out because the date was not recognised (e.g. ${badD.slice(0, 3).join(' | ')}). Check the Date format box.`);
+  if (badV.length) notes.push(`${badV.length} row${badV.length === 1 ? '' : 's'} left out because the value was not a number (dates e.g. ${badV.slice(0, 3).join(' | ')}).`);
+  const total = tab.rows.length;
+  if (!byDay.size || badD.length > total * 0.2) { $('#out').innerHTML = MT.notComputed('Not computed: dates not recognised', [`${badD.length} of ${total} rows have a date the tool cannot read.`, 'Use yyyy-mm-dd, dd/mm/yyyy or a month name such as janv. 2022, or set the Date format box.']) + notesBlock(notes); return; }
+  const pts = Array.from(byDay.entries()).sort((a, b) => a[0] - b[0]).map(([d, o]) => ({ d, v: o.s })), nDays = pts.length;
+  if (dupRows) {
+    const others = tab.cols.filter(c => c !== cdn && c !== cvn && !isNumCol(tab.rows, c) && new Set(tab.rows.map(r => r[c])).size > 1 && new Set(tab.rows.map(r => r[c])).size <= 12);
+    notes.push(hasTime ? `${tab.rows.length - nDays} timestamped rows were added together into ${nDays} days (hourly or sub-daily data). Days are cut at the date written in the file, so if it is UTC and your reporting time zone differs, day totals near midnight sit on the wrong day.` : `${dupRows} row${dupRows === 1 ? ' shares' : 's share'} a date with another row and ${dupRows === 1 ? 'was' : 'were'} added together.${others.length ? ' Your file has a "' + others[0] + '" column with several values. A curve over mixed regions, languages or products is wrong for each of them, so upload one at a time.' : ''}`);
+  }
+  const gaps = []; for (let i = 1; i < pts.length; i++) gaps.push((pts[i].d - pts[i - 1].d) / 864e5);
+  const medGap = gaps.length ? S.median(gaps) : 30, daily = medGap <= 1.5, monthlyGrain = medGap >= 25;
+  let dIdx = null;
+  if (daily && nDays >= 56) {
+    const dm = new Map(pts.map(q => [Math.round(q.d / 864e5), q.v])), by = Array.from({ length: 7 }, () => []);
+    pts.forEach(q => { const t = Math.round(q.d / 864e5); let s = 0, ok = true; for (let j = -3; j <= 3; j++) { const v = dm.get(t + j); if (v == null) { ok = false; break; } s += v; } if (ok && s > 0) by[(new Date(q.d).getUTCDay() + 6) % 7].push(q.v / (s / 7)); });
+    if (by.every(a => a.length >= 8)) { dIdx = by.map(a => S.mean(a)); const n7 = S.mean(dIdx); dIdx = dIdx.map(x => x / n7); }
+    const span2 = (pts[nDays - 1].d - pts[0].d) / 864e5 + 1, miss = Math.round(span2 - nDays); if (miss > span2 * 0.02) notes.push(`${miss} days are missing inside the date range. Weekday indices only use days with a full week of data around them.`);
+  }
+  const wkTable = () => dIdx ? '<div class="card"><h3>Weekday indices</h3>' + MT.tbl(['Day', 'Index', 'Starting bid adjustment'], dIdx.map((x, i) => [DN[i], (x * 100).toFixed(0), (1 + (x - 1) * damp).toFixed(2) + 'x']), { num: [1, 2] }) + '</div>' : '';
+  const mm = new Map(); pts.forEach(p => { const dt = new Date(p.d), k = dt.getUTCFullYear() * 12 + dt.getUTCMonth(), o = mm.get(k) || { s: 0, n: 0 }; o.s += p.v; o.n++; mm.set(k, o); });
+  const ks = Array.from(mm.keys()).sort((a, b) => a - b), k0 = ks[0], k1 = ks[ks.length - 1], span = k1 - k0 + 1, mv = new Array(span).fill(NaN), absent = [], zero = [], partial = [];
+  for (let i = 0; i < span; i++) {
+    const k = k0 + i, o = mm.get(k); if (!o) { absent.push(lab(k)); continue; }
+    const rate = monthlyGrain ? o.s / dim(k) : o.s / (o.n * (daily ? 1 : medGap)), cover = monthlyGrain ? 1 : o.n * (daily ? 1 : medGap) / dim(k);
+    if (cover < 0.5) { partial.push(lab(k)); continue; } if (!(rate > 0)) { zero.push(lab(k)); continue; } mv[i] = rate;
+  }
+  const lst = a => a.slice(0, 4).join(', ') + (a.length > 4 ? ' and ' + (a.length - 4) + ' more' : '');
+  if (absent.length) notes.push(`${absent.length} calendar month${absent.length === 1 ? ' has' : 's have'} no rows (${lst(absent)}). They are treated as gaps, not as zero.`);
+  if (zero.length) notes.push(`${zero.length} month${zero.length === 1 ? '' : 's'} had zero or negative volume (${lst(zero)}). Treated as gaps, since a zero usually means a paused campaign or a tracking outage.`);
+  if (partial.length) notes.push(`${partial.length} month${partial.length === 1 ? ' is' : 's are'} less than half covered by rows (${lst(partial)}) and left out.`);
+  if (monthlyGrain) notes.push('Monthly totals were divided by the days in each month, so February is not understated.');
+  const usable = mv.filter(isFinite).length, yrs = usable / 12;
+  if (usable < 24) { $('#out').innerHTML = MT.notComputed('Not enough history for a seasonal curve', [`Found ${usable} usable month${usable === 1 ? '' : 's'}. At least 24 are needed, and 36 or more for a tested result.`, 'With less history, a seasonal swing cannot be told apart from growth or a one-off spike, so no peak or trough is shown.']) + notesBlock(notes) + wkTable(); return; }
+  // Short internal gaps (up to 3 months) are bridged by straight-line interpolation for the trend line only; they never count as observations.
+  const mf = mv.slice(); let bridged = 0;
+  for (let i = 0; i < span; i++) if (!isFinite(mf[i])) { let j = i; while (j < span && !isFinite(mv[j])) j++; if (i > 0 && j < span && isFinite(mv[i - 1]) && j - i <= 3) { for (let q = i; q < j; q++) mf[q] = mv[i - 1] + (mv[j] - mv[i - 1]) * (q - i + 1) / (j - i + 1); bridged += j - i; } i = j; }
+  if (bridged) notes.push(bridged + ' missing month' + (bridged === 1 ? '' : 's') + ' bridged by a straight line between neighbours to draw the trend. They are not counted as observations.');
+  const ma = mf.map((_, i) => { if (i < 6 || i > span - 7) return NaN; let s = 0; for (let j = -5; j <= 5; j++) s += mf[i + j]; s += 0.5 * mf[i - 6] + 0.5 * mf[i + 6]; return s / 12; });
+  const ratio = Array.from({ length: 12 }, () => []); mv.forEach((v, i) => { if (isFinite(ma[i]) && isFinite(v)) ratio[(k0 + i) % 12].push(v / ma[i]); });
+  if (ratio.some(a => !a.length)) { $('#out').innerHTML = MT.notComputed('Not computed: gaps leave some calendar months with no comparison', ['The series needs a full run of 13 consecutive months around each month to remove the trend.', 'Fill the missing months or use a longer, gap-free history.']) + notesBlock(notes); return; }
+  let idx = ratio.map(a => S.mean(a)); const norm = S.mean(idx); idx = idx.map(x => x / norm);
+  const cnt = ratio.map(a => a.length), tested = cnt.every(n => n >= 2), N = S.sum(cnt);
+  let p = NaN, adjR2 = 0, lo = null, hi = null;
+  if (tested) {
+    const lr = ratio.map(a => a.map(Math.log)), all = [].concat(...lr), gm = S.mean(all), ssT = S.sum(all.map(x => (x - gm) ** 2)), ssW = S.sum(lr.map(a => { const m = S.mean(a); return S.sum(a.map(x => (x - m) ** 2)); })), ssB = ssT - ssW;
+    if (ssT > 1e-12 && ssW > 1e-15) { p = S.fSf((ssB / 11) / (ssW / (N - 12)), 11, N - 12); adjR2 = Math.max(0, 1 - (ssW / (N - 12)) / (ssT / (N - 1))); } else p = ssT <= 1e-12 ? 1 : 0;
+    const pooled = Math.sqrt(ssW / (N - 12)); lo = idx.map((x, i) => x * Math.exp(-2 * pooled / Math.sqrt(cnt[i]))); hi = idx.map((x, i) => x * Math.exp(2 * pooled / Math.sqrt(cnt[i])));
+  }
+  const sig = tested && p < 0.05, prov = !tested, showMult = sig || prov, mult = x => 1 + (x - 1) * damp;
+  const fin = mv.map((v, i) => isFinite(v) ? i : -1).filter(i => i >= 0), deseason = fin.map(i => mv[i] / idx[(k0 + i) % 12]), fit = S.ols(fin.map(i => [1, i]), deseason), trendPerYr = fit.beta[1] * 12 / Math.max(S.mean(deseason), 1e-9);
+  const peak = idx.indexOf(Math.max(...idx)), trough = idx.indexOf(Math.min(...idx)), swing = idx[peak] / idx[trough] - 1, pStr = isFinite(p) ? (p < 0.001 ? 'p < 0.001' : 'p = ' + p.toFixed(3)) : '';
+  let h;
+  if (sig) h = MT.verdict('info', `Peak demand in ${MN[peak]} at ${(idx[peak] * 100).toFixed(0)}% of average, trough in ${MN[trough]} at ${(idx[trough] * 100).toFixed(0)}%`, `The seasonal swing from trough to peak is ${F.pct(swing, 0)}. The month-of-year pattern is statistically real (${pStr}) and accounts for about ${F.pct(adjR2, 0)} of the variation left after removing the trend. The underlying trend runs ${F.spct(trendPerYr, 1)} per year.`);
+  else if (tested) h = MT.verdict('neu', 'No reliable seasonal pattern found', `Month-to-month differences are no larger than random variation (${pStr}). The apparent peak (${MN[peak]}) and trough (${MN[trough]}) should not be used to move bids or budgets. The underlying trend runs ${F.spct(trendPerYr, 1)} per year.`);
+  else h = MT.verdict('neu', `Provisional: peak in ${MN[peak]}, trough in ${MN[trough]}`, `With ${usable} months each calendar month has a single comparison, so the pattern cannot be tested and may be partly noise or growth. The swing from trough to peak is ${F.pct(swing, 0)}. Use 36 or more months before acting on it.`);
+  if (tested && sig) { [peak, trough].forEach(m => { const r = ratio[m], mn = Math.min(...r), mx = Math.max(...r); if (mx / mn > 1.2) notes.push(`${MN[m]} swings by year: its level against trend ranges from ${(mn * 100).toFixed(0)}% to ${(mx * 100).toFixed(0)}%. A gap that wide usually means the peak moves with a holiday or event date (Lunar New Year, Easter, Ramadan, a promotion), which a monthly index cannot time.`); }); }
+  h += notesBlock(notes);
+  h += MT.stats([['Months of history', String(usable), yrs.toFixed(1) + ' years'], ['Granularity', daily ? 'Daily' : monthlyGrain ? 'Monthly' : 'Weekly or other', daily ? (dIdx ? 'weekday indices included' : 'weekday view needs 8 clean weeks per weekday') : 'no weekday view'], ['Peak month', MN[peak], sig ? (idx[peak] * 100).toFixed(0) + ' index' : prov ? 'provisional' : 'not reliable'], ['Trough month', MN[trough], sig ? (idx[trough] * 100).toFixed(0) + ' index' : prov ? 'provisional' : 'not reliable'], ['Annual trend', F.spct(trendPerYr, 1), 'de-seasonalized']]);
   h += '<div class="card"><div id="c1"></div><div id="c2"></div></div>';
-  h += '<div class="card"><h3>Monthly indices and multipliers</h3><p class="sub">Index 100 equals the average month. The multiplier applies your response strength (' + F.pct(damp, 0) + ') so bids and budgets move less than demand does.</p>' + MT.tbl(['Month', 'Seasonal index', 'Bid multiplier', 'Budget multiplier', 'Observations'], idx.map((x, i) => [MN[i], (x * 100).toFixed(0), mult(x).toFixed(2) + 'x', (x).toFixed(2) + 'x', usedMA ? cnt[i] : Math.round(yrs)]), { num: [1, 2, 3, 4] }) + '</div>';
-  if (dIdx) h += '<div class="card"><h3>Weekday indices</h3>' + MT.tbl(['Day', 'Index', 'Bid multiplier'], dIdx.map((x, i) => [DN[i], (x * 100).toFixed(0), mult(x).toFixed(2) + 'x']), { num: [1, 2] }) + '<div id="c3"></div></div>';
-  h += '<div class="actions"><button class="btn btn-secondary btn-sm" id="dl" type="button">Download multipliers (CSV)</button></div>';
-  h += MT.note('<b>Method.</b> Classical multiplicative decomposition: each month is divided by a centered 12-month moving average, ratios are averaged by calendar month and normalized to a mean of 1. Weekday indices divide each day by its centered 7-day average. Budget multipliers follow demand one for one; bid multipliers follow it at the response strength you choose. Search demand leads spend by days to weeks for considered purchases, so start ramping bids one to two weeks before the peak month.');
+  const head = ['Month', 'Seasonal index'].concat(tested ? ['Likely range'] : []).concat(showMult ? ['Starting bid adjustment', 'Budget phasing'] : []).concat(['Months compared']);
+  h += '<div class="card"><h3>Monthly indices' + (showMult ? ' and starting adjustments' : '') + '</h3><p class="sub">Index 100 equals the average month.' + (showMult ? ' The bid adjustment applies your response strength (' + F.pct(damp, 0) + ') so bids move less than demand does. Budget phasing is the index itself.' : ' Adjustments are not shown because the pattern is not reliable.') + '</p>' + MT.tbl(head, idx.map((x, i) => [MN[i], (x * 100).toFixed(0)].concat(tested ? [(lo[i] * 100).toFixed(0) + ' to ' + (hi[i] * 100).toFixed(0)] : []).concat(showMult ? [mult(x).toFixed(2) + 'x', x.toFixed(2) + 'x'] : []).concat([cnt[i]])), { num: head.map((_, i) => i).slice(1) }) + '</div>';
+  if (dIdx) h += '<div class="card"><h3>Weekday indices</h3>' + MT.tbl(['Day', 'Index', 'Starting bid adjustment'], dIdx.map((x, i) => [DN[i], (x * 100).toFixed(0), mult(x).toFixed(2) + 'x']), { num: [1, 2] }) + '<div id="c3"></div></div>';
+  if (showMult) h += '<div class="actions"><button class="btn btn-secondary btn-sm" id="dl" type="button">Download adjustments (CSV)</button></div>';
+  h += MT.note('<b>What this does not do.</b> The curve is built from search volume or whatever series you gave it, not from conversion rate or conversion value, which are what bids should follow. Treat the adjustments as a starting point to test, not a set-and-forget rule. Google Ads seasonality adjustments are meant for short events with a known change in conversion rate. A monthly index also cannot time moving holidays (Easter, Ramadan, Lunar New Year) or a one-off promotion, and it cannot separate regions or languages that peak at different times.');
+  h += MT.note('<b>Method.</b> Classical multiplicative decomposition: each month is divided by a centered 12-month moving average, ratios are averaged by calendar month and normalized to a mean of 1. The significance test is a one-way analysis of variance on the ratios, and the likely range is about two standard errors around each index. Weekday indices divide each day by its centered 7-day average. Search demand leads spend by days to weeks for considered purchases, so start ramping bids one to two weeks before a peak month.');
   $('#out').innerHTML = h;
   const xs = MT.range(12);
   C.line($('#c1'), { title: 'Seasonal index by month', xs, xFmt: v => MN[Math.round(v)] || '', yFmt: v => (v * 100).toFixed(0), series: [{ name: 'Seasonal index', values: idx, color: 'var(--series-1)' }, { name: 'Average (100)', values: xs.map(() => 1), color: 'var(--series-2)', dash: '5 4' }], height: 220 });
-  C.line($('#c2'), { title: 'Monthly demand: actual, de-seasonalized trend', xs: keys.map((k, i) => i), xFmt: i => { const k = keys[Math.round(i)], y = Math.floor(k / 12); return MN[k % 12] + " '" + String(y).slice(2); }, series: [{ name: 'Actual', values: mv, color: 'var(--series-1)', width: 1.4 }, { name: 'De-seasonalized', values: deseason, color: 'var(--series-3)' }], height: 240, table: false });
+  C.line($('#c2'), { title: 'Monthly demand per day: actual, de-seasonalized trend', xs: fin, xFmt: i => { const k = k0 + Math.round(i), y = Math.floor(k / 12); return MN[k % 12] + " '" + String(y).slice(2); }, series: [{ name: 'Actual', values: fin.map(i => mv[i]), color: 'var(--series-1)', width: 1.4 }, { name: 'De-seasonalized', values: deseason, color: 'var(--series-3)' }], height: 240, table: false });
   if (dIdx) C.bars($('#c3'), { title: 'Weekday index', cats: DN, series: [{ name: 'Index', values: dIdx.map(x => x * 100), color: 'var(--series-1)' }], yFmt: v => v.toFixed(0), ref: 100 });
-  $('#dl').addEventListener('click', () => MT.download('seasonality-multipliers.csv', MT.toCSV([['month', 'index', 'bid_multiplier', 'budget_multiplier']].concat(idx.map((x, i) => [MN[i], x.toFixed(3), mult(x).toFixed(3), x.toFixed(3)]))), 'text/csv'));
+  const dl = $('#dl'); if (dl) dl.addEventListener('click', () => MT.download('seasonality-adjustments.csv', MT.toCSV([['month', 'index', 'bid_adjustment', 'budget_phasing']].concat(idx.map((x, i) => [MN[i], x.toFixed(3), mult(x).toFixed(3), x.toFixed(3)]))), 'text/csv'));
 }
 $('#go').addEventListener('click', run);
 })();

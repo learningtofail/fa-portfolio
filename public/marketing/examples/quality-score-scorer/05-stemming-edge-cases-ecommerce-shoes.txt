@@ -1,0 +1,41 @@
+SCENARIO: Ecommerce. The keyword is singular ("shoe") while the ad and page use the plural ("shoes"). Shows how the built-in suffix stemmer treats shoe vs shoes.
+
+Target keyword:
+waterproof trail running shoe
+
+Ad headlines (one per line):
+Waterproof Trail Running Shoes
+Shoes Built For Wet Trails
+Free Returns For 60 Days
+Trail Shoes Under 150
+Grip You Can Trust
+Order Waterproof Shoes Today
+Runner Tested Shoes
+Shop Trail Running
+
+Ad descriptions (one per line):
+Lightweight waterproof trail running shoes with rugged grip. Free returns for 60 days.
+Compare prices and services on every pair. Order today.
+
+Display path / final URL:
+shop.example.com/trail-running-shoes
+
+Page title:
+Waterproof Trail Running Shoes | Free Returns
+
+H1 heading:
+Waterproof Trail Running Shoes
+
+Visible page text:
+Stay dry on every trail with our waterproof trail running shoes. Rugged grip, breathable membranes and free returns for 60 days. Our shoes are tested on wet rock, mud and roots by trail runners across the country. Our shoes are tested on wet rock, mud and roots by trail runners across the country. Our shoes are tested on wet rock, mud and roots by trail runners across the country. Our shoes are tested on wet rock, mud and roots by trail runners across the country. Our shoes are tested on wet rock, mud and roots by trail runners across the country. Our shoes are tested on wet rock, mud and roots by trail runners across the country. Our shoes are tested on wet rock, mud and roots by trail runners across the country. Our shoes are tested on wet rock, mud and roots by trail runners across the country. 
+
+Tick these checklist boxes (0-based index, then label):
+  [0] Ad includes a clear offer, price or differentiator
+  [1] Ad has a strong call to action
+  [2] Ad uses ad assets (sitelinks, callouts, structured snippets)
+  [4] Page loads in under 3 seconds on mobile
+  [5] Page is mobile responsive with tap-friendly buttons
+  [6] Call to action is visible above the fold
+  [7] Page has clear navigation, privacy policy and contact details
+  [8] Page uses HTTPS with no intrusive pop-ups or interstitials
+  [9] Page offers original, useful content about the searched topic

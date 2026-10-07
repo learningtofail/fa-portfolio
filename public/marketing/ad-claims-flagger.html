@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ad Claims Substantiation &amp; Compliance Flagger | Marketing Tools</title>
-<meta name="description" content="Paste draft ad copy, landing page text or a script. The tool scans for superlatives, absolute guarantees, savings, health, comparative and environmental claims, checks for qualifying disclaimers, and returns annotated copy with advice.">
+<title>Ad Claims Flagger | Marketing Tools</title>
+<meta name="description" content="Paste draft ad copy, landing page text or a script. The tool scans for common claim patterns (superlatives, guarantees, savings, health, comparative and environmental claims), checks for nearby qualifiers and returns annotated copy. It does not clear copy for legal or ad-platform compliance.">
 <style>/* Signal & Serif tokens, shared by every tool */
 :root{
   color-scheme: light;
@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -224,8 +237,8 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 </header>
 <main class="wrap">
   <div class="hero">
-    <h1 class="serif">Ad Claims Substantiation &amp; Compliance Flagger</h1>
-    <p>Paste draft ad copy, landing page text or a script. The tool scans for superlatives, absolute guarantees, savings, health, comparative and environmental claims, checks for qualifying disclaimers, and returns annotated copy with advice.</p>
+    <h1 class="serif">Ad Claims Flagger</h1>
+    <p>Paste draft ad copy, landing page text or a script. The tool scans for common claim patterns (superlatives, guarantees, savings, health, comparative and environmental claims), checks for nearby qualifiers and returns annotated copy. It does not clear copy for legal or ad-platform compliance.</p>
     <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
   </div>
   <div class="toolbar">
@@ -234,10 +247,11 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">11</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Headphones ad, English</b></div><p class="example__note">A plain ecommerce ad with about 14 reviewable claims, such as &quot;#1 rated&quot;, &quot;lifetime guarantee&quot; and &quot;better than Bose at half the price&quot;. A good scan flags most of them, so check that comparisons and &quot;this weekend only&quot; are on the list.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/01-ecommerce-headphones-happy-path.txt" download>Download 01-ecommerce-headphones-happy-path.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">US supplement landing page</b></div><p class="example__note">Supplement page that carries the standard FDA disclaimer. The disclaimer itself is required wording and should not be treated as a health claim, while claims like &quot;boosts immunity&quot; and &quot;no side effects&quot; should be.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/02-us-supplement-landing-page.txt" download>Download 02-us-supplement-landing-page.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Canadian loan and credit card offer</b></div><p class="example__note">Lender copy with &quot;pre-approved&quot;, &quot;no credit check&quot; and a 0% promo rate. Each of these needs a rate, term or condition next to it, so look for them in the results.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/03-canada-personal-loan-and-credit-card.txt" download>Download 03-canada-personal-loan-and-credit-card.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Ontario car dealer pricing</b></div><p class="example__note">Dealer ad mixing &quot;from&quot; prices, monthly payments and &quot;all-in pricing&quot; with freight added later. Prices that leave out mandatory fees are a common compliance problem, so read this one by hand too.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/04-canada-auto-dealer-pricing.txt" download>Download 04-canada-auto-dealer-pricing.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">UK and EU tour operator offer</b></div><p class="example__note">Travel offer with scarcity lines (&quot;only 2 rooms left&quot;), a &quot;from&quot; price and a carbon neutral claim. Each of these needs proof or a full price to be safe.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/05-eu-uk-travel-offer.txt" download>Download 05-eu-uk-travel-offer.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Quebec ad in French</b></div><p class="example__note">A French-language ad with about 16 claims. The scanner is built around English wording, so a short or empty result here does not mean the copy is clean.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/06-quebec-francais-publicite.txt" download>Download 06-quebec-francais-publicite.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">French translation of the headphones ad</b></div><p class="example__note">The same ad as the first example, translated. Compare the two results: the same claims should be found in both languages, so any gap shows what the scanner misses in French.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/06b-quebec-francais-translation-of-01.txt" download>Download 06b-quebec-francais-translation-of-01.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Health and savings claims in unusual wording</b></div><p class="example__note">Real claims phrased in ways the scanner does not recognise. A low or green result does not mean the copy is safe, and each claim should still be reviewed.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/07-false-green-unrecognised-claims.txt" download>Download 07-false-green-unrecognised-claims.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Shorter version, no patterns matched</b></div><p class="example__note">Six claims that are worded to slip past pattern matching. &quot;No risky claim patterns found&quot; would be the wrong takeaway, so read the copy yourself.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/07b-false-green-no-patterns-matched.txt" download>Download 07b-false-green-no-patterns-matched.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Plumbing catalogue, no real claims</b></div><p class="example__note">Ordinary catalogue text with words like &quot;Green Bay&quot;, &quot;best practices&quot; and &quot;treat yourself&quot;. There are no real claims, so any red flags here are false alarms and should be dismissed.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/08-false-positives-benign-copy.txt" download>Download 08-false-positives-benign-copy.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Numbered list and stray qualifiers</b></div><p class="example__note">A numbered list plus unrelated &quot;terms apply&quot; style wording. There is one real claim, and the asterisk has no footnote, so a message saying a footnote is present would be wrong.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/ad-claims-flagger/09-footnote-and-qualifier-bugs.txt" download>Download 09-footnote-and-qualifier-bugs.txt</a></p></li></ul></details>
 
 <div class="split">
 <div>
-  <div class="card"><h3>Copy to check</h3><div class="field"><textarea id="txt" rows="14" placeholder="Paste ad copy, landing page text or a script."></textarea></div>
+  <div class="card"><h3>Copy to check</h3><div class="field"><textarea id="f_txt" rows="14" placeholder="Paste ad copy, landing page text or a script."></textarea></div>
     <div class="actions"><button class="btn btn-primary" id="go" type="button">Scan claims</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div></div>
 </div>
 <div id="out" class="out"></div>
@@ -358,14 +372,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -375,6 +433,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -396,22 +456,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -419,7 +542,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -699,7 +822,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -746,41 +869,87 @@ MT.boot = (slug, template) => {
 <script>
 (function () {
 const $ = MT.$, F = MT.fmt;
-/* [regex, category, severity, advice, needsProof] */
+const N = '(?:\\d{1,3}(?:[ ,.\\u00a0\\u202f]\\d{3})+|\\d+(?:[.,]\\d+)?)';
+/* Custom word boundary for accented text: JS \b only understands ASCII letters. Returns a rule whose phrase is capture group 2. */
+const fr = src => new RegExp('(^|[^\\p{L}\\p{N}])(' + src + ')(?![\\p{L}\\p{N}])', 'giu');
+const prevWord = (t, s) => (t.slice(Math.max(0, s - 14), s).match(/([A-Za-z#.]+)\s*$/) || [, ''])[1].toLowerCase();
+const nextWord = (t, e) => (t.slice(e, e + 16).match(/^\s*([A-Za-zÀ-ÿ]+)/) || [, ''])[1].toLowerCase();
+const noPartNo = (t, s) => !/^(item|part|sku|model|order|ref|ticket|no|number|lot|unit|aisle|row|page|step|rank)\.?$/.test(prevWord(t, s)) && !/[A-Za-z0-9]$/.test(t.slice(Math.max(0, s - 1), s));
+/* [regex, category, severity, advice, needsProof, filter(text, start, end), phraseGroup, mask] */
 const R = [
-  [/#\s?1\b|\bnumber[\s-]one\b|\bno\.?\s?1\b/gi, 'Superlative', 'high', 'Ranking claims need a named, recent, independent source. Add "according to [source, year]" or remove.', true],
-  [/\b(best|greatest|finest|top[\s-]rated|most (?:trusted|popular|reliable|powerful|advanced|accurate|loved|recommended)|world[\s-]class|unbeatable|unmatched|unrivaled|second to none|leading|industry[\s-]leading|market[\s-]leading|award[\s-]winning)\b/gi, 'Superlative', 'high', 'Objective superlatives require substantiation. Keep only if you hold documented proof, or soften to a specific, verifiable fact.', true],
-  [/\b(fastest|quickest|cheapest|lowest[\s-]price|lowest[\s-]cost|biggest|largest|smallest|strongest|safest|easiest|most affordable)\b/gi, 'Superlative', 'high', 'Comparative extremes need head-to-head data. State the measure, the comparison set and the date.', true],
-  [/\bguarantee[ds]?\b|\b100\s?%\s?(?:satisfaction|guaranteed|safe|natural|effective|secure)|\bmoney[\s-]back\b/gi, 'Guarantee', 'high', 'State the full terms next to the claim: duration, conditions, how to claim. FTC rules require terms to be disclosed clearly.', false],
-  [/\brisk[\s-]free\b|\bno[\s-]risk\b|\bzero[\s-]risk\b|\bfoolproof\b|\bworks every time\b|\bnever fails?\b|\bpermanent(?:ly)?\b|\bforever\b/gi, 'Absolute', 'high', 'Absolute claims are hard to defend. Replace with a bounded, measurable statement or add explicit conditions.', true],
-  [/\b(clinically|scientifically|medically) (?:proven|tested|shown)\b|\bdoctor[\s-]recommended\b|\bdermatologist[\s-]tested\b|\bFDA[\s-](?:approved|cleared)\b|\bcures?\b|\btreats?\b|\bprevents?\b|\bdetox(?:ify)?\b/gi, 'Health or science', 'high', 'Needs competent and reliable scientific evidence on file, and review by legal or regulatory. Cite the study in a footnote.', true],
-  [/\blose\s+\d+\s?(?:lbs?|pounds|kg|kilos)|\bearn\s+\$\s?\d[\d,]*|\bmake\s+\$\s?\d[\d,]*|\bguaranteed (?:income|returns?|results?)\b/gi, 'Results claim', 'high', 'Specific outcomes must reflect typical results. Add a clear typical-results disclosure or remove.', true],
-  [/\b(save|saves|saving) (?:up to |over )?(?:\$\s?\d[\d,]*|\d+\s?%)|\b\d+\s?%\s?off\b|\bup to \d+\s?%|\b(?:was|regular(?:ly)?) \$\s?\d|\bfree\b|\blimited[\s-]time\b|\bonly today\b|\blast chance\b|\bwhile supplies last\b/gi, 'Price or offer', 'med', 'Show the terms: end date, exclusions, minimum spend, who qualifies. "Free" must not have hidden conditions. Reference prices must be genuine prior prices.', false],
+  [/\bthese statements have not been evaluated by the (?:food and drug administration|fda)[^.\n]*\.?|\b(?:this )?product is not intended to (?:diagnose|treat|cure|or prevent|prevent)[^.\n]*\.?/gi, 'Qualifier', 'info', 'Required supplement disclaimer found. Keep it, with the claims it covers, in readable size.', false, null, 0, true],
+  [/#\s?1\b|\bnumber[\s-]one\b|\bno\.?\s?1\b/gi, 'Superlative', 'high', 'Ranking claims need a named, recent, independent source. Add "according to [source, year]" or remove.', true, noPartNo],
+  [/\b(best|greatest|finest|top[\s-]rated|most (?:trusted|popular|reliable|powerful|advanced|accurate|loved|recommended)|world[\s-]class|unbeatable|unmatched|unrivaled|second to none|leading|industry[\s-]leading|market[\s-]leading|award[\s-]winning|world['’]s (?:favou?rite|best|largest|leading|first))\b/gi, 'Superlative', 'high', 'Objective superlatives require substantiation. Keep only if you hold documented proof, or soften to a specific, verifiable fact. Plain opinion puffery ("great coffee") is lower risk than a measurable claim.', true, (t, s, e) => { const w = t.slice(s, e).toLowerCase(), n = nextWord(t, e); if (w === 'leading') return !/^(to|up|the|cause|edge|edge)$/.test(n); if (w === 'best') return !/^(practice|practices|regards|wishes|of|buy|before)$/.test(n); return true; }],
+  [/\b(fastest|quickest|cheapest|lowest[\s-]prices?|lowest[\s-]costs?|biggest|largest|smallest|strongest|safest|easiest|most affordable)\b|\b(?:more|better|faster|cheaper|bigger) [\w\s]{0,30}?than (?:any|every|all) (?:other|competitor|rival)s?\b|\bhalf[\s-]?(?:the )?price\b/gi, 'Superlative', 'high', 'Comparative extremes need head-to-head data. State the measure, the comparison set and the date.', true],
+  [/\bguarantee[ds]?\b|\b100\s?%\s?(?:satisfaction|guaranteed|safe|natural|effective|secure)|\bmoney[\s-]back\b|\brefund every penny\b|\bsatisfaction (?:assured|guaranteed)\b/gi, 'Guarantee', 'high', 'State the full terms next to the claim: duration, conditions, how to claim. Regulators expect the terms to be disclosed clearly.', false],
+  [/\bguaranteed (?:approval|acceptance|loan|credit|income|returns?|results?|cure|weight loss)\b|\bpre[\s-]?approved\b|\bno credit check\b|\bget approved\b|\bdouble your (?:money|investment)\b|\bmoney (?:will )?double\b/gi, 'Finance claim', 'high', 'Lending and investing claims like this are the problem in themselves, not just their terms. Regulators restrict "guaranteed approval", "pre-approved" and guaranteed returns. Remove or have compliance rewrite it.', true],
+  [new RegExp('\\b(?:\\d+(?:\\.\\d+)?\\s?%\\s?(?:apr|apy|interest|return|returns|cash ?back)|0\\s?%\\s?(?:apr|interest|financing)|earn \\d+(?:\\.\\d+)?\\s?%|rates? as low as \\d+(?:\\.\\d+)?\\s?%)', 'gi'), 'Finance claim', 'high', 'Rates and returns need the full cost of borrowing or the basis and period shown next to them (APR, fees, conditions, how long the rate lasts).', true],
+  [/\brisk[\s-]free\b|\bno[\s-]risk\b|\bzero[\s-]risk\b|\bfoolproof\b|\bworks every time\b|\bnever fails?\b|\bpermanent(?:ly)?\b|\bforever\b|\bworks for everyone\b|\bno side effects\b/gi, 'Absolute', 'high', 'Absolute claims are hard to defend. Replace with a bounded, measurable statement or add explicit conditions.', true, (t, s, e) => !/^(resident|residents|address|marker|magnet|position|employee|employees|staff|link|redirect|record|home|job|jobs|contract|account)$/.test(nextWord(t, e))],
+  [/\b(clinically|scientifically|medically) (?:proven|tested|shown)\b|\bclinical (?:studies|trials?) (?:show|prove|confirm)\b|\bbacked by science\b|\bdoctor[\s-](?:recommended|formulated|approved|developed)\b|\bdermatologist[\s-]tested\b|\bFDA[\s-](?:approved|cleared)\b|\bhealth canada[\s-](?:approved|authori[sz]ed|licen[cs]ed)\b|\bapproved by (?:health canada|the fda)\b|\bcures?\b|\b(?:treats?|prevents?|reverses?|relieves?|heals?|eliminates?) (?:\w+ ){0,2}(?:pain|arthritis|diabetes|cancer|disease|condition|illness|anxiety|depression|infection|symptoms|inflammation|acne|insomnia|cartilage damage|damage)\b|\bdetox(?:ify)?\b|\bhealthy inflammation(?: response)?\b|\bboosts? (?:your )?(?:immune system|immunity|metabolism|energy)\b|\bsupports? (?:healthy )?(?:joint|immune|heart|brain|prostate|gut|bone) (?:health|function)?\b|\b(?:melts?|burns?) (?:belly )?fat\b|\bbelly fat\b|\blose (?:weight|fat)(?: fast)?\b|\byears younger\b/gi, 'Health or science', 'high', 'Needs competent and reliable scientific evidence on file, and review by legal or regulatory. Cite the study in a footnote. Health, supplement and drug claims are regulated by country (FDA/FTC, Health Canada, Quebec rules).', true],
+  [/\blos(?:e|t)\s+\d+\s?(?:lbs?|pounds|kg|kilos)|\bearn\s+\$\s?\d(?:[\d,]*\d)?|\bmake\s+\$\s?\d(?:[\d,]*\d)?|\bI lost \d+/gi, 'Results claim', 'high', 'Specific outcomes must reflect typical results. Add a clear typical-results disclosure or remove. Testimonials count as claims.', true],
+  [/\b(save|saves|saving) (?:up to |over )?(?:\$\s?\d(?:[\d,]*\d)?|\d+\s?%)|\b\d+\s?%\s?off\b|\bup to \d+\s?%|\bup to \$\s?\d(?:[\d,]*\d)?(?: off)?|\$\s?\d(?:[\d,]*\d)? off\b|\b(?:was|regular(?:ly)?) \$\s?\d|\bfree (?:shipping|delivery|returns?|trial|gift|bonus|upgrade|install(?:ation)?|consultation|sample|samples|access|onboarding|setup|membership|month|year)\b|\bfor free\b|\blimited[\s-]time\b|\bonly today\b|\blast chance\b|\bwhile supplies last\b|\bonly \d+ (?:left|remaining|rooms?|seats?|spots?)\b|\bsale ends?\b|\bends (?:tonight|today|soon|sunday)\b|\bweekend only\b|\bhurry\b/gi, 'Price or offer', 'med', 'Show the terms: end date, exclusions, minimum spend, who qualifies. "Free" must not have hidden conditions. Reference prices must be genuine prior prices. Scarcity claims ("only 3 left") must be true.', false],
+  [/\bfrom (?:just |only )?(?:\$|£|€)\s?\d(?:[\d,]*\d)?|\$\s?\d(?:[\d,]*\d)?\s?(?:a|per|\/)\s?(?:month|mo|week|wk)\b|\bfrom (?:£|€)\s?\d(?:[\d,]*\d)?/gi, 'Price or offer', 'high', 'A "from" or per-month price must come with what is included and the all-in price. In Canada and the UK the advertised price has to include mandatory fees.', false],
+  [/\bplus (?:taxes|tax|freight|pdi|destination|licen[cs]ing|admin(?:istration)? fees?|booking fees?|fees|extra fees?)\b|\b(?:fees?|taxes|supplements|charges) extra\b|\bnot included\b|\bextra fees? (?:apply|may apply)\b/gi, 'Drip pricing', 'high', 'Mandatory fees and charges must be in the headline price. Showing them later ("plus freight, PDI") is drip pricing and conflicts with an "all-in" claim.', false],
   [/\b(?:better|faster|cheaper|stronger|more effective|more reliable) than\b|\bunlike (?:other|the competition|competitors)\b|\bbeats? (?:the )?competition\b|\bout[\s-]?performs?\b/gi, 'Comparative', 'high', 'Name the comparison, the metric and the test date. Keep the test data on file. Avoid disparaging competitors without proof.', true],
-  [/\b(?:eco[\s-]friendly|green|sustainable|carbon[\s-](?:neutral|negative)|net[\s-]zero|biodegradable|compostable|recyclable|non[\s-]toxic|all[\s-]natural|natural|chemical[\s-]free)\b/gi, 'Environmental or natural', 'med', 'FTC Green Guides and EU rules require specific, qualified claims. Say what is recyclable, where, and what share of the product.', true],
+  [/\b(?:eco[\s-]friendly|sustainable|carbon[\s-](?:neutral|negative)|net[\s-]zero|biodegradable|compostable|recyclable|non[\s-]toxic|all[\s-]natural|100\s?%\s?natural|natural (?:ingredients|formula|remedy)|chemical[\s-]free|green (?:product|energy|packaging|choice|solution|certified|cleaning)|going green|organic)\b/gi, 'Environmental or natural', 'med', 'Green Guides and EU/UK rules require specific, qualified claims. Say what is recyclable, where, and what share of the product. Offset-based "carbon neutral" claims face tighter rules in the EU. "Organic" needs certification.', true],
   [/\bmade in (?:the )?(?:usa|u\.s\.a?\.|america|canada)\b|\bproudly (?:american|canadian)\b/gi, 'Origin', 'med', '"Made in" claims need all or virtually all of the product made domestically. Qualify with "assembled in" or "with imported parts" where needed.', true],
-  [/\b(?:as seen (?:on|in)|featured (?:on|in)|trusted by|used by (?:millions|thousands|\d[\d,]+)|\d[\d,]*\+? (?:customers|users|clients|members))\b/gi, 'Social proof', 'med', 'Verify the number and the date. Keep a source and update it regularly. Name the media outlet only with permission.', true],
-  [/\b(?:results?|savings?) (?:may )?vary\b|\bnot typical\b|\bterms (?:and conditions )?apply\b|\bsee (?:details|terms|site)\b|\bconditions apply\b|\bbased on\b|\bsource:/gi, 'Qualifier', 'info', 'Qualifier found. Make sure it sits near the claim, in readable size and contrast.', false]
+  [new RegExp('\\b(?:as seen (?:on|in)|featured (?:on|in)|trusted by|used by (?:millions|thousands|\\d[\\d,]+)|' + N + '\\+? (?:customers|users|clients|members|families))\\b', 'gi'), 'Social proof', 'med', 'Verify the number and the date. Keep a source and update it regularly. Name the media outlet only with permission.', true],
+  [/\b(?:results?|savings?) (?:may )?vary\b|\bnot typical\b|\bterms (?:and conditions )?apply\b|\bsee (?:details|terms|site)\b|\bconditions apply\b|\bbased on (?:an? )?(?:\d(?:[\d,]*\d)? |internal|independent|survey|study|studies|data|testing|tests?|results|research|\d{4})|\bsource:/gi, 'Qualifier', 'info', 'Qualifier found. Make sure it sits near the claim, in readable size and contrast.', false],
+  /* French rules, partial. */
+  [fr('(?:le|la|les) meilleur(?:e|s|es)?|le plus (?:grand|rapide|fiable|populaire|puissant|avancé|performant|recommandé|vendu|abordable)|numéro (?:un|1)|n[°o] ?1|leader(?: du marché| de l[’\']industrie)?|inégalé(?:e|s|es)?|imbattable|sans égal|primé(?:e|s|es)?|les prix les plus bas|le moins cher|le plus bas prix'), 'Superlative', 'high', 'Objective superlatives require substantiation. Cite a named, recent source or soften to a verifiable fact. (Partial French rules.)', true, null, 2],
+  [fr('garanti(?:e|s|es)?|satisfait ou remboursé|remboursement garanti|100 ?% (?:garanti|satisfaction|naturel|sûr|efficace)'), 'Guarantee', 'high', 'State the full terms next to the claim: duration, conditions, how to claim. (Partial French rules.)', false, null, 2],
+  [fr('sans risque|zéro risque|aucun risque|infaillible|permanent(?:e|s|es)?|pour toujours|à vie|sans effets? secondaires?'), 'Absolute', 'high', 'Absolute claims are hard to defend. Replace with a bounded, measurable statement. (Partial French rules.)', true, (t, s, e) => !/^(resident|residents|residente|residentes)$/.test(nextWord(t, e)), 2],
+  [fr('cliniquement prouvé(?:e|s|es)?|scientifiquement prouvé(?:e|s|es)?|testé cliniquement|approuvé par (?:santé canada|la fda)|recommandé par (?:les )?(?:médecins|dentistes|dermatologues)|guérit|guérison|détox(?:ifi\\w*)?|élimine (?:la )?graisse|perdez? \\d+ ?(?:lb|livres|kg|kilos)'), 'Health or science', 'high', 'Needs scientific evidence on file and legal review. (Partial French rules.)', true, null, 2],
+  [fr('économisez(?: jusqu[’\']à)? ' + N + ' ?(?:\\$|%|€)|jusqu[’\']à ' + N + ' ?% (?:de rabais|de réduction)|' + N + ' ?% de (?:rabais|réduction)|gratuit(?:e|s|es)?|offre à durée limitée|dernière chance|jusqu[’\']à épuisement|il n[’\']en reste que \\d+|seulement \\d+ (?:restant|disponible)s?'), 'Price or offer', 'med', 'Show the terms: end date, exclusions, who qualifies. In Quebec the advertised price must include mandatory fees. (Partial French rules.)', false, null, 2],
+  [fr('meilleur(?:e|s|es)? que|plus (?:rapide|efficace|fiable|performant|économique)s? que|contrairement à la concurrence|surpasse'), 'Comparative', 'high', 'Name the comparison, the metric and the test date, and keep the data on file. (Partial French rules.)', true, null, 2],
+  [fr('écologique|éco-responsable|carboneutre|neutre en carbone|biodégradable|compostable|recyclable|non toxique|100 ?% naturel|tout naturel|sans produits chimiques|zéro déchet'), 'Environmental or natural', 'med', 'Environmental claims must be specific and supportable. (Partial French rules.)', true, null, 2],
+  [fr('fabriqué (?:au|en) (?:québec|canada|france)|produit du (?:québec|canada)|fièrement (?:québécois|canadien)|conçu au (?:québec|canada)'), 'Origin', 'med', '"Made in" claims need all or virtually all of the product made there. (Partial French rules.)', true, null, 2],
+  [fr('(?:plus de )?' + N + ' (?:clients?|utilisateurs?|membres?|familles?)|fait confiance|approuvé par (?:des )?millions'), 'Social proof', 'med', 'Verify the number and date and keep a source. (Partial French rules.)', true, null, 2],
+  [fr('les résultats peuvent varier|résultats? non typiques?|conditions? (?:s[’\']appliquent|applicables)|certaines conditions|voir (?:les )?(?:détails|conditions)|selon (?:une |notre )?(?:étude|sondage|enquête)|source ?:'), 'Qualifier', 'info', 'Qualifier found. Make sure it sits near the claim. (Partial French rules.)', false, null, 2]
 ];
-function scan(t) { const hits = []; R.forEach(([re, cat, sev, adv, proof]) => { re.lastIndex = 0; let m; while ((m = re.exec(t))) { hits.push({ s: m.index, e: m.index + m[0].length, txt: m[0], cat, sev, adv, proof }); if (m[0].length === 0) re.lastIndex++; } }); hits.sort((a, b) => a.s - b.s || b.e - a.e); const out = []; let end = -1; hits.forEach(h => { if (h.s >= end) { out.push(h); end = h.e; } else if (h.sev !== 'info' && out.length && out[out.length - 1].sev === 'info' && h.e > end) { out.push(h); end = h.e; } }); return out; }
+function scan(t) {
+  const hits = [];
+  R.forEach(([re, cat, sev, adv, proof, filt, g, mask]) => { re.lastIndex = 0; let m; while ((m = re.exec(t))) { const txt = g ? m[g] : m[0], s = m.index + (g ? m[1].length : 0); if (!m[0].length) { re.lastIndex++; continue; } const e = s + txt.length; if (!filt || filt(t, s, e)) hits.push({ s, e, txt, cat, sev, adv, proof, mask: !!mask }); } });
+  hits.sort((a, b) => a.s - b.s || b.e - a.e); const out = []; let end = -1;
+  hits.forEach(h => { if (h.s >= end) { out.push(h); end = h.e; } else if (h.sev !== 'info' && out.length && out[out.length - 1].sev === 'info' && !out[out.length - 1].mask && h.e > end) { out.push(h); end = h.e; } });
+  return out;
+}
+function lang(t) { const w = t.toLowerCase().match(/[\p{L}]+/gu) || [], f = w.filter(x => ['le', 'la', 'les', 'des', 'pour', 'dans', 'avec', 'une', 'est', 'et', 'du', 'au', 'aux', 'sur', 'vous', 'nous', 'vos', 'votre', 'notre', 'chez'].includes(x)).length, e = w.filter(x => ['the', 'and', 'to', 'of', 'is', 'you', 'your', 'with', 'for', 'in', 'our', 'are', 'a'].includes(x)).length, nonLatin = (t.match(/[^\u0000-ɏ\s\d\p{P}\p{S}]/gu) || []).length; if (w.length && nonLatin / w.join('').length > 0.3) return 'other'; return f > e ? 'fr' : 'en'; }
 function run() {
-  const t = $('#txt').value; if (!t.trim()) { $('#out').innerHTML = '<div class="card"><p class="muted">Paste copy to scan.</p></div>'; return; }
-  const hits = scan(t), claims = hits.filter(h => h.sev !== 'info'), quals = hits.filter(h => h.sev === 'info'), foot = /(^|\n)\s*(\*|†|‡|¹|1\.)\s+\S/.test(t), star = /\*/.test(t);
-  const high = claims.filter(h => h.sev === 'high').length, med = claims.filter(h => h.sev === 'med').length, unq = claims.filter(h => h.proof).length;
-  const cats = new Map(); claims.forEach(h => cats.set(h.cat, (cats.get(h.cat) || 0) + 1));
-  const words = t.trim().split(/\s+/).length, density = claims.length / Math.max(words / 100, 1);
-  let h = MT.rag(high >= 3 ? 'red' : high || med ? 'yellow' : 'green', high ? `${high} high-risk claim${high > 1 ? 's' : ''} need substantiation or legal review` : claims.length ? `${med} claim${med > 1 ? 's' : ''} need qualifying terms` : 'No risky claim patterns found', [`${claims.length} flagged phrases in ${words} words (${density.toFixed(1)} per 100 words). ${quals.length} qualifier${quals.length === 1 ? '' : 's'} found.`, star && !foot ? 'An asterisk appears but no footnote text follows it.' : foot ? 'Footnote text is present.' : '']);
-  h += MT.stats([['High risk', String(high), 'substantiate or remove', high ? 'bad' : 'good'], ['Medium', String(med), 'add qualifying terms', med ? 'warn' : 'good'], ['Need proof on file', String(unq), 'documented evidence'], ['Qualifiers', String(quals.length), foot ? 'footnote present' : star ? 'asterisk without footnote' : 'none', star && !foot ? 'bad' : '']]);
+  let t = $('#f_txt').value; const notes = [];
+  if (!t.trim()) { $('#out').innerHTML = MT.notComputed('Paste copy to scan', ['Nothing was scanned.']); return; }
+  if (/<\/?[a-z][^>]*>|<!--/i.test(t)) { t = t.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/[ \t]{2,}/g, ' '); notes.push('HTML tags and comments were removed before scanning, so markup and code comments are not read as copy.'); }
+  const lg = lang(t), hits = scan(t), claims = hits.filter(h => h.sev !== 'info'), quals = hits.filter(h => h.sev === 'info');
+  const star = (t.match(/[A-Za-z0-9.,)%"'][*†‡]/g) || []).length, foot = /(^|\n)\s*[*†‡¹²³]\s?\S/.test(t);
+  const near = h => quals.some(q => Math.abs(q.s - h.s) <= 300) || (foot && /^[*†‡]/.test(t.slice(h.e, h.e + 2)));
+  claims.forEach(h => h.q = near(h));
+  const high = claims.filter(h => h.sev === 'high').length, med = claims.filter(h => h.sev === 'med').length, unq = claims.filter(h => h.proof).length, noq = claims.filter(h => !h.q).length;
+  const words = t.trim().split(/\s+/).length, density = claims.length / Math.max(words / 100, 1), pl = (n, a, b) => n + ' ' + (n === 1 ? a : b);
+  const cov = 'This scanner matches about 25 phrase patterns in English and a partial set in French. It does not know your country, your industry\'s rules, or whether a claim is true. Wording it does not recognise gets no flag.';
+  let h;
+  if (lg === 'other') h = MT.notComputed('This language is not supported', ['The copy is mostly in a script or language this scanner has no rules for, so nothing meaningful was checked.']);
+  else if (!claims.length) h = MT.verdict('info', 'No listed claim patterns matched. This is not a clearance.', `${pl(words, 'word', 'words')} were scanned. ${MT.esc(cov)} Have anything in a regulated field (health, finance, legal, alcohol, cannabis, children) reviewed by a person.`);
+  else h = MT.rag(high >= 3 ? 'red' : 'yellow', high ? `${pl(high, 'high-risk claim', 'high-risk claims')} to substantiate or send to legal` : `${pl(med, 'claim', 'claims')} to qualify`, [`${pl(claims.length, 'flagged phrase', 'flagged phrases')} in ${pl(words, 'word', 'words')} (${density.toFixed(1)} per 100 words), ${pl(quals.length, 'qualifier', 'qualifiers')} found, ${noq} flagged ${noq === 1 ? 'phrase has' : 'phrases have'} no qualifier within 300 characters.`, 'This is a list of what the scanner recognised, not of everything that needs review.']);
+  if (lg === 'fr') h += MT.note('<b>French copy.</b> Only a partial set of French patterns is checked, and Quebec Consumer Protection Act and French-language rules are not. Treat a short or empty result as "not screened", never as clear.', 'warn');
+  if (lg === 'en' && claims.length) h += MT.note(MT.esc(cov), '');
+  if (star && !foot) notes.push('An asterisk marks a claim but no footnote line starting with that mark follows.');
+  if (foot && !star) notes.push('A footnote line is present but no mark in the copy points to it.');
+  if (notes.length) h += '<div class="note warn" role="note"><b>Notes</b><ul>' + notes.map(n => '<li>' + MT.esc(n) + '</li>').join('') + '</ul></div>';
+  const footTxt = foot ? 'footnote line present' : star ? 'asterisk without footnote' : 'no footnote';
+  h += MT.stats([['High risk', String(high), 'substantiate or remove', high ? 'bad' : ''], ['Medium', String(med), 'add qualifying terms', med ? 'warn' : ''], ['Need proof on file', String(unq), 'documented evidence'], ['Qualifiers found', String(quals.length), footTxt, star && !foot ? 'bad' : '']]);
   let ann = '', p = 0; hits.forEach(x => { ann += MT.esc(t.slice(p, x.s)) + `<mark class="cl cl-${x.sev}" title="${MT.esc(x.cat)}">${MT.esc(t.slice(x.s, x.e))}</mark>`; p = x.e; }); ann += MT.esc(t.slice(p));
-  h += '<div class="card"><h3>Annotated copy</h3><style>.cl{padding:.05rem .2rem;border-radius:3px;color:var(--ink);border-bottom:2px solid}.cl-high{background:var(--critical-wash);border-color:var(--critical)}.cl-med{background:var(--warn-wash);border-color:var(--warn)}.cl-info{background:var(--good-wash);border-color:var(--good)}.ann{white-space:pre-wrap;line-height:1.75}</style><div class="ann">' + ann + '</div><p class="sub" style="margin-top:.6rem">Red: high risk. Amber: qualify. Green: qualifier present.</p></div>';
+  h += '<div class="card"><h3>Annotated copy</h3><style>.cl{padding:.05rem .2rem;border-radius:3px;color:var(--ink);border-bottom:2px solid}.cl-high{background:var(--critical-wash);border-color:var(--critical)}.cl-med{background:var(--warn-wash);border-color:var(--warn)}.cl-info{background:var(--good-wash);border-color:var(--good)}.ann{white-space:pre-wrap;line-height:1.75}</style><div class="ann">' + ann + '</div><p class="sub" style="margin-top:.6rem">Red: high risk. Amber: qualify. Green: qualifier or required disclaimer present. Unmarked text was not recognised, which is not the same as approved.</p></div>';
   const tg = s => MT.tag(s === 'high' ? 'High' : s === 'med' ? 'Medium' : 'OK', s === 'high' ? 'bad' : s === 'med' ? 'warn' : 'good');
-  h += '<div class="card"><h3>Claims and advice</h3>' + (claims.length ? MT.tbl(['Phrase', 'Type', 'Risk', 'Proof needed', 'What to do'], claims.map(x => [x.txt, x.cat, { h: tg(x.sev) }, x.proof ? 'Yes' : 'Terms', x.adv])) : '<p class="muted">Nothing flagged.</p>') + '<div class="actions"><button class="btn btn-secondary btn-sm" id="dl" type="button">Download CSV</button><button class="btn btn-secondary btn-sm" id="cp" type="button">Copy review checklist</button></div></div>';
-  h += MT.note('<b>This is a screen, not legal advice.</b> The scanner matches phrases and cannot judge whether a claim is true or how a court or regulator would read it. Requirements differ by country and industry (FTC and state law in the US, Competition Bureau in Canada, ASA in the UK, and stricter rules for health, finance, and children). Send every high-risk item to legal or compliance, and keep the supporting evidence on file before launch.');
+  const grp = new Map(); claims.forEach(x => { const k = x.txt.toLowerCase() + '|' + x.cat; const o = grp.get(k); if (o) o.n++; else grp.set(k, Object.assign({ n: 1 }, x)); });
+  const rowsU = Array.from(grp.values());
+  h += '<div class="card"><h3>Claims and advice</h3>' + (rowsU.length ? MT.tbl(['Phrase', 'Type', 'Risk', 'Proof needed', 'Qualifier nearby', 'What to do'], rowsU.map(x => [x.txt + (x.n > 1 ? ' (x' + x.n + ')' : ''), x.cat, { h: tg(x.sev) }, x.proof ? 'Yes' : 'Terms', x.q ? 'Yes' : 'No', x.adv])) : '<p class="muted">Nothing flagged. That does not mean the copy is clear.</p>') + '<div class="actions"><button class="btn btn-secondary btn-sm" id="dl" type="button">Download CSV</button><button class="btn btn-secondary btn-sm" id="cp" type="button">Copy review checklist</button></div></div>';
+  h += MT.note('<b>This is a screen, not legal advice.</b> The scanner matches phrases and cannot judge whether a claim is true or how a court or regulator would read it. Requirements differ by country and industry (FTC and state law in the US, Competition Bureau and Quebec rules in Canada, ASA in the UK, and stricter rules for health, finance, and children). Send every high-risk item to legal or compliance, and keep the supporting evidence on file before launch.');
   $('#out').innerHTML = h;
-  $('#dl').addEventListener('click', () => MT.download('claims-review.csv', MT.toCSV([['phrase', 'type', 'risk', 'advice']].concat(claims.map(x => [x.txt, x.cat, x.sev, x.adv]))), 'text/csv'));
+  const ctx = x => t.slice(Math.max(0, x.s - 40), Math.min(t.length, x.e + 40)).replace(/\s+/g, ' ');
+  $('#dl').addEventListener('click', () => MT.download('claims-review.csv', MT.toCSV([['phrase', 'type', 'risk', 'qualifier_nearby', 'context', 'advice']].concat(claims.map(x => [x.txt, x.cat, x.sev, x.q ? 'yes' : 'no', ctx(x), x.adv]))), 'text/csv'));
   $('#cp').addEventListener('click', e => MT.copy(claims.map(x => `[ ] "${x.txt}" (${x.cat}, ${x.sev}): ${x.adv}`).join('\n'), e.target));
 }
-$('#smp').addEventListener('click', () => { $('#txt').value = `The #1 project management tool trusted by 50,000 teams. Our industry-leading platform is the fastest way to ship, guaranteed. Try it risk-free for 30 days, and save up to 40% on annual plans. Clinically proven to reduce stress*, and better than the competition at every price point. Our eco-friendly packaging is 100% recyclable. Limited-time offer, free onboarding for new accounts. Terms apply.
+$('#smp').addEventListener('click', () => { $('#f_txt').value = `The #1 project management tool trusted by 50,000 teams. Our industry-leading platform is the fastest way to ship, guaranteed. Try it risk-free for 30 days, and save up to 40% on annual plans. Clinically proven to reduce stress*, and better than the competition at every price point. Our eco-friendly packaging is 100% recyclable. Limited-time offer, free onboarding for new accounts. Terms apply.
 
 *Based on an internal survey of 200 users in 2025.`; run(); });
 $('#go').addEventListener('click', run);

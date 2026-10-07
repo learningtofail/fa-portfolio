@@ -1,0 +1,66 @@
+[
+  {
+    "file": "01-b2b-saas-happy-path.csv",
+    "label": "B2B software, 90 days",
+    "kind": "happy",
+    "note": "A clean English export. The correct result is about $34,967 of equivalent value over the period, or about $142,000 over a year, with brand clicks excluded.",
+    "values": {
+      "Brand terms to exclude": "taskloop, task loop",
+      "Days covered by the export": "90",
+      "Default CPC": "1.80"
+    }
+  },
+  {
+    "file": "01-b2b-saas-cpc-overrides.csv",
+    "label": "CPC overrides for the first file",
+    "kind": "happy",
+    "note": "Paste into \"Per-query CPC overrides\" together with the first example."
+  },
+  {
+    "file": "02a-quebec-travel-fr-gsc-export.csv",
+    "label": "Quebec travel, French export",
+    "kind": "messy",
+    "note": "Decimal commas such as \"2,35\" and French headers. Map the clicks column by hand and read positions like 2,6 as 2.6; the value is roughly $17,600.",
+    "values": {
+      "Brand terms to exclude": "boréal, boreal",
+      "Days covered by the export": "90"
+    }
+  },
+  {
+    "file": "02b-quebec-travel-fr-messy-semicolon-bom.csv",
+    "label": "Quebec travel, messy export",
+    "kind": "messy",
+    "note": "A title row, semicolons and a \"Total\" row. Delete the title row before use, since the tool cannot find the header otherwise.",
+    "values": {
+      "Brand terms to exclude": "boréal, boreal",
+      "Days covered by the export": "90"
+    }
+  },
+  {
+    "file": "02-quebec-travel-cpc-overrides-decimal-comma.csv",
+    "label": "CPC overrides with decimal commas",
+    "kind": "messy",
+    "note": "A comma means a decimal here, so 2,35 is $2.35. If a value looks 100 times too large, the comma was misread."
+  },
+  {
+    "file": "03-publisher-informational-spike-7day.csv",
+    "label": "Seven days with a spike",
+    "kind": "trap",
+    "note": "Seven days is too short to project a year, and one big event query is over a third of the value. Treat the annual number as unreliable.",
+    "values": {
+      "Brand terms to exclude": "freshplate",
+      "Days covered by the export": "7"
+    }
+  },
+  {
+    "file": "04-local-hvac-brand-substring-trap.csv",
+    "label": "Brand name inside other words",
+    "kind": "trap",
+    "note": "The brand \"ace\" also sits inside \"furnace\" and \"replace\". Only queries that start with the brand are branded, and the correct value is about $20,200.",
+    "values": {
+      "Brand terms to exclude": "ace",
+      "Days covered by the export": "90",
+      "Default CPC": "9"
+    }
+  }
+]

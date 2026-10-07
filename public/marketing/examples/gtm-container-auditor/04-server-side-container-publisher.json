@@ -1,0 +1,270 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2026-09-30 10:14:52",
+  "containerVersion": {
+    "path": "accounts/6012345678/containers/98765432/versions/0",
+    "accountId": "6012345678",
+    "containerId": "98765432",
+    "containerVersionId": "0",
+    "container": {
+      "path": "accounts/6012345678/containers/98765432",
+      "accountId": "6012345678",
+      "containerId": "98765432",
+      "name": "pressline-sgtm.example",
+      "publicId": "GTM-PR9S3VD",
+      "usageContext": [
+        "SERVER"
+      ],
+      "fingerprint": "1700000000000",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/6012345678/containers/98765432/workspaces?apiLink=container"
+    },
+    "client": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "clientId": "1",
+        "name": "GA4 client",
+        "type": "gaaw_client",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "activateGtagSupport",
+            "value": "true"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "cookieManagement",
+            "value": "server"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "cookieName",
+            "value": "FPID"
+          }
+        ],
+        "priority": 0
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "clientId": "2",
+        "name": "Data tag client (legacy)",
+        "type": "cvt_98765432_5",
+        "parameter": [],
+        "priority": 0
+      }
+    ],
+    "tag": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "tagId": "1",
+        "name": "GA4 - server",
+        "type": "sgtmgaaw",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "epToMpMigration",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "redactVisitorIp",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementId",
+            "value": "G-PRESS12345"
+          }
+        ],
+        "firingTriggerId": [
+          "1"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "tagId": "2",
+        "name": "Meta CAPI - purchase",
+        "type": "cvt_98765432_8",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "pixelId",
+            "value": "{{Const - Meta pixel}}"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "{{Event Name}}"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "userData",
+            "value": "{{ED - email_hash}}"
+          }
+        ],
+        "firingTriggerId": [
+          "2"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "tagId": "3",
+        "name": "Firestore - session log",
+        "type": "cvt_98765432_9",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "doc",
+            "value": "{{Request Path}}"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "client",
+            "value": "{{Client Name}}"
+          }
+        ],
+        "firingTriggerId": [
+          "1"
+        ]
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "triggerId": "1",
+        "name": "All GA4 events",
+        "type": "ALWAYS",
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{Client Name}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "GA4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "triggerId": "2",
+        "name": "purchase event",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{Event Name}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "purchase"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "variableId": "1",
+        "name": "Const - Meta pixel",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "123456789012345"
+          }
+        ]
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "variableId": "2",
+        "name": "ED - email_hash",
+        "type": "ed",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "keyPath",
+            "value": "user_data.email_hash"
+          }
+        ]
+      }
+    ],
+    "builtInVariable": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "type": "CLIENT_NAME",
+        "name": "Client Name"
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "type": "EVENT_NAME",
+        "name": "Event Name"
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "type": "REQUEST_PATH",
+        "name": "Request Path"
+      }
+    ],
+    "transformation": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "transformationId": "1",
+        "name": "Redact IP",
+        "type": "tf_exclude_params",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "paramsToExclude",
+            "value": "ip_override"
+          }
+        ]
+      }
+    ],
+    "folder": [],
+    "fingerprint": "1700000000000",
+    "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/6012345678/containers/98765432/versions/0?apiLink=version"
+  }
+}

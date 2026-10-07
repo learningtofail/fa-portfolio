@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -234,6 +247,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">8</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">B2B software with a retention curve</b></div><p class="example__note">Type the values in and paste this curve into the custom retention box. The correct result is a fully loaded cost per customer of about $4,082, payback near 6.2 months and LTV to CAC of about 4.1.</p><table class="t example__values"><tbody><tr><th scope="row">New customers acquired (all channels)</th><td>85</td></tr><tr><th scope="row">Paid media spend ($)</th><td>120000</td></tr><tr><th scope="row">Agency and creative fees ($)</th><td>15000</td></tr><tr><th scope="row">Marketing headcount, fully loaded ($)</th><td>60000</td></tr><tr><th scope="row">Sales headcount, fully loaded ($)</th><td>140000</td></tr><tr><th scope="row">Tools, software and other overhead ($)</th><td>12000</td></tr><tr><th scope="row">Revenue per customer per month ($)</th><td>900</td></tr><tr><th scope="row">COGS and delivery cost (% of revenue)</th><td>18</td></tr><tr><th scope="row">Other variable cost per customer per month ($)</th><td>25</td></tr><tr><th scope="row">Monthly churn (%)</th><td>1.8</td></tr><tr><th scope="row">CAC basis for payback</th><td>Fully loaded</td></tr><tr><th scope="row">Annual discount rate (%)</th><td>10</td></tr><tr><th scope="row">Horizon (months)</th><td>36</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/cac-payback-modeler/a-curve-workaround-1.8pct-churn-36mo.txt" download>Download a-curve-workaround-1.8pct-churn-36mo.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Subscription box with a spreadsheet curve</b></div><p class="example__note">The curve is pasted with percent signs the way a spreadsheet exports it. Check that the tool used it: the correct payback is about 13.1 months, not the 7.8 you get from the churn field alone.</p><table class="t example__values"><tbody><tr><th scope="row">New customers acquired (all channels)</th><td>1240</td></tr><tr><th scope="row">Paid media spend ($)</th><td>98000</td></tr><tr><th scope="row">Agency and creative fees ($)</th><td>9500</td></tr><tr><th scope="row">Marketing headcount, fully loaded ($)</th><td>22000</td></tr><tr><th scope="row">Sales headcount, fully loaded ($)</th><td>0</td></tr><tr><th scope="row">Tools, software and other overhead ($)</th><td>4800</td></tr><tr><th scope="row">Revenue per customer per month ($)</th><td>49.9</td></tr><tr><th scope="row">COGS and delivery cost (% of revenue)</th><td>52</td></tr><tr><th scope="row">Other variable cost per customer per month ($)</th><td>5.2</td></tr><tr><th scope="row">Monthly churn (%)</th><td>9</td></tr><tr><th scope="row">CAC basis for payback</th><td>Fully loaded</td></tr><tr><th scope="row">Annual discount rate (%)</th><td>0</td></tr><tr><th scope="row">Horizon (months)</th><td>36</td></tr><tr><th scope="row">Custom retention curve (optional)</th><td>100%, 71%, 58%, 49%, 43%, 39%, 36%, 34%, 32%, 30%, 29%, 28%</td></tr></tbody></table></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Dealer subscriptions, mostly organic</b></div><p class="example__note">Only 18 of 60 new dealers came from paid media. The cost per paid dealer is $3,000, not $900, so judge payback on the fully loaded figure (about 6.1 months).</p><table class="t example__values"><tbody><tr><th scope="row">New customers acquired (all channels)</th><td>60</td></tr><tr><th scope="row">Paid media spend ($)</th><td>54000</td></tr><tr><th scope="row">Agency and creative fees ($)</th><td>8000</td></tr><tr><th scope="row">Marketing headcount, fully loaded ($)</th><td>40000</td></tr><tr><th scope="row">Sales headcount, fully loaded ($)</th><td>90000</td></tr><tr><th scope="row">Tools, software and other overhead ($)</th><td>10000</td></tr><tr><th scope="row">Revenue per customer per month ($)</th><td>749</td></tr><tr><th scope="row">COGS and delivery cost (% of revenue)</th><td>12</td></tr><tr><th scope="row">Other variable cost per customer per month ($)</th><td>30</td></tr><tr><th scope="row">Monthly churn (%)</th><td>3</td></tr><tr><th scope="row">CAC basis for payback</th><td>Paid media only</td></tr><tr><th scope="row">Annual discount rate (%)</th><td>0</td></tr><tr><th scope="row">Horizon (months)</th><td>36</td></tr><tr><th scope="row">Custom retention curve (optional)</th><td>100,93,88,84,81,79,77,75,74,73,72,71</td></tr></tbody></table></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">One-time purchase retailer</b></div><p class="example__note">Customers buy once, so enter churn 100 and the curve &quot;100&quot;. The result of no payback within 12 months is right, and the tool has no repeat-purchase model to show more.</p><table class="t example__values"><tbody><tr><th scope="row">New customers acquired (all channels)</th><td>3200</td></tr><tr><th scope="row">Paid media spend ($)</th><td>150000</td></tr><tr><th scope="row">Agency and creative fees ($)</th><td>18000</td></tr><tr><th scope="row">Marketing headcount, fully loaded ($)</th><td>35000</td></tr><tr><th scope="row">Sales headcount, fully loaded ($)</th><td>0</td></tr><tr><th scope="row">Tools, software and other overhead ($)</th><td>9000</td></tr><tr><th scope="row">Revenue per customer per month ($)</th><td>64</td></tr><tr><th scope="row">COGS and delivery cost (% of revenue)</th><td>48</td></tr><tr><th scope="row">Other variable cost per customer per month ($)</th><td>9</td></tr><tr><th scope="row">Monthly churn (%)</th><td>100</td></tr><tr><th scope="row">CAC basis for payback</th><td>Fully loaded</td></tr><tr><th scope="row">Annual discount rate (%)</th><td>0</td></tr><tr><th scope="row">Horizon (months)</th><td>12</td></tr><tr><th scope="row">Custom retention curve (optional)</th><td>100</td></tr></tbody></table></li><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Retention curve, clean</b></div><p class="example__note">A simple retention curve with one percent value per month. It should be read as written.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/cac-payback-modeler/curve-clean.txt" download>Download curve-clean.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Retention curve, tabs and percent signs</b></div><p class="example__note">A curve pasted from a spreadsheet with tabs and percent signs. If results look the same as with no curve, the paste was not read, so retype it with commas.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/cac-payback-modeler/curve-paste-tab-separated-percent.txt" download>Download curve-paste-tab-separated-percent.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Retention curve as fractions</b></div><p class="example__note">Values like 0.71 mean 71 percent. Entered as is they are read as under 1 percent, so multiply by 100 first.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/cac-payback-modeler/curve-fractions-wrong-units.txt" download>Download curve-fractions-wrong-units.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Curve that rises at the end</b></div><p class="example__note">Retention goes up in the last month (60, 40, then 45). Extending that trend inflates lifetime value, so fix the tail before trusting the result.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/cac-payback-modeler/curve-rising-tail-explodes.txt" download>Download curve-rising-tail-explodes.txt</a></p></li></ul></details>
 
 <div class="split">
   <div>
@@ -296,14 +310,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -313,6 +371,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -334,22 +394,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -357,7 +480,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -637,7 +760,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -685,7 +808,7 @@ MT.boot = (slug, template) => {
 (function () {
 const $ = MT.$, F = MT.fmt, C = MT.chart;
 MT.fields($('#fCost'), [
-  { id: 'cust', label: 'New customers acquired', value: 400, min: 1 }, { id: 'paid', label: 'Paid media spend ($)', value: 60000 },
+  { id: 'cust', label: 'New customers acquired (all channels)', value: 400, min: 1 }, { id: 'pcust', label: 'Of those, customers from paid media (optional)', value: '', hint: 'Leave blank if all customers came from paid. Used for paid-media CAC.' }, { id: 'paid', label: 'Paid media spend ($)', value: 60000 },
   { id: 'agency', label: 'Agency and creative fees ($)', value: 12000 }, { id: 'mkt', label: 'Marketing headcount, fully loaded ($)', value: 30000 },
   { id: 'sales', label: 'Sales headcount, fully loaded ($)', value: 25000 }, { id: 'tools', label: 'Tools, software and other overhead ($)', value: 6000 }
 ], 'g2');
@@ -696,16 +819,37 @@ MT.fields($('#fUnit'), [
   { id: 'hor', label: 'Horizon (months)', value: 36, min: 6, max: 120 },
   { id: 'curve', label: 'Custom retention curve (optional)', type: 'text', value: '', placeholder: 'Month-by-month % still active, e.g. 100,92,86,81', hint: 'Month 1 first. Overrides churn.' }
 ], 'g2');
-function retention(h) { const cur = String(MT.$('#f_curve').value).split(/[,\s]+/).map(Number).filter(x => isFinite(x)); const ch = MT.f('churn') / 100; const r = []; for (let t = 1; t <= h; t++) { if (cur.length) { const v = t <= cur.length ? cur[t - 1] / 100 : (cur.length > 1 ? cur[cur.length - 1] / 100 * Math.pow(cur[cur.length - 1] / cur[Math.max(0, cur.length - 2)] || 1, t - cur.length) : 0); r.push(Math.max(0, v)); } else r.push(Math.pow(1 - ch, t - 1)); } return r; }
+function parseCurve() {
+  const raw = String(MT.$('#f_curve').value).split(/[,;\t\n]+|\s+/).map(x => x.trim()).filter(x => x !== ''), vals = raw.map(x => MT.num(x)).filter(x => isFinite(x));
+  if (!vals.length) return { cur: [], msg: '' };
+  const frac = vals.every(v => v <= 1.0001) && vals[0] > 0 && !raw.some(x => /%/.test(x)), cur = frac ? vals.map(v => v * 100) : vals;
+  let msg = frac ? 'Curve values were all 1 or below, so they were read as fractions (0.71 = 71%).' : '';
+  if (cur[0] < 50) msg += ' The first curve value is below 50%. Month 1 is usually 100%; check the order.';
+  if (cur.some((v, i) => i && v > cur[i - 1] + 0.01)) msg += ' The curve rises somewhere (customers returning). Values beyond the last month are held flat or declining, never rising.';
+  return { cur, msg: msg.trim() };
+}
+function retention(h) {
+  const { cur } = parseCurve(), ch = MT.f('churn') / 100, r = [];
+  for (let t = 1; t <= h; t++) {
+    if (!cur.length) { r.push(Math.pow(1 - ch, t - 1)); continue; }
+    if (t <= cur.length) { r.push(Math.max(0, cur[t - 1] / 100)); continue; }
+    const last = cur[cur.length - 1] / 100, prev = cur.length > 1 ? cur[cur.length - 2] / 100 : last, rate = prev > 0 ? Math.min(1, last / prev) : 1;
+    r.push(Math.max(0, last * Math.pow(rate, t - cur.length)));
+  }
+  return r;
+}
 function payback(cac, m, ret, d) { let cum = 0; const curve = []; let pb = null; for (let t = 0; t < ret.length; t++) { const df = Math.pow(1 + d, -(t + 1) / 12); const add = ret[t] * m * df; const prev = cum; cum += add; curve.push(cum); if (pb == null && cum >= cac) pb = t + (cac - prev) / add; } return { pb, curve, ltv: cum }; }
 function run() {
-  const N = MT.f('cust'), paid = MT.f('paid'), total = paid + MT.f('agency') + MT.f('mkt') + MT.f('sales') + MT.f('tools'), blended = paid / N, full = total / N;
+  const N = MT.f('cust'), paid = MT.f('paid'), total = paid + MT.f('agency') + MT.f('mkt') + MT.f('sales') + MT.f('tools'), PN = isFinite(MT.f('pcust')) && MT.f('pcust') > 0 ? Math.min(MT.f('pcust'), N) : N, blended = paid / PN, full = total / N;
   const H = Math.round(MT.f('hor')) || 36, d = MT.f('disc') / 100, arpu = MT.f('arpu'), gm = 1 - MT.f('cogs') / 100, m = arpu * gm - MT.f('var'), cac = MT.$('#f_basis').value === 'paid' ? blended : full;
   if (!(N > 0) || !isFinite(m)) { $('#out').innerHTML = MT.note('Enter customers acquired and unit economics.'); return; }
   const ret = retention(H), pb = payback(cac, m, ret, d), ltv = pb.ltv, ltvCac = ltv / cac, gmPct = m / arpu, ch = MT.f('churn') / 100;
   const simple = ch > 0 ? m / ch : NaN;
-  let h = MT.verdict(pb.pb == null ? 'neg' : pb.pb <= 12 ? 'pos' : pb.pb <= 18 ? 'neu' : 'neg', pb.pb == null ? `Not paid back within ${H} months` : `Cash payback in ${pb.pb.toFixed(1)} months`, `${MT.$('#f_basis').value === 'paid' ? 'Paid-only' : 'Fully loaded'} CAC of ${F.money(cac, 0)} against ${F.money(m, 2)} monthly contribution per active customer. LTV:CAC over ${H} months is ${ltvCac.toFixed(2)}.`);
-  h += MT.stats([['Blended CAC (paid only)', F.money(blended, 0), F.money(paid, 0) + ' / ' + F.int(N)], ['Fully loaded CAC', F.money(full, 0), 'incl. fees, headcount, tools'], ['Loading gap', F.spct(full / blended - 1, 0), 'fully loaded vs paid-only'], ['Contribution per customer-month', F.money(m, 2), F.pct(gmPct, 1) + ' margin'], [`LTV (${H} mo, contribution)`, F.money(ltv, 0), isFinite(simple) ? 'Formula m/churn: ' + F.money(simple, 0) : ''], ['LTV:CAC', ltvCac.toFixed(2) + 'x', ltvCac >= 3 ? 'above the 3x rule of thumb' : 'below 3x', ltvCac >= 3 ? 'good' : ltvCac >= 1.5 ? 'warn' : 'bad']]);
+  const pbFull = payback(full, m, ret, d), pbPaid = payback(blended, m, ret, d), both = `Payback on fully loaded CAC: ${pbFull.pb == null ? 'not within ' + H + ' months' : pbFull.pb.toFixed(1) + ' months'}. On paid-media CAC only: ${pbPaid.pb == null ? 'not within ' + H + ' months' : pbPaid.pb.toFixed(1) + ' months'}.`, cm = parseCurve().msg;
+  let h = MT.verdict(pb.pb == null ? 'neg' : pb.pb <= 12 ? 'pos' : pb.pb <= 18 ? 'neu' : 'neg', pb.pb == null ? `Not paid back within ${H} months` : `Cash payback in ${pb.pb.toFixed(1)} months`, `${MT.$('#f_basis').value === 'paid' ? 'Paid-only' : 'Fully loaded'} CAC of ${F.money(cac, 0)} against ${F.money(m, 2)} monthly contribution per active customer. LTV:CAC over ${H} months is ${ltvCac.toFixed(2)}. ${both}${MT.$('#f_basis').value === 'paid' ? ' Paid-only CAC leaves out headcount, agency and tools, so it flatters payback; use it for channel comparison, not for the finance view.' : ''}`);
+  if (cm) h += MT.note(MT.esc(cm), 'warn');
+  if (parseCurve().cur.length) h += MT.note('The sensitivity table below varies a constant monthly churn and does not use your curve, so its middle cell will not match the headline.');
+  h += MT.stats([['Paid-media CAC', F.money(blended, 0), F.money(paid, 0) + ' / ' + F.int(PN) + (PN < N ? ' paid customers' : ' customers')], ['Fully loaded CAC', F.money(full, 0), 'incl. fees, headcount, tools'], ['Loading gap', F.spct(full / blended - 1, 0), 'fully loaded vs paid-only'], ['Contribution per customer-month', F.money(m, 2), F.pct(gmPct, 1) + ' margin'], [`LTV (${H} mo, contribution)`, F.money(ltv, 0), isFinite(simple) ? 'Formula m/churn: ' + F.money(simple, 0) : ''], ['LTV:CAC', ltvCac.toFixed(2) + 'x', ltvCac >= 3 ? 'above the 3x rule of thumb' : 'below 3x', ltvCac >= 3 ? 'good' : ltvCac >= 1.5 ? 'warn' : 'bad']]);
   h += '<div class="card"><div id="cc"></div></div>';
   // sensitivity
   const base = MT.f('churn'), churns = [0.5, 0.75, 1, 1.5, 2].map(x => +(base * x).toFixed(2)), gms = [-10, -5, 0, 5, 10].map(x => Math.max(1, Math.min(99, gm * 100 + x)));

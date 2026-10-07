@@ -1,0 +1,74 @@
+[
+  {
+    "file": "01-happy-ecommerce-outdoor-gear.csv",
+    "label": "Outdoor gear store",
+    "kind": "happy",
+    "note": "A plain export with obvious junk words such as \"free\", \"jobs\" and \"pdf\". Expect phrase negatives for those, and brand and converting terms left alone.",
+    "values": {
+      "Protected terms (never negate)": "northpeak"
+    }
+  },
+  {
+    "file": "02-messy-google-ads-export-b2b-saas.csv",
+    "label": "Google Ads export with title lines",
+    "kind": "messy",
+    "note": "Two title lines, total rows and an \"Other search terms\" row. Delete the title lines first; real term spend is about $6,183.",
+    "values": {
+      "Protected terms (never negate)": "taskly"
+    }
+  },
+  {
+    "file": "02b-same-export-title-rows-removed.csv",
+    "label": "Same export, title lines removed",
+    "kind": "messy",
+    "note": "Ignore the \"Other search terms\" row and keep the brand term \"taskly login\" out of any negative.",
+    "values": {
+      "Protected terms (never negate)": "taskly"
+    }
+  },
+  {
+    "file": "03-messy-french-quebec-florist-semicolon.csv",
+    "label": "Quebec florist, French export",
+    "kind": "messy",
+    "note": "French headers, semicolons and decimal commas. Remove the two title lines and match columns by hand, because totals read with commas as thousands will be 100 times too high.",
+    "values": {
+      "Protected terms (never negate)": "pivoine"
+    }
+  },
+  {
+    "file": "03b-same-french-title-rows-removed.csv",
+    "label": "Florist, title lines removed",
+    "kind": "messy",
+    "note": "Total cost should be about CAD 1,624. A total of $162,357 means decimal commas were read wrongly.",
+    "values": {
+      "Protected terms (never negate)": "pivoine"
+    }
+  },
+  {
+    "file": "03c-control-same-french-data-dot-decimals.csv",
+    "label": "Florist, clean copy",
+    "kind": "happy",
+    "note": "The same data with dot decimals. Total spend is about $1,624, with about $639 addressable.",
+    "values": {
+      "Protected terms (never negate)": "pivoine"
+    }
+  },
+  {
+    "file": "04-trap-local-services-repair-is-the-product.csv",
+    "label": "Plumber where \"repair\" is the product",
+    "kind": "trap",
+    "note": "Terms with \"repair\" convert well. Never block \"repair\"; block words such as \"jobs\", \"salary\" and \"diy\" instead.",
+    "values": {
+      "Protected terms (never negate)": "acme"
+    }
+  },
+  {
+    "file": "05-trap-b2b-high-cpa-zero-conv-is-noise.csv",
+    "label": "Enterprise software, few conversions",
+    "kind": "trap",
+    "note": "Terms with 6 to 13 clicks and no sales are normal when sales are rare. Do not block them from this evidence, and keep the brand login queries.",
+    "values": {
+      "Protected terms (never negate)": "valence"
+    }
+  }
+]

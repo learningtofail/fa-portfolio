@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -235,6 +248,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">10</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Travel referral program, 80 partners</b></div><p class="example__note">A clean export with one partner at about 27% of revenue. A correct reading is moderate risk: the top 3 partners bring in about 48% and you need 4 partners to reach half of revenue.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/a-travel-clean.csv" download>Download a-travel-clean.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Fundraising partners, European export</b></div><p class="example__note">Semicolons, decimal commas, euro signs, a refund in brackets, a blank partner and a &quot;Total&quot; row. Pick the columns by hand and clean those rows first; after cleaning there are 9 partners and the biggest holds about 45% of revenue, which is high risk.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/b-nonprofit-messy.csv" download>Download b-nonprofit-messy.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Nine sub-IDs of one network</b></div><p class="example__note">Nine partner IDs that all belong to one parent network, each near 9%. Looked at one by one the risk seems low, but grouped by parent one network holds about 79% of revenue.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/c-fragmented-subids-trap.csv" download>Download c-fragmented-subids-trap.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Five equal partners</b></div><p class="example__note">Five partners with 20% each. Perfectly even sharing in a small program still scores as moderate risk because the score has a built-in floor, so do not read it as a warning.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/c-five-equal-partners.csv" download>Download c-five-equal-partners.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Three equal partners</b></div><p class="example__note">Three partners with a third each. A &quot;high risk&quot; label here only reflects that there are few partners, not that one of them dominates.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/c-three-equal-partners.csv" download>Download c-three-equal-partners.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Exactly 80% in two partners</b></div><p class="example__note">Shares of 70, 10, 10 and 10 percent. The correct answer is that 2 partners reach 80% of revenue, so a result of 3 partners is a rounding error.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/e-float-boundary-n80.csv" download>Download e-float-boundary-n80.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Partner with negative net revenue</b></div><p class="example__note">One partner has refunds larger than sales. A careful reading includes that reversal in the total instead of dropping the partner.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/negnet.csv" download>Download negnet.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">One partner has all the revenue</b></div><p class="example__note">A single partner earns everything. The right answer is 100% concentrated, not an error message.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/onepos.csv" download>Download onepos.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Title lines above the header</b></div><p class="example__note">An export with report title lines before the column names. Delete the lines above the header row and upload again if the columns are not found.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/preamble.csv" download>Download preamble.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Tab-separated file</b></div><p class="example__note">The same kind of data with tabs instead of commas. It should load normally.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/affiliate-concentration-analyzer/tab.tsv" download>Download tab.tsv</a></p></li></ul></details>
 
 <div class="card">
   <h3>Affiliate report</h3>
@@ -242,6 +256,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
   <div id="drop"></div>
   <div class="field" style="margin-top:.6rem"><label for="paste">Or paste CSV</label><textarea id="paste" placeholder="partner,revenue,payout&#10;CouponSite,52000,5200"></textarea></div>
   <div class="row3"><div class="field"><label for="cp">Partner column</label><select id="cp"></select></div><div class="field"><label for="cr">Revenue column</label><select id="cr"></select></div><div class="field"><label for="cy">Payout column (optional)</label><select id="cy"></select></div></div>
+  <div class="checks"><label><input type="checkbox" id="grp"> Group sub-IDs: treat names that share the text before a dash or underscore (AutoGuide-US, AutoGuide-CA) as one partner</label></div>
   <div class="actions"><button class="btn btn-primary" id="go" type="button">Analyze</button><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div>
   <div class="err" id="err"></div>
 </div>
@@ -301,14 +316,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -318,6 +377,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -339,22 +400,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -362,7 +486,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -642,7 +766,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -689,27 +813,56 @@ MT.boot = (slug, template) => {
 <script>
 (function () {
 const $ = MT.$, F = MT.fmt, S = MT.stat, C = MT.chart; let tab = null;
-function load(t) { tab = MT.readTable(t); const c = tab.cols; MT.fillSelect($('#cp'), c, /partner|affiliate|publisher|source|name|site/i); MT.fillSelect($('#cr'), c, /revenue|sales|sale amount|order value|gmv/i); MT.fillSelect($('#cy'), c, /payout|commission|earning|cost/i, { none: true }); }
+function load(t) { tab = MT.readTable(t); const c = tab.cols; MT.fillSelect($('#cp'), c, /partner|affiliate|publisher|source|name|site|channel|network/i, { choose: true }); MT.fillSelect($('#cr'), c, /revenue|sales|sale amount|order value|gmv|donation|amount|income|turnover/i, { choose: true }); MT.fillSelect($('#cy'), c, /payout|commission|earning|cost|fee/i, { none: true }); if (!MT.guess(c, /payout|commission|earning|cost|fee/i)) $('#cy').value = ''; }
 MT.dropzone($('#drop'), t => { $('#paste').value = t; load(t); }); $('#paste').addEventListener('input', MT.debounce(() => load($('#paste').value), 250));
 $('#smp').addEventListener('click', () => { const r = MT.rng(5), rows = [['partner', 'revenue', 'payout']]; const big = [['CouponHub', 61000], ['DealFinder', 24000], ['BlogAlpha', 12000], ['ReviewPro', 8000]]; big.forEach(b => rows.push([b[0], b[1], (b[1] * (b[0] === 'CouponHub' ? 0.14 : 0.09)).toFixed(0)])); for (let i = 0; i < 46; i++) { const rev = Math.round(60 + Math.exp(r.n() * 0.9 + 5.2)); rows.push(['Partner_' + String(i + 1).padStart(2, '0'), rev, (rev * 0.09).toFixed(0)]); } const t = MT.toCSV(rows); $('#paste').value = t; load(t); run(); });
+const normKey = n => String(n).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[\s,;.]+/g, ' ').trim();
+const parentKey = n => { const m = String(n).match(/^(.{3,}?)\s*[-_:|\/]\s*\S.*$/); return m ? normKey(m[1]) : normKey(n); };
 function run() {
-  $('#err').textContent = ''; if (!tab) { $('#err').textContent = 'Paste or upload a report first.'; return; }
-  const pc = $('#cp').value, rc = $('#cr').value, yc = $('#cy').value, m = new Map();
-  tab.rows.forEach(r => { const k = String(r[pc]).trim(); if (!k) return; const v = MT.num(r[rc]); if (!isFinite(v)) return; const o = m.get(k) || { rev: 0, pay: 0 }; o.rev += v; if (yc) { const p = MT.num(r[yc]); if (isFinite(p)) o.pay += p; } m.set(k, o); });
-  const list = Array.from(m, ([name, o]) => ({ name, rev: o.rev, pay: o.pay })).filter(x => x.rev > 0).sort((a, b) => b.rev - a.rev), n = list.length; if (n < 2) { $('#err').textContent = 'Need at least two partners with positive revenue.'; return; }
+  $('#err').textContent = ''; $('#out').innerHTML = ''; if (!tab) { $('#err').textContent = 'Paste or upload a report first.'; return; }
+  const pc = $('#cp').value, rc = $('#cr').value, yc = $('#cy').value, grp = $('#grp').checked;
+  if (!pc || !rc) { $('#err').textContent = 'Choose which columns hold the partner name and the revenue.'; return; }
+  if (pc === rc) { $('#err').textContent = 'The partner column and the revenue column must be different.'; return; }
+  const raw = tab.raw.slice(1), cur = (raw.map(r => r.join(' ')).join(' ').match(/[€£]/) || ['$'])[0], money = x => (x < 0 ? '-' : '') + cur + Math.abs(x).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const m = new Map(); let blank = 0, blankRev = 0, bad = 0, badEx = [];
+  tab.rows.forEach(r => {
+    const nm = String(r[pc]).trim(), v = MT.num(r[rc]);
+    if (!isFinite(v)) { if (nm || String(r[rc]).trim()) { bad++; if (badEx.length < 3) badEx.push(nm + ' / ' + r[rc]); } return; }
+    if (!nm) { blank++; blankRev += v; return; }
+    const k = grp ? parentKey(nm) : normKey(nm), o = m.get(k) || { rev: 0, pay: 0, names: new Map() }; o.rev += v; o.names.set(nm, (o.names.get(nm) || 0) + 1);
+    if (yc) { const p = MT.num(r[yc]); if (isFinite(p)) o.pay += p; } m.set(k, o);
+  });
+  const all = Array.from(m, ([k, o]) => ({ key: k, name: Array.from(o.names).sort((a, b) => b[1] - a[1])[0][0], variants: o.names.size, rev: o.rev, pay: o.pay })), notes = [];
+  const list = all.filter(x => x.rev > 0).sort((a, b) => b.rev - a.rev), gone = all.filter(x => x.rev <= 0), n = list.length;
+  if (blank) notes.push(`${blank} row${blank === 1 ? '' : 's'} with no partner name left out (${money(blankRev)} of unattributed revenue). They are not in the shares below.`);
+  if (bad) notes.push(`${bad} row${bad === 1 ? '' : 's'} with no readable revenue skipped (e.g. ${badEx.join(' | ')}).`);
+  if (gone.length) notes.push(`${gone.length} partner${gone.length === 1 ? '' : 's'} with zero or negative net revenue left out of the shares (${gone.slice(0, 3).map(x => x.name + ' ' + money(x.rev)).join(', ')}). These have no sales, or reversals larger than sales.`);
+  const merged = all.filter(x => x.variants > 1); if (merged.length && !grp) notes.push(`${merged.length} partner name${merged.length === 1 ? ' was' : 's were'} merged after ignoring case, accents and spacing (e.g. ${merged.slice(0, 3).map(x => x.name).join(', ')}).`);
+  if (grp) notes.push('Names were grouped by the text before the first dash, underscore, colon or slash, so sub-IDs count as one partner.');
+  const noteHtml = notes.length ? '<div class="note warn" role="note"><b>Data notes</b><ul>' + notes.map(t => '<li>' + MT.esc(t) + '</li>').join('') + '</ul></div>' : '';
+  if (n < 1) { $('#out').innerHTML = MT.notComputed('Not computed', ['No partner has positive net revenue, so there is nothing to measure.']) + noteHtml; return; }
   const tot = S.sum(list.map(x => x.rev)), sh = list.map(x => x.rev / tot), hhi = S.sum(sh.map(s => (s * 100) ** 2)), eff = 10000 / hhi, cum = []; sh.reduce((a, s, i) => (cum[i] = a + s, a + s), 0);
-  const top = k => S.sum(sh.slice(0, k)), n80 = cum.findIndex(c => c >= 0.8) + 1, n50 = cum.findIndex(c => c >= 0.5) + 1, hhiMin = 10000 / n;
-  const asc = sh.slice().reverse(); let lor = [0], acc = 0; asc.forEach(s => { acc += s; lor.push(acc); }); let area = 0; for (let i = 1; i < lor.length; i++) area += (lor[i] + lor[i - 1]) / 2 / n; const gini = 1 - 2 * area;
-  const level = hhi > 2500 || sh[0] > 0.3 ? 'red' : hhi > 1500 || sh[0] > 0.2 || top(3) > 0.6 ? 'yellow' : 'green';
-  const flags = []; if (sh[0] > 0.3) flags.push(`${list[0].name} alone provides ${F.pct(sh[0], 1)} of revenue.`); else if (sh[0] > 0.2) flags.push(`${list[0].name} provides ${F.pct(sh[0], 1)} of revenue.`); if (top(3) > 0.6) flags.push(`The top 3 partners provide ${F.pct(top(3), 0)}.`); if (hhi > 2500) flags.push('HHI is above 2,500, the conventional threshold for a highly concentrated market.'); else if (hhi > 1500) flags.push('HHI is in the moderately concentrated band (1,500 to 2,500).'); if (!flags.length) flags.push('Revenue is spread across many partners.');
-  let h = MT.rag(level, level === 'red' ? 'High concentration risk' : level === 'yellow' ? 'Moderate concentration risk' : 'Low concentration risk', flags);
-  h += MT.stats([['HHI', F.int(hhi), 'scale 0 to 10,000', level === 'red' ? 'bad' : level === 'yellow' ? 'warn' : 'good'], ['Effective number of partners', eff.toFixed(1), `of ${n} active (equal split: HHI ${F.int(hhiMin)})`], ['Top partner share', F.pct(sh[0], 1), list[0].name], ['Top 5 share', F.pct(top(5), 1), 'Top 10: ' + F.pct(top(10), 1)], [`Partners for 80% of revenue`, `${n80} (${F.pct(n80 / n, 0)})`, `50% needs ${n50}`], ['Gini coefficient', gini.toFixed(2), '0 = equal, 1 = one partner']]);
-  h += '<div class="card"><h3>Loss scenarios</h3>' + MT.tbl(['If you lose', 'Revenue at risk', 'Remaining revenue'], [1, 3, 5].filter(k => k < n).map(k => [k === 1 ? list[0].name : `Top ${k} partners`, F.money(S.sum(list.slice(0, k).map(x => x.rev)), 0) + ' (' + F.pct(top(k), 1) + ')', F.money(tot - S.sum(list.slice(0, k).map(x => x.rev)), 0)]), { num: [1, 2] }) + '</div>';
+  const EPS = 1e-9, top = k => Math.min(1, S.sum(sh.slice(0, k))), n80 = cum.findIndex(c => c >= 0.8 - EPS) + 1, n50 = cum.findIndex(c => c >= 0.5 - EPS) + 1, hhiMin = 10000 / n, small = n < 6;
+  const asc = sh.slice().reverse(); let lor = [0], acc = 0; asc.forEach(s => { acc += s; lor.push(acc); }); let area = 0; for (let i = 1; i < lor.length; i++) area += (lor[i] + lor[i - 1]) / 2 / n; const gini = Math.max(0, 1 - 2 * area);
+  // sub-ID check: names that share a prefix before a dash or underscore and add up to more than the top partner
+  let sub = null; if (!grp) { const g = new Map(); list.forEach(x => { const k = parentKey(x.name); if (k === normKey(x.name)) return; const o = g.get(k) || { k, rev: 0, n: 0, ex: x.name.split(/\s*[-_:|\/]/)[0] }; o.rev += x.rev; o.n++; g.set(k, o); }); const big = Array.from(g.values()).filter(o => o.n >= 3 && o.rev / tot > sh[0] && o.rev / tot > 0.2).sort((a, b) => b.rev - a.rev)[0]; if (big) sub = big; }
+  let level = small ? (sh[0] > 0.5 ? 'red' : 'yellow') : (hhi > 2500 || sh[0] > 0.3 ? 'red' : hhi > 1500 || sh[0] > 0.2 || top(3) > 0.6 + EPS ? 'yellow' : 'green');
+  if (sub && level === 'green') level = 'yellow';
+  const flags = []; if (sh[0] > 0.3) flags.push(`${list[0].name} alone provides ${F.pct(sh[0], 1)} of revenue.`); else if (sh[0] > 0.2) flags.push(`${list[0].name} provides ${F.pct(sh[0], 1)} of revenue.`);
+  if (!small && top(3) > 0.6 + EPS) flags.push(`The top 3 partners provide ${F.pct(top(3), 0)}.`);
+  if (sub) flags.push(`Possible sub-IDs: ${sub.n} partners start with "${sub.ex}" and together provide ${F.pct(sub.rev / tot, 1)} of revenue. If they belong to one company, concentration is much higher than shown. Tick "Group sub-IDs" and run again.`);
+  if (n === 1) flags.push('One partner provides all of the positive revenue.'); else if (small) flags.push(`Only ${n} active partners, so HHI cannot go below ${F.int(hhiMin)} even when the split is perfectly even. Judge by how much one partner leaving would cost.`);
+  else if (hhi > 2500) flags.push('HHI is above 2,500, the conventional threshold for a highly concentrated market.'); else if (hhi > 1500) flags.push('HHI is in the moderately concentrated band (1,500 to 2,500).');
+  if (level === 'red' && !small && hhi <= 2500) flags.push('The banner is red because the largest partner is above 30%, even though HHI alone is not high.');
+  if (!flags.length) flags.push('Revenue is spread across many partners.');
+  let h = MT.rag(level, level === 'red' ? 'High concentration risk' : level === 'yellow' ? (small ? 'Small program: every partner matters' : 'Moderate concentration risk') : 'Low concentration risk', flags) + noteHtml;
+  h += MT.stats([['HHI', F.int(hhi), 'scale 0 to 10,000', level === 'red' ? 'bad' : level === 'yellow' ? 'warn' : 'good'], ['Effective number of partners', eff.toFixed(1), `of ${n} active (equal split: HHI ${F.int(hhiMin)})`], ['Top partner share', F.pct(sh[0], 1), list[0].name], ['Top 5 share', n <= 5 ? (n === 1 ? 'The only partner' : 'All ' + n + ' partners') : F.pct(top(5), 1), n <= 5 ? '' : n <= 10 ? 'Top 10 is all ' + n + ' partners' : 'Top 10: ' + F.pct(top(10), 1)], [`Partners for 80% of revenue`, `${n80} (${F.pct(n80 / n, 0)})`, `50% needs ${n50}`], ['Gini coefficient', gini.toFixed(2), '0 = equal, 1 = one partner']]);
+  h += '<div class="card"><h3>Loss scenarios</h3>' + MT.tbl(['If you lose', 'Revenue at risk', 'Remaining revenue'], [1, 3, 5].filter(k => k < n).map(k => [k === 1 ? list[0].name : `Top ${k} partners`, money(S.sum(list.slice(0, k).map(x => x.rev))) + ' (' + F.pct(top(k), 1) + ')', money(tot - S.sum(list.slice(0, k).map(x => x.rev)))]), { num: [1, 2] }) + '<p class="sub">Gross revenue, not profit. A partner with a high payout costs more margin than the revenue share suggests.</p></div>';
   h += '<div class="card"><div id="c1"></div><div id="c2"></div></div>';
-  const rows = list.slice(0, 25).map((x, i) => { const r = [i + 1, x.name, F.money(x.rev, 0), F.pct(sh[i], 1), F.pct(cum[i], 1)]; if (yc) { const ps = x.pay / x.rev; r.push(F.pct(ps, 1)); } return r; });
+  const rows = list.slice(0, 25).map((x, i) => { const r = [i + 1, x.name, money(x.rev), F.pct(sh[i], 1), F.pct(cum[i], 1)]; if (yc) { const ps = x.pay / x.rev; r.push(F.pct(ps, 1)); } return r; });
   h += '<div class="card"><h3>Top partners</h3>' + MT.tbl(['#', 'Partner', 'Revenue', 'Share', 'Cumulative', ...(yc ? ['Payout / revenue'] : [])], rows, { num: [0, 2, 3, 4, 5] }) + '</div>';
-  if (yc) { const avg = S.sum(list.map(x => x.pay)) / tot, hi = list.filter(x => x.rev > 0 && x.pay / x.rev > avg * 1.4).slice(0, 5); if (hi.length) h += MT.note('<b>Payout outliers.</b> These partners cost noticeably more per revenue dollar than the program average of ' + F.pct(avg, 1) + ': ' + hi.map(x => MT.esc(x.name) + ' (' + F.pct(x.pay / x.rev, 1) + ')').join(', ') + '.', 'warn'); }
-  h += MT.note('<b>Benchmarks.</b> HHI under 1,500 is unconcentrated, 1,500 to 2,500 moderate, above 2,500 high (US DOJ convention, applied here to revenue share). No single partner above 20% and top 3 under 50% is a common diversification target for affiliate programs.');
+  if (yc) { const avg = S.sum(list.map(x => x.pay)) / tot, hi = list.filter(x => x.pay / x.rev > avg * 1.4).sort((a, b) => b.pay / b.rev - a.pay / a.rev).slice(0, 5); if (hi.length) h += MT.note('<b>Payout outliers.</b> These partners cost noticeably more per revenue unit than the program average of ' + F.pct(avg, 1) + ': ' + hi.map(x => MT.esc(x.name) + ' (' + F.pct(x.pay / x.rev, 1) + ')').join(', ') + '.', 'warn'); }
+  h += MT.note('<b>Benchmarks.</b> The HHI bands (under 1,500 unconcentrated, 1,500 to 2,500 moderate, above 2,500 high) come from the 2010 US antitrust guidelines, and the 2023 guidelines put the high line at 1,800. They are borrowed from competition law, not affiliate norms, so treat them as a rough guide. No single partner above 20% and top 3 under 50% is a common diversification target for affiliate programs. This tool measures revenue only: it does not know which partners are incremental, under contract or profitable.');
   $('#out').innerHTML = h;
   C.hbars($('#c1'), { title: 'Revenue share, top 15 partners', cats: list.slice(0, 15).map(x => x.name), values: sh.slice(0, 15).map(s => s * 100), fmt: v => v.toFixed(1) + '%' });
   C.line($('#c2'), { title: 'Lorenz curve: cumulative revenue share vs cumulative partner share', xs: lor.map((_, i) => i / n * 100), xFmt: v => v.toFixed(0) + '%', yFmt: v => (v * 100).toFixed(0) + '%', series: [{ name: 'Actual', values: lor, color: 'var(--series-1)' }, { name: 'Perfect equality', values: lor.map((_, i) => i / n), color: 'var(--ink-muted)', dash: '4 3' }], table: false });

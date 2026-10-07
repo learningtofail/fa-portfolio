@@ -1,0 +1,6 @@
+source,target
+/Products/,/products
+/About-Us,/about-us
+http://www.example-shop.com/sale,https://www.example-shop.com/sale
+https://www.example-shop.com/old,https://example-shop.com/old
+/search?utm_source=email,/search

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Paid Ad Quality Score &amp; Landing Page Checklist Scorer | Marketing Tools</title>
-<meta name="description" content="Enter a keyword, ad copy and landing page text. The tool checks keyword presence, message match and page-experience factors, then estimates each Quality Score component and lists the fixes that matter most.">
+<title>Ad Copy &amp; Landing Page Readiness Checklist | Marketing Tools</title>
+<meta name="description" content="Enter a keyword, ad copy and landing page text. The tool checks keyword presence, message match and page-experience factors, then scores copy readiness out of 100 and lists the fixes that matter most. It does not predict Google&#x27;s Quality Score.">
 <style>/* Signal & Serif tokens, shared by every tool */
 :root{
   color-scheme: light;
@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -224,8 +237,8 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 </header>
 <main class="wrap">
   <div class="hero">
-    <h1 class="serif">Paid Ad Quality Score &amp; Landing Page Checklist Scorer</h1>
-    <p>Enter a keyword, ad copy and landing page text. The tool checks keyword presence, message match and page-experience factors, then estimates each Quality Score component and lists the fixes that matter most.</p>
+    <h1 class="serif">Ad Copy &amp; Landing Page Readiness Checklist</h1>
+    <p>Enter a keyword, ad copy and landing page text. The tool checks keyword presence, message match and page-experience factors, then scores copy readiness out of 100 and lists the fixes that matter most. It does not predict Google&#x27;s Quality Score.</p>
     <span class="privacy"><span class="dot"></span>Runs entirely in your browser. Nothing is uploaded. Your inputs are saved only on this device.</span>
   </div>
   <div class="toolbar">
@@ -234,21 +247,22 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">6</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Tuscany villa rentals, English</b></div><p class="example__note">A well-aligned ad and page, with every box ticked after a real review. A high score is fair, but 10 out of 10 is unusual without real auction data.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/quality-score-scorer/01-happy-travel-tuscany-villa.txt" download>Download 01-happy-travel-tuscany-villa.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Quebec dental ad in French</b></div><p class="example__note">Accents and plurals such as &quot;Montréal&quot; and &quot;urgences&quot; against the typed &quot;montreal&quot; and &quot;urgence&quot;. The page is well aligned, so a poor ad relevance rating here would be wrong.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/quality-score-scorer/02-messy-healthcare-quebec-dental-fr.txt" download>Download 02-messy-healthcare-quebec-dental-fr.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">English twin of the dental page</b></div><p class="example__note">The same clinic and page in English, for comparison with the French example. The scores should be close.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/quality-score-scorer/02b-control-english-twin-of-dental-page.txt" download>Download 02b-control-english-twin-of-dental-page.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Fake cure claims and keyword stuffing</b></div><p class="example__note">False &quot;cure diabetes fast&quot; claims and a keyword repeated hundreds of times. Ads like this would be rejected, so do not trust any high score.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/quality-score-scorer/03-trap-healthcare-claims-keyword-stuffed-doorway.txt" download>Download 03-trap-healthcare-claims-keyword-stuffed-doorway.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Same ad, page not audited</b></div><p class="example__note">The first example with no boxes ticked. Unticked means not checked, not failed, so the lower score is unknown rather than bad.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/quality-score-scorer/04-same-as-happy-but-no-boxes-ticked.txt" download>Download 04-same-as-happy-but-no-boxes-ticked.txt</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Singular keyword, plural page</b></div><p class="example__note">The keyword says &quot;shoe&quot; and the page says &quot;shoes&quot;. Google treats these as the same, so these checks should pass.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/quality-score-scorer/05-stemming-edge-cases-ecommerce-shoes.txt" download>Download 05-stemming-edge-cases-ecommerce-shoes.txt</a></p></li></ul></details>
 
 <div class="split">
 <div>
   <div class="card"><h3>Keyword and ad</h3>
-    <div class="field"><label for="kw">Target keyword</label><input id="kw" type="text" placeholder="waterproof trail running shoes"></div>
-    <div class="field"><label for="hl">Ad headlines (one per line)</label><textarea id="hl" rows="4"></textarea></div>
-    <div class="field"><label for="ds">Ad descriptions (one per line)</label><textarea id="ds" rows="3"></textarea></div>
-    <div class="field"><label for="url">Display path / final URL</label><input id="url" type="text"></div>
+    <div class="field"><label for="f_keyword">Target keyword</label><input id="f_keyword" type="text" placeholder="waterproof trail running shoes"></div>
+    <div class="field"><label for="f_headlines">Ad headlines (one per line)</label><textarea id="f_headlines" rows="4"></textarea></div>
+    <div class="field"><label for="f_descriptions">Ad descriptions (one per line)</label><textarea id="f_descriptions" rows="3"></textarea></div>
+    <div class="field"><label for="f_url">Display path / final URL</label><input id="f_url" type="text"></div>
   </div>
   <div class="card"><h3>Landing page</h3>
-    <div class="field"><label for="ptitle">Page title</label><input id="ptitle" type="text"></div>
-    <div class="field"><label for="ph1">H1 heading</label><input id="ph1" type="text"></div>
-    <div class="field"><label for="pbody">Visible page text (first screen and body)</label><textarea id="pbody" rows="6"></textarea></div>
+    <div class="field"><label for="f_pageTitle">Page title</label><input id="f_pageTitle" type="text"></div>
+    <div class="field"><label for="f_h1">H1 heading</label><input id="f_h1" type="text"></div>
+    <div class="field"><label for="f_body">Visible page text (first screen and body; leave out menus and footers)</label><textarea id="f_body" rows="6"></textarea></div>
   </div>
-  <div class="card"><h3>Page experience checklist</h3><div id="chk" class="checks stack"></div>
+  <div class="card"><h3>Manual checks</h3><p class="sub">Answer only what you have verified. "Not checked" is left out of the score, not counted as a failure.</p><div id="chk" class="checks stack"></div>
     <div class="actions"><button class="btn btn-secondary btn-sm" id="smp" type="button">Load sample</button></div></div>
 </div>
 <div id="out" class="out"></div>
@@ -306,14 +320,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -323,6 +381,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -344,22 +404,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -367,7 +490,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -647,7 +770,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -694,53 +817,77 @@ MT.boot = (slug, template) => {
 <script>
 (function () {
 const $ = MT.$, F = MT.fmt;
+/* [group, label, points, fix]. Groups: ad = ad and keyword, appeal = ad appeal, lp = landing page. */
 const CH = [
-  ['ctr', 'Ad includes a clear offer, price or differentiator', 3, 'Add a concrete offer or proof point to a headline.'],
-  ['ctr', 'Ad has a strong call to action', 2, 'End a description with a specific action verb.'],
-  ['ctr', 'Ad uses ad assets (sitelinks, callouts, structured snippets)', 3, 'Add sitelinks, callouts and structured snippets to lift CTR.'],
-  ['ctr', 'Keyword is in a match type that fits its intent (not broad on a head term)', 2, 'Tighten match types on high-volume terms.'],
+  ['appeal', 'Ad includes a clear offer, price or differentiator', 3, 'Add a concrete offer or proof point to a headline.'],
+  ['appeal', 'Ad has a strong call to action', 2, 'End a description with a specific action verb.'],
+  ['appeal', 'Ad uses ad assets (sitelinks, callouts, structured snippets)', 3, 'Add sitelinks, callouts and structured snippets.'],
+  ['appeal', 'Keyword is in a match type that fits its intent (not broad on a head term)', 2, 'Tighten match types on high-volume terms.'],
   ['lp', 'Page loads in under 3 seconds on mobile', 4, 'Compress images, defer scripts and fix Core Web Vitals.'],
   ['lp', 'Page is mobile responsive with tap-friendly buttons', 3, 'Fix mobile layout and tap targets.'],
   ['lp', 'Call to action is visible above the fold', 3, 'Move the primary button above the fold.'],
   ['lp', 'Page has clear navigation, privacy policy and contact details', 2, 'Add privacy, contact and about links.'],
   ['lp', 'Page uses HTTPS with no intrusive pop-ups or interstitials', 3, 'Remove interstitials and mixed content.'],
   ['lp', 'Page offers original, useful content about the searched topic', 3, 'Add specific, original product or service detail.'],
-  ['rel', 'Ad group holds a tight theme (under 15 closely related keywords)', 3, 'Split the ad group into tighter themes.']
+  ['ad', 'Ad group holds a tight theme (under 15 closely related keywords)', 3, 'Split the ad group into tighter themes.']
 ];
-function words(s) { return MT.tokens(String(s || '')).map(MT.stem); }
+const GROUPS = [['ad', 'Ad and keyword match', 0.3], ['appeal', 'Ad appeal (self-checked)', 0.39], ['lp', 'Landing page', 0.31]];
+const FR = new Set('le la les un une des du de d l et ou en au aux pour par sur dans avec chez est sont ce ces cet cette qui que sans'.split(' '));
+const RISKY = /\b(cures?|cured|miracle cure|reverse[sd]? (?:diabetes|cancer)|stop (?:taking )?(?:your )?(?:insulin|medication|meds)|guaranteed (?:approval|returns?|cure|weight loss)|lose \d+ ?(?:lbs?|pounds|kg)|get rich|no credit check)\b/i;
+const REGULATED = /\b(health|medical|medicine|diabet\w*|cancer|weight loss|supplements?|pharmac\w*|dentist\w*|dentiste\w*|clinic\w*|therap\w*|loans?|prêts?|credit|mortgage|invest\w*|insurance|attorney|lawyer|avocat|gambl\w*|casino|crypto\w*|alcohol|cannabis)\b/i;
+const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’‘]/g, "'");
+/* Plural, accent, -ing and trailing-e insensitive stem. Only for plain Latin words; other scripts are compared as they are. */
+function stem(w) { if (w.length < 4 || !/^[a-z]+$/.test(w)) return w; let x = w; if (/ies$/.test(x)) x = x.slice(0, -3) + 'y'; else if (!/(ss|us|is)$/.test(x) && /s$/.test(x)) x = x.slice(0, -1); if (x.length > 5 && /ing$/.test(x)) { x = x.slice(0, -3); if (/([^aeiou])\1$/.test(x)) x = x.slice(0, -1); } return x.replace(/e$/, ''); }
+function words(s) { return (norm(s).match(/[\p{L}\p{N}]+/gu) || []).filter(w => w.length > 1 && !MT.stop.has(w) && !FR.has(w)).map(stem); }
+const seq = (w, p) => { if (!p.length) return false; for (let i = 0; i + p.length <= w.length; i++) { let ok = true; for (let j = 0; j < p.length; j++) if (w[i + j] !== p[j]) { ok = false; break; } if (ok) return true; } return false; };
 function cover(kwT, text) { if (!kwT.length) return 0; const t = new Set(words(text)); return kwT.filter(w => t.has(w)).length / kwT.length; }
-function has(kw, text) { return String(text).toLowerCase().includes(kw.toLowerCase().trim()); }
-function draw() { $('#chk').innerHTML = CH.map((c, i) => `<label><input type="checkbox" id="chk_${i}" data-i="${i}"> ${MT.esc(c[1])}</label>`).join(''); }
-function lvl(s) { return s >= 0.7 ? ['Above average', 'good'] : s >= 0.4 ? ['Average', 'warn'] : ['Below average', 'bad']; }
+function draw() { $('#chk').innerHTML = CH.map((c, i) => `<div class="field"><label for="chk_${i}">${MT.esc(c[1])}</label><select id="chk_${i}" data-i="${i}"><option value="">Not checked</option><option value="y">Yes</option><option value="n">No</option></select></div>`).join(''); }
+function lvl(s) { return s >= 0.7 ? ['Strong', 'good'] : s >= 0.4 ? ['Mixed', 'warn'] : ['Weak', 'bad']; }
 function run() {
-  const kw = $('#kw').value.trim(); if (!kw) { $('#out').innerHTML = '<div class="card"><p class="muted">Enter a keyword to score.</p></div>'; return; }
-  const kwT = words(kw), hls = $('#hl').value.split('\n').map(s => s.trim()).filter(Boolean), dss = $('#ds').value.split('\n').map(s => s.trim()).filter(Boolean), ad = hls.concat(dss).join(' '), url = $('#url').value, title = $('#ptitle').value, h1 = $('#ph1').value, body = $('#pbody').value, first = body.slice(0, 600);
-  const ck = Array.from(document.querySelectorAll('#chk input')).map(i => i.checked), test = [];
-  const T = (key, ok, pts, label, fix) => test.push({ key, ok, pts, label, fix });
-  T('rel', hls.some(h => has(kw, h)), 4, 'Exact keyword appears in a headline', 'Put the full keyword phrase in at least one headline.');
-  T('rel', cover(kwT, hls.join(' ')) >= 0.99, 2, 'All keyword words appear across headlines', 'Include every keyword word in the headlines.');
-  T('rel', dss.some(d => cover(kwT, d) >= 0.5), 2, 'Keyword terms appear in a description', 'Mention the keyword in a description line.');
-  T('rel', hls.length >= 8, 1, 'At least 8 headlines for responsive ads', 'Supply 8 to 15 varied headlines.');
-  T('lp', cover(kwT, h1) >= 0.99, 4, 'H1 contains all keyword words', 'Rewrite the H1 to include the keyword.');
-  T('lp', cover(kwT, title) >= 0.99, 3, 'Page title contains all keyword words', 'Add the keyword to the page title.');
-  T('lp', cover(kwT, first) >= 0.66, 3, 'Keyword terms appear in the first screen of text', 'Repeat the searched topic in the opening copy.');
-  T('lp', cover(kwT, body) >= 0.99 && body.split(/\s+/).length >= 150, 2, 'Body has 150+ words covering the keyword', 'Add substantive body copy on the searched topic.');
-  T('lp', kwT.some(w => words(url).includes(w)), 1, 'URL or display path contains a keyword term', 'Use a relevant display path and URL slug.');
-  T('ad', (function () { const a = new Set(words(ad)), b = new Set(words(h1 + ' ' + title + ' ' + first)); if (!a.size || !b.size) return false; let n = 0; a.forEach(w => b.has(w) && n++); return n / a.size >= 0.35; })(), 4, 'Ad message and page copy overlap (message match)', 'Reuse the ad offer and wording on the landing page.');
-  CH.forEach((c, i) => T(c[0], ck[i], c[2], c[1], c[3]));
-  const sc = k => { const t = test.filter(x => x.key === k || (k === 'rel' && x.key === 'ad')), tot = MT.stat.sum(t.map(x => x.pts)); return MT.stat.sum(t.filter(x => x.ok).map(x => x.pts)) / tot; };
-  const rel = sc('rel'), ctrRaw = test.filter(x => x.key === 'ctr'), ctr = MT.stat.sum(ctrRaw.filter(x => x.ok).map(x => x.pts)) / MT.stat.sum(ctrRaw.map(x => x.pts)) * 0.75 + 0.25 * (hls.length >= 8 ? 1 : 0.3), lp = sc('lp');
-  const est = Math.max(1, Math.min(10, Math.round(1 + 9 * (0.39 * ctr + 0.3 * rel + 0.31 * lp))));
-  const comp = [['Expected CTR', ctr], ['Ad relevance', rel], ['Landing page experience', lp]];
-  let h = MT.verdict(est >= 7 ? 'pos' : est >= 5 ? 'neu' : 'neg', `Estimated Quality Score ${est} out of 10`, `Weakest area: ${comp.slice().sort((a, b) => a[1] - b[1])[0][0]}. This is a checklist estimate, not the score Google assigns. Google computes Quality Score from live auction data.`);
-  h += MT.stats(comp.map(c => { const l = lvl(c[1]); return [c[0], l[0], Math.round(c[1] * 100) + ' of 100', l[1]]; }));
-  const fails = test.filter(x => !x.ok).sort((a, b) => b.pts - a.pts);
-  h += '<div class="card"><h3>Fix these first</h3>' + (fails.length ? MT.tbl(['Fix', 'Area', 'Weight'], fails.slice(0, 10).map(x => [x.fix, { ctr: 'Expected CTR', rel: 'Ad relevance', ad: 'Ad relevance', lp: 'Landing page' }[x.key], x.pts]), { num: [2] }) : '<p class="muted">Every check passes.</p>') + '</div>';
-  h += '<div class="card"><h3>All checks</h3>' + MT.tbl(['Check', 'Result'], test.map(x => [x.label, { h: MT.tag(x.ok ? 'Pass' : 'Fail', x.ok ? 'good' : 'bad') }])) + '</div>';
-  h += MT.note('<b>Scoring.</b> Text checks compare stemmed keyword words against headlines, descriptions, title, H1, opening copy and URL. Manual checks rely on your ticks. Weights follow Google\'s published guidance that ad relevance, expected CTR and landing page experience drive Quality Score, with page speed and message match carrying the most weight in practice. Use the output as a pre-launch audit.');
+  const kw = $("#f_keyword").value.trim(); if (!kw) { $('#out').innerHTML = MT.notComputed('Enter a keyword to score', ['Nothing was scored. Type the target keyword above.']); return; }
+  const kwT = words(kw);
+  if (!kwT.length) { $('#out').innerHTML = MT.notComputed('Keyword has no content words', ['The keyword is only common words, so it cannot be matched against the copy. Use a more specific keyword.']); return; }
+  const hls = $("#f_headlines").value.split('\n').map(s => s.trim()).filter(Boolean), dss = $("#f_descriptions").value.split('\n').map(s => s.trim()).filter(Boolean), ad = hls.concat(dss).join(' '), url = $("#f_url").value, title = $("#f_pageTitle").value, h1 = $("#f_h1").value, body = $("#f_body").value, first = body.slice(0, 600);
+  const ans = CH.map((c, i) => { const e = document.getElementById('chk_' + i); return e ? e.value : ''; });
+  if (!hls.length && !dss.length && !title.trim() && !h1.trim() && !body.trim()) { $('#out').innerHTML = MT.notComputed('Nothing to check yet', ['Add ad headlines or landing page text. Only the keyword has been entered.']); return; }
+  const test = [], T = (key, ok, pts, label, fix, have) => test.push({ key, ok: have === false ? null : ok, pts, label, fix });
+  const hasH = hls.length > 0, hasD = dss.length > 0, hasPage = !!(title.trim() || h1.trim() || body.trim());
+  const bodyW = body.trim() ? body.trim().split(/\s+/).length : 0, bt = words(body), freq = new Map(); bt.forEach(w => freq.set(w, (freq.get(w) || 0) + 1));
+  const top = Math.max(0, ...freq.values()), stuffed = bt.length >= 30 && top >= 10 && top / bt.length > 0.12, topWord = Array.from(freq.entries()).sort((a, b) => b[1] - a[1])[0]; const rawOf = new Map(); (norm(body).match(/[\p{L}\p{N}]+/gu) || []).forEach(w => { if (!rawOf.has(stem(w))) rawOf.set(stem(w), w); });
+  T('ad', hls.some(h => seq(words(h), kwT)), 4, 'Exact keyword appears in a headline (singular or plural)', 'Put the full keyword phrase in at least one headline.', hasH);
+  T('ad', cover(kwT, hls.join(' ')) >= 0.99, 2, 'All keyword words appear across headlines', 'Include every keyword word in the headlines.', hasH);
+  T('ad', dss.some(d => cover(kwT, d) >= 0.5), 2, 'Keyword terms appear in a description', 'Mention the keyword in a description line.', hasD);
+  T('ad', hls.length >= 8, 1, 'At least 8 headlines (more asset variety; this helps Ad Strength, not Quality Score directly)', 'Supply 8 to 15 varied headlines.', hasH);
+  T('lp', cover(kwT, h1) >= 0.99, 4, 'H1 contains all keyword words', 'Rewrite the H1 to include the keyword.', !!h1.trim());
+  T('lp', cover(kwT, title) >= 0.99, 3, 'Page title contains all keyword words', 'Add the keyword to the page title.', !!title.trim());
+  T('lp', cover(kwT, first) >= 0.66, 3, 'Keyword terms appear in the first screen of text', 'Repeat the searched topic in the opening copy.', !!body.trim());
+  T('lp', cover(kwT, body) >= 0.99 && bodyW >= 150, 2, 'Body has 150+ words covering the keyword', 'Add substantive body copy on the searched topic.', !!body.trim());
+  T('lp', !stuffed, 4, 'Page text reads naturally (no keyword stuffing)', 'The page repeats "' + (topWord ? rawOf.get(topWord[0]) || topWord[0] : '') + '" far too often. Rewrite it as useful copy for a person.', !!body.trim());
+  T('lp', kwT.some(w => words(url).includes(w)), 1, 'URL or display path contains a keyword term', 'Use a relevant display path and URL slug.', !!url.trim());
+  T('lp', (function () { const a = new Set(words(ad)), b = new Set(words(h1 + ' ' + title + ' ' + first)); if (!a.size || !b.size) return false; let n = 0; a.forEach(w => b.has(w) && n++); return n / a.size >= 0.35; })(), 4, 'Ad message and page copy overlap (message match)', 'Reuse the ad offer and wording on the landing page.', (hasH || hasD) && hasPage);
+  CH.forEach((c, i) => T(c[0], ans[i] === 'y', c[2], c[1], c[3], ans[i] !== ''));
+  const gs = GROUPS.map(([k, name, wt]) => { const t = test.filter(x => x.key === k && x.ok !== null), tot = MT.stat.sum(t.map(x => x.pts)); return { k, name, wt, score: tot ? MT.stat.sum(t.filter(x => x.ok).map(x => x.pts)) / tot : null, n: t.length, all: test.filter(x => x.key === k).length }; });
+  const live = gs.filter(g => g.score !== null), wsum = MT.stat.sum(live.map(g => g.wt));
+  const raw = live.length ? MT.stat.sum(live.map(g => g.score * g.wt)) / wsum : 0, text = [ad, title, h1, body].join(' '), risky = RISKY.exec(text), regulated = REGULATED.test(kw + ' ' + text);
+  let score = Math.round(raw * 100), capNote = '';
+  if (stuffed) { score = Math.min(score, 50); capNote = 'Capped at 50 because the page text looks stuffed with the keyword.'; }
+  if (risky) { score = Math.min(score, 30); capNote = 'Capped at 30 because the copy contains a claim Google Ads policy is likely to disapprove: "' + risky[0] + '".'; }
+  const manualUn = ans.filter(a => a === '').length, thin = live.length < 3, unans = test.filter(x => x.ok === null).length;
+  const sorted = live.slice().sort((a, b) => a.score - b.score), spread = live.length > 1 ? sorted[sorted.length - 1].score - sorted[0].score : 1;
+  const weak = live.length < 2 ? '' : spread < 0.05 ? 'No single weak area: the checked areas score about the same.' : 'Weakest area: ' + sorted[0].name + '.';
+  let h = risky ? MT.verdict('neg', 'Policy review needed before anything else', `This copy makes claims that Google Ads and the platforms' health, finance and misleading-claims policies are likely to disapprove (matched: "${MT.esc(risky[0])}"). A checklist score does not matter if the ad is not approved, Readiness score: ${score} out of 100, capped at 30.`)
+    : MT.verdict(score >= 75 && manualUn < 6 ? 'pos' : score >= 50 ? 'neu' : 'neg', `Copy readiness ${score} out of 100${manualUn >= 6 ? ', from text checks only' : ''}`, `${weak} ${thin ? 'Based on ' + live.length + ' of 3 areas; the rest were not assessed. ' : ''}${stuffed ? MT.esc(capNote) + ' ' : ''}This is a pre-launch copy checklist with this tool's own weights. It is not Google's Quality Score and does not predict it; Google computes Quality Score from live auction data.`);
+  h += MT.stats(gs.map(g => { if (g.score === null) return [g.name, 'Not assessed', 'no answers yet']; const l = lvl(g.score); return [g.name, l[0], Math.round(g.score * 100) + ' of 100', l[1]]; }));
+  if (regulated && !risky) h += MT.note('<b>Policy approval is not assessed.</b> Health, finance, legal, gambling and similar ads are reviewed against Google Ads policies before Quality Score matters. This checklist does not read claims. Have the copy reviewed separately.', 'warn');
+  if (/[^\u0000-ɏ]/.test(kw)) h += MT.note('<b>Language support.</b> This keyword uses a script the tool cannot stem. Only exact word matches are checked, so singular, plural and other word forms will not match.', 'warn');
+  if (unans) h += MT.note(`<b>${unans} check${unans === 1 ? '' : 's'} not assessed</b> because the field was blank or the manual answer is "Not checked". They are left out of the score, not counted as failures.`);
+  const fails = test.filter(x => x.ok === false).sort((a, b) => b.pts - a.pts), area = { appeal: 'Ad appeal', ad: 'Ad and keyword', lp: 'Landing page' };
+  h += '<div class="card"><h3>Fix these first</h3>' + (fails.length ? MT.tbl(['Fix', 'Area', 'Weight'], fails.slice(0, 10).map(x => [x.fix, area[x.key], x.pts]), { num: [2] }) : '<p class="muted">No assessed check failed.</p>') + '</div>';
+  h += '<div class="card"><h3>All checks</h3>' + MT.tbl(['Check', 'Result'], test.map(x => [x.label, { h: x.ok === null ? MT.tag('Not assessed', '') : MT.tag(x.ok ? 'Pass' : 'Fail', x.ok ? 'good' : 'bad') }])) + '</div>';
+  h += MT.note('<b>Scoring.</b> Text checks compare keyword words with headlines, descriptions, title, H1, opening copy and URL, ignoring plurals, accents and hyphens. Manual checks use your answers; "Not checked" is left out. The area weights (30 percent ad match, 39 percent ad appeal, 31 percent landing page) and the tiers (70 and 40) are this tool\'s own rules of thumb, not Google\'s. Ad assets and headline count are ad quality inputs, not direct Quality Score components. The page text, ad and keyword are never sent anywhere.');
   $('#out').innerHTML = h;
 }
-$('#smp').addEventListener('click', () => { $('#kw').value = 'waterproof trail running shoes'; $('#hl').value = 'Waterproof Trail Running Shoes\nFree Returns for 60 Days\nGrip Built for Wet Trails\nShop Trail Shoes Today'; $('#ds').value = 'Stay dry on every trail. Lightweight waterproof shoes with rugged grip. Order today.'; $('#url').value = 'shop.example.com/trail-shoes'; $('#ptitle').value = 'Waterproof Trail Running Shoes | Free 60 Day Returns'; $('#ph1').value = 'Waterproof Trail Running Shoes'; $('#pbody').value = 'Stay dry on every trail with our lightweight waterproof trail running shoes. Rugged grip, breathable membranes and free returns for 60 days. ' + 'Our shoes are tested on wet rock, mud and roots by trail runners across the country. '.repeat(3); document.querySelectorAll('#chk input').forEach((c, i) => c.checked = [0, 1, 4, 5, 6, 7, 8, 9].includes(i)); run(); });
+$('#smp').addEventListener('click', () => { $("#f_keyword").value = 'waterproof trail running shoes'; $("#f_headlines").value = 'Waterproof Trail Running Shoes\nFree Returns for 60 Days\nGrip Built for Wet Trails\nShop Trail Shoes Today'; $("#f_descriptions").value = 'Stay dry on every trail. Lightweight waterproof shoes with rugged grip. Order today.'; $("#f_url").value = 'shop.example.com/trail-shoes'; $("#f_pageTitle").value = 'Waterproof Trail Running Shoes | Free 60 Day Returns'; $("#f_h1").value = 'Waterproof Trail Running Shoes'; $("#f_body").value = 'Stay dry on every trail with our lightweight waterproof trail running shoes. Rugged grip, breathable membranes and free returns for 60 days. ' + 'Our shoes are tested on wet rock, mud and roots by trail runners across the country. '.repeat(3); CH.forEach((c, i) => { document.getElementById('chk_' + i).value = [0, 1, 4, 5, 6, 7, 8, 9].includes(i) ? 'y' : ''; }); run(); });
 draw(); MT.live(document.querySelector('.split'), run);
 })();
 </script>

@@ -1,0 +1,68 @@
+[
+  {
+    "file": "01-ecommerce-headphones-happy-path.txt",
+    "label": "Headphones ad, English",
+    "kind": "happy",
+    "note": "A plain ecommerce ad with about 14 reviewable claims, such as \"#1 rated\", \"lifetime guarantee\" and \"better than Bose at half the price\". A good scan flags most of them, so check that comparisons and \"this weekend only\" are on the list."
+  },
+  {
+    "file": "02-us-supplement-landing-page.txt",
+    "label": "US supplement landing page",
+    "kind": "messy",
+    "note": "Supplement page that carries the standard FDA disclaimer. The disclaimer itself is required wording and should not be treated as a health claim, while claims like \"boosts immunity\" and \"no side effects\" should be."
+  },
+  {
+    "file": "03-canada-personal-loan-and-credit-card.txt",
+    "label": "Canadian loan and credit card offer",
+    "kind": "messy",
+    "note": "Lender copy with \"pre-approved\", \"no credit check\" and a 0% promo rate. Each of these needs a rate, term or condition next to it, so look for them in the results."
+  },
+  {
+    "file": "04-canada-auto-dealer-pricing.txt",
+    "label": "Ontario car dealer pricing",
+    "kind": "messy",
+    "note": "Dealer ad mixing \"from\" prices, monthly payments and \"all-in pricing\" with freight added later. Prices that leave out mandatory fees are a common compliance problem, so read this one by hand too."
+  },
+  {
+    "file": "05-eu-uk-travel-offer.txt",
+    "label": "UK and EU tour operator offer",
+    "kind": "messy",
+    "note": "Travel offer with scarcity lines (\"only 2 rooms left\"), a \"from\" price and a carbon neutral claim. Each of these needs proof or a full price to be safe."
+  },
+  {
+    "file": "06-quebec-francais-publicite.txt",
+    "label": "Quebec ad in French",
+    "kind": "messy",
+    "note": "A French-language ad with about 16 claims. The scanner is built around English wording, so a short or empty result here does not mean the copy is clean."
+  },
+  {
+    "file": "06b-quebec-francais-translation-of-01.txt",
+    "label": "French translation of the headphones ad",
+    "kind": "messy",
+    "note": "The same ad as the first example, translated. Compare the two results: the same claims should be found in both languages, so any gap shows what the scanner misses in French."
+  },
+  {
+    "file": "07-false-green-unrecognised-claims.txt",
+    "label": "Health and savings claims in unusual wording",
+    "kind": "trap",
+    "note": "Real claims phrased in ways the scanner does not recognise. A low or green result does not mean the copy is safe, and each claim should still be reviewed."
+  },
+  {
+    "file": "07b-false-green-no-patterns-matched.txt",
+    "label": "Shorter version, no patterns matched",
+    "kind": "trap",
+    "note": "Six claims that are worded to slip past pattern matching. \"No risky claim patterns found\" would be the wrong takeaway, so read the copy yourself."
+  },
+  {
+    "file": "08-false-positives-benign-copy.txt",
+    "label": "Plumbing catalogue, no real claims",
+    "kind": "trap",
+    "note": "Ordinary catalogue text with words like \"Green Bay\", \"best practices\" and \"treat yourself\". There are no real claims, so any red flags here are false alarms and should be dismissed."
+  },
+  {
+    "file": "09-footnote-and-qualifier-bugs.txt",
+    "label": "Numbered list and stray qualifiers",
+    "kind": "trap",
+    "note": "A numbered list plus unrelated \"terms apply\" style wording. There is one real claim, and the asterisk has no footnote, so a message saying a footnote is present would be wrong."
+  }
+]

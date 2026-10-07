@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -235,17 +248,19 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">8</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Outdoor gear store</b></div><p class="example__note">A plain export with obvious junk words such as &quot;free&quot;, &quot;jobs&quot; and &quot;pdf&quot;. Expect phrase negatives for those, and brand and converting terms left alone.</p><table class="t example__values"><tbody><tr><th scope="row">Protected terms (never negate)</th><td>northpeak</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/sqr-negative-keywords/01-happy-ecommerce-outdoor-gear.csv" download>Download 01-happy-ecommerce-outdoor-gear.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Google Ads export with title lines</b></div><p class="example__note">Two title lines, total rows and an &quot;Other search terms&quot; row. Delete the title lines first; real term spend is about $6,183.</p><table class="t example__values"><tbody><tr><th scope="row">Protected terms (never negate)</th><td>taskly</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/sqr-negative-keywords/02-messy-google-ads-export-b2b-saas.csv" download>Download 02-messy-google-ads-export-b2b-saas.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Same export, title lines removed</b></div><p class="example__note">Ignore the &quot;Other search terms&quot; row and keep the brand term &quot;taskly login&quot; out of any negative.</p><table class="t example__values"><tbody><tr><th scope="row">Protected terms (never negate)</th><td>taskly</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/sqr-negative-keywords/02b-same-export-title-rows-removed.csv" download>Download 02b-same-export-title-rows-removed.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Quebec florist, French export</b></div><p class="example__note">French headers, semicolons and decimal commas. Remove the two title lines and match columns by hand, because totals read with commas as thousands will be 100 times too high.</p><table class="t example__values"><tbody><tr><th scope="row">Protected terms (never negate)</th><td>pivoine</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/sqr-negative-keywords/03-messy-french-quebec-florist-semicolon.csv" download>Download 03-messy-french-quebec-florist-semicolon.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Florist, title lines removed</b></div><p class="example__note">Total cost should be about CAD 1,624. A total of $162,357 means decimal commas were read wrongly.</p><table class="t example__values"><tbody><tr><th scope="row">Protected terms (never negate)</th><td>pivoine</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/sqr-negative-keywords/03b-same-french-title-rows-removed.csv" download>Download 03b-same-french-title-rows-removed.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Florist, clean copy</b></div><p class="example__note">The same data with dot decimals. Total spend is about $1,624, with about $639 addressable.</p><table class="t example__values"><tbody><tr><th scope="row">Protected terms (never negate)</th><td>pivoine</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/sqr-negative-keywords/03c-control-same-french-data-dot-decimals.csv" download>Download 03c-control-same-french-data-dot-decimals.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Plumber where &quot;repair&quot; is the product</b></div><p class="example__note">Terms with &quot;repair&quot; convert well. Never block &quot;repair&quot;; block words such as &quot;jobs&quot;, &quot;salary&quot; and &quot;diy&quot; instead.</p><table class="t example__values"><tbody><tr><th scope="row">Protected terms (never negate)</th><td>acme</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/sqr-negative-keywords/04-trap-local-services-repair-is-the-product.csv" download>Download 04-trap-local-services-repair-is-the-product.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Enterprise software, few conversions</b></div><p class="example__note">Terms with 6 to 13 clicks and no sales are normal when sales are rare. Do not block them from this evidence, and keep the brand login queries.</p><table class="t example__values"><tbody><tr><th scope="row">Protected terms (never negate)</th><td>valence</td></tr></tbody></table><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/sqr-negative-keywords/05-trap-b2b-high-cpa-zero-conv-is-noise.csv" download>Download 05-trap-b2b-high-cpa-zero-conv-is-noise.csv</a></p></li></ul></details>
 
 <div class="card">
   <h3>Search terms report</h3>
-  <p class="sub">Export from Google Ads (Campaigns, Insights and reports, Search terms) or Microsoft Ads. Header lines above the column names are skipped automatically.</p>
+  <p class="sub">Export from Google Ads (Campaigns, Insights and reports, Search terms) or Microsoft Ads. Title lines above the column names are skipped, and French exports are read. Choose any column the tool could not recognise.</p>
   <div id="drop"></div>
   <div class="field" style="margin-top:.6rem"><label for="paste">Or paste CSV</label><textarea id="paste" placeholder="Search term,Clicks,Impr.,Cost,Conversions"></textarea></div>
   <div class="row3"><div class="field"><label for="ct">Search term column</label><select id="ct"></select></div><div class="field"><label for="cc">Clicks</label><select id="cc"></select></div><div class="field"><label for="ci">Impressions</label><select id="ci"></select></div></div>
-  <div class="row3"><div class="field"><label for="cs">Cost</label><select id="cs"></select></div><div class="field"><label for="cv">Conversions</label><select id="cv"></select></div><div class="field"><label>N-gram sizes</label><div class="checks"><label><input type="checkbox" class="ng" value="1" checked> 1 word</label><label><input type="checkbox" class="ng" value="2" checked> 2 words</label><label><input type="checkbox" class="ng" value="3" checked> 3 words</label></div></div></div>
+  <div class="row3"><div class="field"><label for="cs">Cost</label><select id="cs"></select></div><div class="field"><label for="cv">Conversions</label><select id="cv"></select></div><div class="field"><label for="cx">Added/Excluded (optional)</label><select id="cx"></select></div></div>
+  <div class="row3"><div class="field"><label>N-gram sizes</label><div class="checks"><label><input type="checkbox" class="ng" value="1" checked> 1 word</label><label><input type="checkbox" class="ng" value="2" checked> 2 words</label><label><input type="checkbox" class="ng" value="3" checked> 3 words</label></div></div></div>
 </div>
 <div class="card"><h3>Thresholds</h3><div id="f"></div>
-  <div class="row2"><div class="field"><label for="prot">Protected terms (never negate)</label><textarea id="prot" placeholder="Your product and brand words, one per line or comma separated"></textarea></div><div class="field"><label for="mods">Irrelevant intent modifiers</label><textarea id="mods">free
+  <div class="row2"><div class="field"><label for="f_prot">Protected terms (never negate)</label><textarea id="f_prot" placeholder="Your product and brand words, one per line or comma separated"></textarea></div><div class="field"><label for="mods">Irrelevant intent modifiers</label><textarea id="mods">free
 jobs
 job
 careers
@@ -315,14 +330,58 @@ MT.fmt = {
   sig(x, d = 3) { return isNum(x) ? Number(x.toPrecision(d)).toString() : '—'; },
   date(ms) { return isNum(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 };
-MT.num = s => { if (typeof s === 'number') return s; if (s == null) return NaN; let t = String(s).trim(); if (t === '' || /^(--|n\/a|na|null|nan|-)$/i.test(t)) return NaN; let neg = /^\(.*\)$/.test(t); t = t.replace(/[()$€£,%\s]/g, ''); const v = parseFloat(t); return neg ? -v : v; };
-MT.pctNum = s => { const v = MT.num(s); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
-MT.parseDate = s => {
+/* Numbers. fmt: 'us' (1,234.56), 'eu' (1.234,56 or 1 234,56) or 'auto' (decide per value; "1,234" reads as thousands).
+   Use MT.numFmt(values) once per column and pass the result, so one value like "12,5" switches the whole column to eu. */
+const NUM_JUNK = /[\s  '’]/g;
+const NUM_NA = /^(--|n\/a|na|null|nan|-|—|–|#n\/a|s\/o)$/i;
+MT.numFmt = values => {
+  let eu = 0, us = 0;
+  for (const v of values) {
+    if (typeof v === 'number' || v == null) continue;
+    const t = String(v).replace(/[^\d.,]/g, '');
+    if (!/[.,]/.test(t)) continue;
+    const lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+    if (lc >= 0 && ld >= 0) { if (lc > ld) eu++; else us++; continue; }
+    if (lc >= 0) { const parts = t.split(','); if (parts.length > 2) us++; else if (parts[1].length !== 3) eu++; continue; }
+    const parts = t.split('.'); if (parts.length > 2) eu++; else if (parts[1].length !== 3) us++;
+  }
+  if (eu && us) return 'auto';   // mixed column: decide value by value
+  return eu ? 'eu' : 'us';
+};
+MT.num = (s, fmt) => {
+  if (typeof s === 'number') return s; if (s == null) return NaN;
+  let t = String(s).trim(); if (t === '' || NUM_NA.test(t)) return NaN;
+  const neg = /^\(.*\)$/.test(t) || /^[-\u2212\u2013]/.test(t) || /\d-$/.test(t);
+  t = t.replace(NUM_JUNK, '').replace(/[^\d.,]/g, ''); if (!/\d/.test(t)) return NaN;
+  const nc = t.split(',').length - 1, nd = t.split('.').length - 1, lc = t.lastIndexOf(','), ld = t.lastIndexOf('.');
+  let dec = '';
+  if (nc && nd) dec = lc > ld ? ',' : '.';
+  else if (nc) { if (nc === 1) dec = fmt === 'eu' || (fmt !== 'us' && t.length - lc - 1 !== 3) ? ',' : ''; }
+  else if (nd === 1) dec = fmt === 'eu' && t.length - ld - 1 === 3 ? '' : '.';
+  const i = dec ? t.lastIndexOf(dec) : -1;
+  const v = parseFloat(i < 0 ? t.replace(/[.,]/g, '') : t.slice(0, i).replace(/[.,]/g, '') + '.' + t.slice(i + 1).replace(/[.,]/g, ''));
+  if (!isFinite(v)) return NaN; return neg ? -Math.abs(v) : v;
+};
+MT.pctNum = (s, fmt) => { const v = MT.num(s, fmt); return isNum(v) && /%/.test(String(s)) ? v / 100 : v; };
+const MONTHS = { jan: 0, janv: 0, january: 0, janvier: 0, feb: 1, fev: 1, febr: 1, fevr: 1, february: 1, fevrier: 1, mar: 2, mars: 2, march: 2, apr: 3, avr: 3, april: 3, avril: 3, mai: 4, may: 4, jun: 5, juin: 5, june: 5, jul: 6, juil: 6, july: 6, juillet: 6, aug: 7, aout: 7, august: 7, sep: 8, sept: 8, september: 8, septembre: 8, oct: 9, october: 9, octobre: 9, nov: 10, november: 10, novembre: 10, dec: 11, december: 11, decembre: 11 };
+const monthIdx = w => { const k = String(w).toLowerCase().normalize('NFD').replace(/[̀-ͯ.]/g, ''); return k in MONTHS ? MONTHS[k] : -1; };
+/* Decide day-first or month-first for a column of slash/dot dates. Returns {order:'dmy'|'mdy', ambiguous:boolean}. */
+MT.dateOrder = values => {
+  let dmy = 0, mdy = 0;
+  for (const v of values) { const m = String(v == null ? '' : v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/); if (!m) continue; if (+m[1] > 12) dmy++; else if (+m[2] > 12) mdy++; }
+  if (dmy && !mdy) return { order: 'dmy', ambiguous: false };
+  if (mdy && !dmy) return { order: 'mdy', ambiguous: false };
+  return { order: 'mdy', ambiguous: !(dmy || mdy) || (dmy && mdy) };
+};
+/* order: 'mdy' (default) or 'dmy' for ambiguous numeric dates. Handles ISO, yyyymmdd, 2025/01/31, 31.01.2025, "31 janv. 2025", "Jan 31, 2025". */
+MT.parseDate = (s, order) => {
   if (s == null) return NaN; s = String(s).trim(); let m;
   if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
   if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return Date.UTC(+m[3], +m[1] - 1, +m[2]);
-  if ((m = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})/))) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3], a = +m[1], b = +m[2], dmy = order === 'dmy' || (order !== 'mdy' && a > 12); const d = dmy ? a : b, mo = dmy ? b : a; if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN; return Date.UTC(y, mo - 1, d); }
+  if ((m = s.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ.]+)\s+(\d{4})/)) && monthIdx(m[2]) >= 0) return Date.UTC(+m[3], monthIdx(m[2]), +m[1]);
+  if ((m = s.match(/^([A-Za-zÀ-ÿ.]+)\s+(\d{1,2}),?\s+(\d{4})/)) && monthIdx(m[1]) >= 0) return Date.UTC(+m[3], monthIdx(m[1]), +m[2]);
   const t = Date.parse(s + (/\d{4}/.test(s) ? ' UTC' : '')); return isNaN(t) ? NaN : t;
 };
 MT.tbl = (heads, rows, opt) => {
@@ -332,6 +391,8 @@ MT.tbl = (heads, rows, opt) => {
 };
 MT.stats = list => `<div class="stats">${list.map(s => `<div class="stat-tile"><span class="stat-label">${MT.esc(s[0])}</span><span class="stat-value ${s[3] || ''}">${MT.esc(s[1])}</span>${s[2] ? `<span class="stat-sub">${MT.esc(s[2])}</span>` : ''}</div>`).join('')}</div>`;
 MT.verdict = (kind, title, text) => `<div class="verdict ${kind}" role="status"><div class="ico" aria-hidden="true">${{ pos: '▲', neg: '▼', neu: '●', info: 'ⓘ' }[kind] || '●'}</div><div><h2>${MT.esc(title)}</h2><p>${text}</p></div></div>`;
+/* Shown instead of a green banner when the tool could not compute a result (blank, unmapped or unusable input). */
+MT.notComputed = (title, reasons) => MT.verdict('info', title || 'Not computed', (reasons || []).map(MT.esc).join(' '));
 MT.tag = (t, k) => `<span class="tag tag-${k || ''}">${MT.esc(t)}</span>`;
 MT.note = (html, k) => `<div class="note ${k || ''}">${html}</div>`;
 
@@ -353,22 +414,85 @@ MT.parseCSV = (text, delim) => {
   if (f !== '' || row.length) { row.push(f); rows.push(row); }
   return rows.filter(r => r.some(c => String(c).trim() !== ''));
 };
-/* returns {cols, rows:[{col:val}], raw}. headerMatch: regex; leading junk lines before the header row are skipped */
-MT.readTable = (text, headerMatch) => {
-  let raw = MT.parseCSV(text);
-  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
-  if (!raw.length) return { cols: [], rows: [], raw };
-  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
-  const rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; });
-  return { cols, rows, raw };
+const TOTAL_ROW = /^\s*(grand\s+total|total(?:\s+general)?|totals?|sub-?total|totaux?|total\s+g[ée]n[ée]ral|sous-?total|gesamt|summe|all\s+(?:campaigns|accounts))\b/i;
+/* Data-quality log: every row or line a tool skips is recorded here and shown by MT.dq.html(). */
+MT.dq = {
+  items: [],
+  reset() { this.items = []; },
+  add(kind, text, rows) { this.items.push({ kind, text, rows: rows || [] }); },
+  show() { const d = typeof document !== 'undefined' && document.querySelector && document.querySelector('.drop'); if (!d) return; const old = document.querySelector('.dq-note'); if (old) old.remove(); const h = this.html(); if (h) d.insertAdjacentHTML('afterend', h.replace('class="note warn"', 'class="note warn dq-note"')); },
+  html() {
+    if (!this.items.length) return '';
+    return '<div class="note warn" role="note"><b>Data quality: ' + this.items.length + ' thing' + (this.items.length === 1 ? '' : 's') + ' to check</b><ul>' + this.items.map(i => '<li>' + MT.esc(i.text) + (i.rows.length ? ' <small>(e.g. ' + i.rows.slice(0, 3).map(r => MT.esc(String(r).slice(0, 80))).join(' | ') + ')</small>' : '') + '</li>').join('') + '</ul></div>';
+  }
 };
-MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(c); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* returns {cols, rows:[{col:val}], raw, skipped, totals}.
+   headerMatch: regex; leading junk lines before the header row are skipped.
+   Without headerMatch the header is the first row with the modal column count, which skips "# comment" preambles and one-cell title lines
+   (GA4 exports, Google Ads reports). Rows named Total / Grand total / Totaux are removed and logged in MT.dq. */
+MT.readTable = (text, headerMatch, opts) => {
+  opts = opts || {}; MT.dq.reset(); let raw = MT.parseCSV(text), skipped = 0;
+  const pre = raw.length;
+  raw = raw.filter(r => !(String(r[0]).trim().startsWith('#') && r.slice(1).every(c => String(c).trim() === '')));
+  if (headerMatch) { const k = raw.findIndex(r => r.some(c => headerMatch.test(String(c)))); if (k > 0) raw = raw.slice(k); }
+  else if (raw.length > 2) {
+    const freq = new Map(); raw.forEach(r => { const n = r.filter(c => String(c).trim() !== '').length; if (n > 1) freq.set(r.length, (freq.get(r.length) || 0) + 1); });
+    let modal = 0, best = 0; freq.forEach((c, n) => { if (c > best) { best = c; modal = n; } });
+    const k = modal ? raw.findIndex(r => r.length === modal) : 0; if (k > 0) raw = raw.slice(k);
+  }
+  skipped = pre - raw.length; if (skipped > 0) MT.dq.add('preamble', skipped + ' line' + (skipped === 1 ? '' : 's') + ' above the header row ignored (report title or # comments).');
+  if (!raw.length) return { cols: [], rows: [], raw, skipped, totals: 0 };
+  const cols = raw[0].map((c, i) => String(c).trim() || 'col' + (i + 1));
+  let rows = raw.slice(1).map(r => { const o = {}; cols.forEach((c, i) => o[c] = r[i] == null ? '' : r[i]); return o; }), totals = 0;
+  if (opts.keepTotals !== true) { const kept = rows.filter(o => !TOTAL_ROW.test(String(o[cols[0]]))), gone = rows.filter(o => TOTAL_ROW.test(String(o[cols[0]]))); if (gone.length) { totals = gone.length; MT.dq.add('totals', gone.length + ' total row' + (gone.length === 1 ? '' : 's') + ' removed so they are not counted twice.', gone.map(o => o[cols[0]])); rows = kept; } }
+  MT.normaliseColumns(cols, rows);
+  MT.dq.show();
+  return { cols, rows, raw, skipped, totals };
+};
+/* Rewrites decimal-comma number columns and day-first or French-month date columns into the canonical forms every tool already parses
+   (1234.5 and yyyy-mm-dd), and logs what it did. Mixed or text columns are left alone. */
+const DATE_LIKE = /^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+\d{4})\s*$/;
+MT.normaliseColumns = (cols, rows) => {
+  cols.forEach(c => {
+    const vals = rows.map(o => o[c]).filter(v => String(v).trim() !== ''); if (vals.length < 2) return;
+    const dated = vals.filter(v => DATE_LIKE.test(v)).length;
+    if (dated >= vals.length * 0.8) {
+      const o = MT.dateOrder(vals), named = vals.some(v => /[A-Za-zÀ-ÿ]/.test(v));
+      if (o.order === 'mdy' && !o.ambiguous && !named) return;
+      rows.forEach(r => { const t = MT.parseDate(r[c], o.order); if (isFinite(t)) r[c] = MT.fmt.date(t); });
+      MT.dq.add('dates', named ? `Column "${c}": month names converted to dates.` : o.ambiguous ? `Column "${c}": dates like 03/04/2025 are ambiguous; read as month/day. If your export is day/month, rewrite them as yyyy-mm-dd.` : `Column "${c}": read as day/month/year.`);
+      return;
+    }
+    const numeric = vals.filter(v => isFinite(MT.num(v)) && /^[\s$€£\d.,()%\-\u00a0\u202f'’]+$/.test(v)).length;
+    if (numeric < vals.length * 0.8) return;
+    if (MT.numFmt(vals) !== 'eu') return;
+    rows.forEach(r => { const v = r[c]; if (String(v).trim() === '') return; const n = MT.num(v, 'eu'); if (isFinite(n)) r[c] = String(n) + (/%/.test(v) ? '%' : ''); });
+    MT.dq.add('numbers', `Column "${c}": read with comma as the decimal separator (1.234,5 means 1234.5).`);
+  });
+};
+/* Spreadsheets run a cell that starts with = + - @ as a formula. Text cells that could be read that way get a leading apostrophe on export. */
+MT.safeCell = c => { if (typeof c !== 'string') return c; if (/^[=@\t\r]/.test(c)) return "'" + c; if (/^[+-]/.test(c) && !/^[+-]?[\d.,]+%?$/.test(c)) return "'" + c; return c; };
+MT.toCSV = rows => rows.map(r => r.map(c => { c = c == null ? '' : String(MT.safeCell(typeof c === 'number' ? c : String(c))); return /[",\n\r]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(',')).join('\n');
+/* Decode file bytes: UTF-8 (BOM aware), UTF-16 with BOM, else Windows-1252 (Excel "CSV" exports from French and German locales). */
+MT.decode = buf => {
+  const u = new Uint8Array(buf);
+  if (u[0] === 0xFF && u[1] === 0xFE) return { text: new TextDecoder('utf-16le').decode(u.subarray(2)), enc: 'utf-16le' };
+  if (u[0] === 0xFE && u[1] === 0xFF) return { text: new TextDecoder('utf-16be').decode(u.subarray(2)), enc: 'utf-16be' };
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(u).replace(/^﻿/, ''), enc: 'utf-8' }; }
+  catch (e) { return { text: new TextDecoder('windows-1252').decode(u), enc: 'windows-1252' }; }
+};
 MT.download = (name, text, mime) => { const b = new Blob([text], { type: mime || 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MT.copy = async (text, btn) => { try { await navigator.clipboard.writeText(text); } catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove(); } if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1200); } };
-MT.guess = (cols, re) => cols.find(c => re.test(c)) || '';
+/* French and German header words mapped to the English words the tools' guess patterns look for. */
+const HEADER_ALIASES = [[/\bclics?\b|\bklicks?\b/g, 'clicks'], [/\bd[ée]penses?\b|\bco[uû]ts?\b|\bkosten\b|\bbudget d[ée]pens[ée]\b/g, 'spend cost'], [/\bcampagnes?\b|\bkampagne\b/g, 'campaign'],
+  [/\bs[ée]ances?\b|\bsitzungen\b/g, 'sessions'], [/\bimpressions?\b|\bimpressionen\b/g, 'impressions'], [/\bventes?\b|\bumsatz\b/g, 'sales revenue'], [/\brevenus?\b|\bchiffre d'affaires\b/g, 'revenue'],
+  [/\bjours?\b|\bdatum\b|\btag\b/g, 'date day'], [/\bmots?-cl[ée]s?\b|\bsuchbegriffe?\b/g, 'keyword'], [/\brequ[êe]tes?\b|\bsuchanfrage\b/g, 'query'], [/\bterme de recherche\b/g, 'search term'],
+  [/\bconversions?\b/g, 'conversions'], [/\bplateforme\b|\bplattform\b/g, 'platform'], [/\bpages? de destination\b/g, 'landing page'], [/\bposition moyenne\b/g, 'position'], [/\bcreatifs?\b|\bkreativ\b/g, 'creative ad'], [/\bfrequence\b|\bh[äa]ufigkeit\b/g, 'frequency'], [/\bnom\b/g, 'name'], [/\bmois\b|\bmonat\b/g, 'month'], [/\bsemaine\b|\bwoche\b/g, 'week']];
+MT.headerEn = c => { let t = String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const orig = String(c).toLowerCase(); HEADER_ALIASES.forEach(([re, en]) => { t = t.replace(new RegExp(re.source.replace(/é/g, 'e').replace(/ê/g, 'e').replace(/û/g, 'u').replace(/\[ée\]/g, '[e]').replace(/\[êe\]/g, '[e]').replace(/\[uû\]/g, '[u]'), 'g'), en); }); return orig + ' ' + t; };
+MT.guess = (cols, re) => cols.find(c => re.test(c)) || cols.find(c => re.test(MT.headerEn(c))) || '';
 MT.fillSelect = (sel, cols, guessRe, opts) => {
-  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
-  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (!opts.none && cols.length) sel.selectedIndex = 0;
+  opts = opts || {}; sel.innerHTML = (opts.none ? '<option value="">(none)</option>' : opts.choose ? '<option value="">(choose a column)</option>' : '') + cols.map(c => `<option value="${MT.esc(c)}">${MT.esc(c)}</option>`).join('');
+  const g0 = guessRe ? MT.guess(cols, guessRe) : ''; if (g0) sel.value = g0; else if (opts.choose) sel.value = ''; else if (!opts.none && cols.length) sel.selectedIndex = 0;
 };
 MT.fillChecks = (box, cols, name, checked) => { box.innerHTML = cols.map(c => `<label><input type="checkbox" name="${name}" value="${MT.esc(c)}" ${checked && checked(c) ? 'checked' : ''}> ${MT.esc(c)}</label>`).join(''); };
 MT.checked = (box) => MT.$$('input:checked', box).map(i => i.value);
@@ -376,7 +500,7 @@ MT.dropzone = (el, onText, label) => {
   el.classList.add('drop'); el.tabIndex = 0; el.setAttribute('role', 'button');
   el.innerHTML = label || 'Drop a CSV here, or click to choose a file';
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,.tsv,.txt,.json,.xml,.html,.md'; inp.style.display = 'none'; el.after(inp);
-  const read = f => { const r = new FileReader(); r.onload = () => { onText(String(r.result), f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded. Drop another to replace.'; }; r.readAsText(f); };
+  const read = f => { const r = new FileReader(); r.onload = () => { const d = MT.decode(r.result); onText(d.text, f); el.innerHTML = '✓ ' + MT.esc(f.name) + ' loaded' + (d.enc === 'utf-8' ? '' : ' (read as ' + d.enc + ')') + '. Drop another to replace.'; }; r.readAsArrayBuffer(f); };
   el.addEventListener('click', () => inp.click()); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => inp.files[0] && read(inp.files[0]));
   ['dragenter', 'dragover'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); el.classList.add('over'); }));
@@ -656,7 +780,7 @@ MT.fields = (root, list, cls) => {
     if (t === 'select') inp = `<select id="${id}">${f.options.map(o => `<option value="${MT.esc(o[0])}" ${String(o[0]) === String(f.value) ? 'selected' : ''}>${MT.esc(o[1])}</option>`).join('')}</select>`;
     else if (t === 'textarea') inp = `<textarea id="${id}" rows="${f.rows || 5}" placeholder="${MT.esc(f.placeholder || '')}">${MT.esc(f.value || '')}</textarea>`;
     else if (t === 'check') return `<div class="field"><div class="checks"><label><input type="checkbox" id="${id}" ${f.value ? 'checked' : ''}> ${MT.esc(f.label)}</label></div>${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`;
-    else inp = `<input id="${id}" type="${t}" ${f.step != null ? `step="${f.step}"` : t === 'number' ? 'step="any"' : ''} ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
+    else inp = `<input id="${id}" type="${t === 'number' ? 'text' : t}" ${t === 'number' ? 'inputmode="decimal" autocomplete="off"' : ''} ${f.min != null ? `data-min="${f.min}"` : ''} ${f.max != null ? `data-max="${f.max}"` : ''} value="${MT.esc(f.value == null ? '' : f.value)}" ${f.placeholder ? `placeholder="${MT.esc(f.placeholder)}"` : ''}>`;
     return `<div class="field"><label for="${id}">${MT.esc(f.label)}</label>${inp}${f.hint ? `<span class="hint">${MT.esc(f.hint)}</span>` : ''}</div>`; }).join('');
   root.classList.add('grid'); root.classList.add(cls || 'g3');
 };
@@ -702,42 +826,93 @@ MT.boot = (slug, template) => {
 </script>
 <script>
 (function () {
-const $ = MT.$, F = MT.fmt, S = MT.stat, C = MT.chart; let tab = null;
-MT.fields($('#f'), [{ id: 'spend', label: 'Exact negative: zero conversions and spend at least ($)', value: 50 }, { id: 'clk', label: '...or clicks at least', value: 30 }, { id: 'ctr', label: 'Low CTR below (%)', value: 1 }, { id: 'imp', label: '...with impressions at least', value: 500 }, { id: 'ngc', label: 'Phrase negative: n-gram cost at least ($)', value: 40 }, { id: 'ngt', label: '...seen in at least this many distinct terms', value: 2 }], 'g3');
-function load(t) { tab = MT.readTable(t, /search term|query|keyword/i); const c = tab.cols; MT.fillSelect($('#ct'), c, /search term|query|keyword/i); MT.fillSelect($('#cc'), c, /^clicks?$/i); MT.fillSelect($('#ci'), c, /impr/i); MT.fillSelect($('#cs'), c, /^cost|spend/i); MT.fillSelect($('#cv'), c, /^conv(ersions?)?\.?$|conversions/i); }
+const $ = MT.$, F = MT.fmt, S = MT.stat, C = MT.chart; let tab = null, preLines = 0;
+MT.fields($('#f'), [{ id: 'spend', label: 'Exact negative: zero conversions and spend at least ($)', value: 50 }, { id: 'clk', label: '...or clicks at least', value: 30 }, { id: 'ctr', label: 'Low CTR below (%)', value: 1 }, { id: 'imp', label: '...with impressions at least', value: 500 }, { id: 'ngc', label: 'Phrase negative: n-gram cost at least ($)', value: 40 }, { id: 'ngt', label: '...seen in at least this many distinct terms', value: 2 }, { id: 'luck', label: 'Count zero conversions as evidence only if the chance of it happening by luck is below (%)', value: 10 }], 'g3');
+const FR_STOP = new Set('les des une aux avec dans pour par sur sous chez vers est sont et ou ni mais donc que qui quoi dont ses ces mes tes nos vos leur leurs the and for with'.split(' '));
+const AGG = /^(other search terms|autres termes de recherche|autres requ[êe]tes|--+|n\/a)$/i;
+/* Drop title lines above the header: the header is the first line with at least 3 cells (comma, semicolon or tab separated). */
+function trimPreamble(t) { const L = t.replace(/^﻿/, '').split(/\r?\n/); let k = L.findIndex(l0 => { const l = l0.replace(/"[^"]*"/g, ''); return Math.max((l.match(/,/g) || []).length, (l.match(/;/g) || []).length, (l.match(/\t/g) || []).length) >= 2; }); if (k < 0) k = 0; preLines = L.slice(0, k).filter(l => l.trim()).length; return L.slice(k).join('\n'); }
+function load(t) { tab = MT.readTable(trimPreamble(t)); const c = tab.cols, o = { choose: true }; MT.fillSelect($('#ct'), c, /search term|query|keyword/i, o); MT.fillSelect($("#cc"), c, /^clicks?$|\bclicks\b/i, o); MT.fillSelect($('#ci'), c, /impr/i, { none: true }); MT.fillSelect($('#cs'), c, /^cost|spend/i, o); MT.fillSelect($('#cv'), c, /^conv(ersions?)?\.?$|^conversions/i, o); MT.fillSelect($('#cx'), c, /added.?excluded|ajout|exclu|^status|^statut/i, { none: true }); }
 MT.dropzone($('#drop'), t => { $('#paste').value = t; load(t); }); $('#paste').addEventListener('input', MT.debounce(() => load($('#paste').value), 250));
-$('#smp').addEventListener('click', () => { const r = MT.rng(11), rows = [['Search term', 'Clicks', 'Impr.', 'Cost', 'Conversions']]; const good = ['crm software', 'best crm for small business', 'crm software pricing', 'sales crm tool', 'crm for startups'], bad = ['free crm software download', 'crm jobs', 'crm salary', 'crm training pdf', 'what is crm definition', 'crm login', 'free crm template excel', 'crm developer jobs remote', 'crm repair manual', 'hubspot login page']; good.forEach(g => { const c = 30 + Math.round(r.u() * 60); rows.push([g, c, c * 12, '$' + (c * 3.1).toFixed(2), Math.round(c * 0.09)]); }); bad.forEach(g => { const c = 10 + Math.round(r.u() * 50); rows.push([g, c, c * 20, '$' + (c * 2.6).toFixed(2), 0]); }); for (let i = 0; i < 25; i++) { const c = 1 + Math.round(r.u() * 8); rows.push(['crm query ' + (i + 1), c, c * 15, '$' + (c * 2.9).toFixed(2), r.u() < 0.2 ? 1 : 0]); } const t = MT.toCSV(rows); $('#paste').value = t; load(t); MT.$('#prot').value = 'crm'; run(); });
-const words = s => (s.toLowerCase().match(/[a-z0-9à-ÿ'\-]+/g) || []);
+$('#smp').addEventListener('click', () => { const r = MT.rng(11), rows = [['Search term', 'Clicks', 'Impr.', 'Cost', 'Conversions']]; const good = ['crm software', 'best crm for small business', 'crm software pricing', 'sales crm tool', 'crm for startups'], bad = ['free crm software download', 'crm jobs', 'crm salary', 'crm training pdf', 'what is crm definition', 'crm login', 'free crm template excel', 'crm developer jobs remote', 'crm repair manual', 'hubspot login page']; good.forEach(g => { const c = 30 + Math.round(r.u() * 60); rows.push([g, c, c * 12, '$' + (c * 3.1).toFixed(2), Math.round(c * 0.09)]); }); bad.forEach(g => { const c = 10 + Math.round(r.u() * 50); rows.push([g, c, c * 20, '$' + (c * 2.6).toFixed(2), 0]); }); for (let i = 0; i < 25; i++) { const c = 1 + Math.round(r.u() * 8); rows.push(['crm query ' + (i + 1), c, c * 15, '$' + (c * 2.9).toFixed(2), r.u() < 0.2 ? 1 : 0]); } const t = MT.toCSV(rows); $('#paste').value = t; load(t); MT.$('#f_prot').value = 'crm'; run(); });
+/* Unicode-aware tokens: NFC, curly apostrophes straightened, French elisions (l', d', qu') dropped, letters from any script. */
+const words = s => (s.toLowerCase().normalize('NFC').replace(/[’‘]/g, "'").replace(/(^|[^\p{L}\p{N}])(?:[ldnsjmtc]|qu)'(?=\p{L})/gu, '$1').match(/[\p{L}\p{N}]+(?:[\-'][\p{L}\p{N}]+)*/gu) || []);
+const hasSeq = (w, p) => { if (!p.length) return false; for (let i = 0; i + p.length <= w.length; i++) { let ok = true; for (let j = 0; j < p.length; j++) if (w[i + j] !== p[j]) { ok = false; break; } if (ok) return true; } return false; };
 function run() {
   $('#err').textContent = ''; if (!tab) { $('#err').textContent = 'Paste or upload a report first.'; return; }
-  const t = $('#ct').value, cc = $('#cc').value, ci = $('#ci').value, cs = $('#cs').value, cv = $('#cv').value;
-  const rows = tab.rows.map(r => ({ term: String(r[t]).trim().toLowerCase(), clicks: MT.num(r[cc]) || 0, impr: MT.num(r[ci]) || 0, cost: MT.num(r[cs]) || 0, conv: MT.num(r[cv]) || 0 })).filter(r => r.term && !/^total/.test(r.term) && !r.term.startsWith('--'));
-  if (!rows.length) { $('#err').textContent = 'No rows parsed. Check the columns.'; return; }
-  const prot = MT.$('#prot').value.toLowerCase().split(/[\n,]+/).map(s => s.trim()).filter(Boolean), isProt = term => prot.some(p => term.includes(p) && p.split(/\s+/).every(w => words(term).includes(w) || term.includes(p)));
-  const totalCost = S.sum(rows.map(r => r.cost)), sp = MT.f('spend'), mc = MT.f('clk'), ctrMax = MT.f('ctr') / 100, mi = MT.f('imp');
-  const mods = MT.$('#mods').value.toLowerCase().split(/[\n,]+/).map(s => s.trim()).filter(Boolean), sizes = MT.$$('.ng:checked').map(x => +x.value);
-  // phrase negatives via n-grams and modifiers
-  const ng = new Map(); rows.forEach(r => { const w = words(r.term); sizes.forEach(n => { const seen = new Set(); for (let i = 0; i + n <= w.length; i++) { const g = w.slice(i, i + n).join(' '); if (seen.has(g)) continue; seen.add(g); if (n === 1 && (MT.stop.has(g) || g.length < 3)) continue; const o = ng.get(g) || { g, n, cost: 0, clicks: 0, conv: 0, terms: 0 }; o.cost += r.cost; o.clicks += r.clicks; o.conv += r.conv; o.terms++; ng.set(g, o); } }); });
-  const phrases = []; const ngc = MT.f('ngc'), ngt = MT.f('ngt');
-  Array.from(ng.values()).filter(o => o.conv === 0 && o.cost >= ngc && o.terms >= ngt && !prot.some(p => o.g.includes(p) || p.includes(o.g))).forEach(o => phrases.push({ g: o.g, cost: o.cost, clicks: o.clicks, terms: o.terms, why: 'Zero conversions across ' + o.terms + ' terms' }));
-  mods.forEach(m => { const hit = rows.filter(r => words(r.term).includes(m) || (m.includes(' ') && r.term.includes(m))); const c = S.sum(hit.map(r => r.cost)); if (hit.length && !prot.some(p => m.includes(p)) && !phrases.some(p => p.g === m)) phrases.push({ g: m, cost: c, clicks: S.sum(hit.map(r => r.clicks)), terms: hit.length, why: 'Irrelevant intent modifier' }); });
-  // prune sub-ngrams dominated by larger ones with the same cost is skipped; sort by cost
-  phrases.sort((a, b) => b.cost - a.cost);
-  const covered = term => phrases.some(p => (' ' + words(term).join(' ') + ' ').includes(' ' + p.g + ' '));
-  const exact = rows.filter(r => r.conv === 0 && ((r.cost >= sp || r.clicks >= mc) || (r.impr >= mi && r.impr > 0 && r.clicks / r.impr < ctrMax)) && !isProt(r.term)).sort((a, b) => b.cost - a.cost), exactOnly = exact.filter(r => !covered(r.term));
-  const phraseSave = S.sum(rows.filter(r => covered(r.term) && r.conv === 0).map(r => r.cost)), exactSave = S.sum(exactOnly.map(r => r.cost)), save = phraseSave + exactSave;
-  const zero = S.sum(rows.filter(r => r.conv === 0).map(r => r.cost));
-  let h = MT.verdict(save / totalCost > 0.15 ? 'neg' : 'neu', `${F.money(save, 0)} of spend is addressable (${F.pct(save / Math.max(totalCost, 1), 1)} of ${F.money(totalCost, 0)})`, `${phrases.length} phrase negatives and ${exactOnly.length} exact negatives found. Zero-conversion terms account for ${F.money(zero, 0)} in total; this list targets the part you can safely cut.`);
-  h += MT.stats([['Total spend', F.money(totalCost, 0), F.int(rows.length) + ' search terms'], ['Zero-conversion spend', F.money(zero, 0), F.pct(zero / Math.max(totalCost, 1), 0) + ' of spend'], ['Phrase negatives', String(phrases.length), F.money(phraseSave, 0) + ' saved'], ['Exact negatives', String(exactOnly.length), F.money(exactSave, 0) + ' saved']]);
+  const t = $('#ct').value, cc = $('#cc').value, ci = $('#ci').value, cs = $('#cs').value, cv = $('#cv').value, cx = $('#cx').value, notes = [];
+  const missing = [['search term', t], ['clicks', cc], ['cost', cs], ['conversions', cv]].filter(x => !x[1]).map(x => x[0]);
+  if (missing.length) { $('#out').innerHTML = MT.notComputed('Choose the columns first', ['Nothing was calculated because these columns are not mapped: ' + missing.join(', ') + '. Pick them in the lists above, then run again.']); return; }
+  if (preLines) notes.push(preLines + ' title line' + (preLines === 1 ? '' : 's') + ' above the column names ignored.');
+  const nan = { cost: 0, clicks: 0, conv: 0 }, norm = s => String(s).trim().toLowerCase().replace(/\s+/g, ' ');
+  const colN = c => MT.numFmt(tab.rows.map(r => r[c])), fm = { cc: colN(cc), cs: colN(cs), cv: colN(cv), ci: ci ? colN(ci) : 'us' };
+  const parsed = [], excl = []; let noTerm = 0; const aggRows = [];
+  tab.rows.forEach(r => {
+    const term = norm(r[t]); if (!term) { noTerm++; return; } if (/^total/.test(term) || term.startsWith('--')) return;
+    if (AGG.test(term)) { aggRows.push(term + ' (' + F.money(MT.num(r[cs], fm.cs) || 0, 2) + ')'); return; }
+    const num = (c, f, k) => { const v = MT.num(r[c], f); if (!isFinite(v)) { if (String(r[c]).trim() !== '' && !/^(--|n\/a|na)$/i.test(String(r[c]).trim())) nan[k]++; return 0; } return v; };
+    const o = { term, clicks: num(cc, fm.cc, 'clicks'), impr: ci ? num(ci, fm.ci, 'clicks') : 0, cost: num(cs, fm.cs, 'cost'), conv: num(cv, fm.cv, 'conv'), added: false };
+    const st = cx ? norm(r[cx]) : ''; if (/^(excluded|exclu)/.test(st)) { excl.push(o); return; } if (/^(added|ajout)/.test(st)) o.added = true;
+    parsed.push(o);
+  });
+  /* merge the same term appearing in several campaigns */
+  const m = new Map(); let merged = 0; parsed.forEach(r => { const o = m.get(r.term); if (o) { o.clicks += r.clicks; o.impr += r.impr; o.cost += r.cost; o.conv += r.conv; o.added = o.added || r.added; merged++; } else m.set(r.term, Object.assign({}, r)); });
+  const rows = Array.from(m.values()); rows.forEach(r => r.w = words(r.term));
+  if (noTerm) notes.push(noTerm + ' row' + (noTerm === 1 ? '' : 's') + ' with an empty search term skipped.');
+  if (aggRows.length) notes.push(aggRows.length + ' aggregate row' + (aggRows.length === 1 ? '' : 's') + ' left out because they are buckets, not search terms: ' + aggRows.slice(0, 3).join('; ') + '.');
+  if (excl.length) notes.push(excl.length + ' term' + (excl.length === 1 ? ' is' : 's are') + ' already Excluded (' + F.money(S.sum(excl.map(r => r.cost)), 2) + ') and left out of every total and saving.');
+  if (merged) notes.push(merged + ' repeated search term row' + (merged === 1 ? '' : 's') + ' (same term in another campaign) merged into one.');
+  const nb = nan.cost + nan.clicks + nan.conv; if (nb) notes.push(nb + ' cell' + (nb === 1 ? '' : 's') + ' in the cost, clicks or conversions columns could not be read as numbers and counted as 0. Check the column mapping.');
+  const addedN = rows.filter(r => r.added).length; if (addedN) notes.push(addedN + ' term' + (addedN === 1 ? ' is' : 's are') + ' already Added as your own keywords, so they are never proposed as negatives and no phrase negative that would block them is proposed.');
+  const noteHtml = () => notes.length ? '<div class="note warn" role="note"><b>Data notes</b><ul>' + notes.map(n => '<li>' + MT.esc(n) + '</li>').join('') + '</ul></div>' : '';
+  if (!rows.length) { $('#out').innerHTML = MT.notComputed('No search terms read', ['No usable rows after skipping totals and aggregates. Check that the search term column is mapped correctly.']) + noteHtml(); return; }
+  const totalCost = S.sum(rows.map(r => r.cost)), totalClk = S.sum(rows.map(r => r.clicks)), totalConv = S.sum(rows.map(r => r.conv));
+  if (totalCost <= 0) { $('#out').innerHTML = MT.notComputed('No spend found', ['The cost column added up to zero, so there is nothing to analyse. Check the Cost column mapping and number format.']) + noteHtml(); return; }
+  if (totalConv <= 0 || totalClk <= 0) { $('#out').innerHTML = MT.notComputed('No conversions in this report', ['Without any conversions, a zero-conversion term is not evidence of waste, so no negatives are proposed. Check the Conversions column mapping, or use a longer date range.']) + noteHtml(); return; }
+  const cvr = totalConv / totalClk, luck = MT.f('luck') / 100, pZero = c => Math.pow(1 - Math.min(cvr, 0.999999), c), enough = c => pZero(c) <= luck;
+  const prot = MT.$('#f_prot').value.toLowerCase().split(/[\n,]+/).map(s => s.trim()).filter(Boolean).map(s => ({ s, w: words(s) })).filter(p => p.w.length);
+  const isProt = r => r.added || prot.some(p => hasSeq(r.w, p.w)), protName = r => r.added ? 'your own keyword' : 'protected "' + prot.find(p => hasSeq(r.w, p.w)).s + '"';
+  const sp = MT.f('spend'), mc = MT.f('clk'), ctrMax = MT.f('ctr') / 100, mi = MT.f('imp'), ngc = MT.f('ngc'), ngt = MT.f('ngt');
+  const mods = MT.$('#mods').value.toLowerCase().split(/[\n,]+/).map(s => s.trim()).filter(Boolean).map(s => ({ s, w: words(s) })).filter(p => p.w.length), sizes = MT.$$('.ng:checked').map(x => +x.value);
+  const ng = new Map(); rows.forEach(r => { sizes.forEach(n => { const seen = new Set(); for (let i = 0; i + n <= r.w.length; i++) { const gw = r.w.slice(i, i + n), g = gw.join(' '); if (seen.has(g)) continue; seen.add(g); if (n === 1 && (MT.stop.has(g) || FR_STOP.has(g) || g.length < 3 || /^\d+$/.test(g))) continue; const o = ng.get(g) || { g, gw, n, rows: [] }; o.rows.push(r); ng.set(g, o); } }); });
+  const phrases = [], held = [];
+  const summ = rs => ({ cost: S.sum(rs.map(r => r.cost)), clicks: S.sum(rs.map(r => r.clicks)), conv: S.sum(rs.map(r => r.conv)), terms: rs.length });
+  const convWords = new Set(); rows.filter(r => r.conv > 0).forEach(r => r.w.forEach(x => convWords.add(x)));
+  ng.forEach(o => { const s = summ(o.rows); if (s.conv > 0 || s.cost < ngc || s.terms < ngt || !enough(s.clicks)) return; if (o.n === 1) { const kin = Array.from(convWords).find(x => x !== o.g && x.length >= 4 && o.g.length >= 4 && (x.startsWith(o.g) || o.g.startsWith(x))); if (kin) { held.push({ g: o.g, gw: o.gw, cost: s.cost, why: 'Close variant of "' + kin + '", a word in your converting terms. Phrase match could block it.' }); return; } } const bad = o.rows.filter(isProt); if (bad.length) { held.push({ g: o.g, gw: o.gw, cost: s.cost, why: 'Would also block ' + protName(bad[0]) + ' term "' + bad[0].term + '" (' + F.money(bad[0].cost, 2) + ')' + (bad.length > 1 ? ' and ' + (bad.length - 1) + ' more' : '') + '.' }); return; } phrases.push({ g: o.g, gw: o.gw, cost: s.cost, clicks: s.clicks, terms: s.terms, why: 'Zero conversions across ' + s.terms + ' distinct terms' }); });
+  mods.forEach(mo => { const hit = rows.filter(r => hasSeq(r.w, mo.w)); if (!hit.length || phrases.some(p => p.g === mo.w.join(' '))) return; const s = summ(hit), conv = hit.filter(r => r.conv > 0), bad = hit.filter(isProt);
+    if (conv.length) { held.push({ g: mo.s, gw: mo.w, cost: s.cost, why: 'Terms containing it converted (' + F.int(conv.reduce((a, r) => a + r.conv, 0)) + ' conversions on ' + conv.length + ' term' + (conv.length === 1 ? '' : 's') + ', ' + F.money(S.sum(conv.map(r => r.cost)), 2) + '). It may be what you sell.' }); return; }
+    if (bad.length) { held.push({ g: mo.s, gw: mo.w, cost: s.cost, why: 'Would also block ' + protName(bad[0]) + ' term "' + bad[0].term + '" (' + F.money(bad[0].cost, 2) + ').' }); return; }
+    if (s.cost <= 0) return; phrases.push({ g: mo.s, gw: mo.w, cost: s.cost, clicks: s.clicks, terms: s.terms, why: 'Intent word from your list; no matching term converted' }); });
+  /* a phrase negative that contains a shorter listed phrase adds nothing: the shorter one already blocks it */
+  const kept = phrases.filter(p => !phrases.some(q => q !== p && q.gw.length < p.gw.length && hasSeq(p.gw, q.gw)));
+  const sig = p => rows.filter(r => hasSeq(r.w, p.gw)).map(r => r.term).sort().join('|'), seenSig = new Set();
+  kept.sort((a, b) => a.gw.length - b.gw.length || a.g.length - b.g.length); for (let i = 0; i < kept.length; i++) { const k = sig(kept[i]); if (seenSig.has(k)) { kept.splice(i, 1); i--; } else seenSig.add(k); }
+  const pruned = phrases.length - kept.length; phrases.length = 0; kept.forEach(p => phrases.push(p)); phrases.sort((a, b) => b.cost - a.cost);
+  if (pruned) notes.push(pruned + ' longer phrase negative' + (pruned === 1 ? '' : 's') + ' not listed because a shorter listed phrase already blocks the same searches.');
+  const covered = r => phrases.some(p => hasSeq(r.w, p.gw));
+  const zeroRows = rows.filter(r => r.conv === 0 && !isProt(r));
+  const money = r => (r.cost >= sp || r.clicks >= mc), lowCtr = r => r.impr >= mi && r.impr > 0 && r.clicks / r.impr < ctrMax;
+  const exact = zeroRows.filter(r => (money(r) && enough(r.clicks)) || lowCtr(r)).sort((a, b) => b.cost - a.cost), exactOnly = exact.filter(r => !covered(r));
+  const unsure = zeroRows.filter(r => money(r) && !enough(r.clicks) && !lowCtr(r) && !covered(r)).sort((a, b) => b.cost - a.cost);
+  const phraseSave = S.sum(rows.filter(r => covered(r) && r.conv === 0).map(r => r.cost)), exactSave = S.sum(exactOnly.map(r => r.cost)), save = phraseSave + exactSave;
+  const zero = S.sum(rows.filter(r => r.conv === 0).map(r => r.cost)), found = phrases.length + exactOnly.length;
+  const need = cvr > 0 ? Math.ceil(Math.log(luck) / Math.log(1 - Math.min(cvr, 0.999999))) : 0;
+  let h = found ? MT.verdict(save / totalCost > 0.15 ? 'neg' : 'neu', `${F.money(save, 0)} of past spend sits on terms these negatives would block (${F.pct(save / Math.max(totalCost, 1), 1)} of ${F.money(totalCost, 0)})`, `${phrases.length} phrase negatives and ${exactOnly.length} exact negatives found. Zero-conversion terms account for ${F.money(zero, 0)} in total. This is past spend: some of it moves to other queries instead of disappearing, so read every line before adding it.`) : MT.verdict('neu', 'No negatives have enough evidence at these settings', `Zero-conversion terms account for ${F.money(zero, 0)}, but none clears the evidence and protection checks below. Nothing here should be added as a negative yet.`);
+  h += '<p class="sub">The average term in this report converts at ' + F.pct(cvr, 2) + ' of clicks. A term with zero conversions counts as evidence only when the chance of that happening by luck is under ' + F.pct(luck, 0) + ', which takes about ' + F.int(need) + ' clicks at this rate.</p>';
+  h += MT.stats([['Total spend', F.money(totalCost, 0), F.int(rows.length) + ' search terms'], ['Zero-conversion spend', F.money(zero, 0), F.pct(zero / Math.max(totalCost, 1), 0) + ' of spend'], ['Phrase negatives', String(phrases.length), F.money(phraseSave, 0) + ' past spend'], ['Exact negatives', String(exactOnly.length), F.money(exactSave, 0) + ' past spend']]);
+  h += noteHtml();
   const pl = phrases.map(p => '"' + p.g + '"'), el = exactOnly.map(r => '[' + r.term + ']');
-  h += '<div class="card"><h3>Phrase-match negatives</h3>' + (phrases.length ? MT.tbl(['Negative', 'Cost', 'Clicks', 'Terms', 'Reason'], phrases.slice(0, 40).map(p => ['"' + p.g + '"', F.money(p.cost, 2), F.int(p.clicks), p.terms, p.why]), { num: [1, 2, 3] }) + '<div class="actions"><button class="btn btn-secondary btn-sm" data-c="p" type="button">Copy phrase list</button></div>' : '<p class="muted">None found at these thresholds.</p>') + '</div>';
-  h += '<div class="card"><h3>Exact-match negatives</h3><p class="sub">Terms not already covered by a phrase negative above.</p>' + (exactOnly.length ? MT.tbl(['Negative', 'Cost', 'Clicks', 'Impressions', 'Conversions'], exactOnly.slice(0, 60).map(r => ['[' + r.term + ']', F.money(r.cost, 2), F.int(r.clicks), F.int(r.impr), r.conv]), { num: [1, 2, 3, 4] }) + '<div class="actions"><button class="btn btn-secondary btn-sm" data-c="e" type="button">Copy exact list</button><button class="btn btn-secondary btn-sm" data-c="a" type="button">Copy all</button><button class="btn btn-secondary btn-sm" id="dl" type="button">Download CSV</button></div>' : '<p class="muted">None found at these thresholds.</p>') + '</div>';
-  if (prot.length) h += MT.note('<b>Protected terms</b> (' + MT.esc(prot.join(', ')) + ') were excluded from all suggestions.');
+  h += '<div class="card"><h3>Phrase-match negatives</h3>' + (phrases.length ? MT.tbl(['Negative', 'Cost', 'Clicks', 'Terms', 'Reason'], phrases.map(p => ['"' + p.g + '"', F.money(p.cost, 2), F.int(p.clicks), p.terms, p.why]), { num: [1, 2, 3] }) + '<div class="actions"><button class="btn btn-secondary btn-sm" data-c="p" type="button">Copy phrase list</button></div>' : '<p class="muted">None found at these thresholds.</p>') + '</div>';
+  h += '<div class="card"><h3>Exact-match negatives</h3><p class="sub">Terms not already covered by a phrase negative above.</p>' + (exactOnly.length ? MT.tbl(['Negative', 'Cost', 'Clicks', 'Impressions', 'Conversions', 'Chance of 0 by luck'], exactOnly.map(r => ['[' + r.term + ']', F.money(r.cost, 2), F.int(r.clicks), F.int(r.impr), r.conv, F.pct(pZero(r.clicks), 0)]), { num: [1, 2, 3, 4, 5] }) + '<div class="actions"><button class="btn btn-secondary btn-sm" data-c="e" type="button">Copy exact list</button><button class="btn btn-secondary btn-sm" data-c="a" type="button">Copy all</button><button class="btn btn-secondary btn-sm" id="dl" type="button">Download CSV</button></div>' : '<p class="muted">None found at these thresholds.</p>') + '</div>';
+  const hd = []; held.forEach(x => { if (!hd.some(y => y.g === x.g)) hd.push(x); }); held.length = 0; hd.forEach(x => held.push(x));
+  if (held.length) h += '<div class="card"><h3>Held back: would block terms you want</h3><p class="sub">These looked like waste but would also block a converting, protected or Added term. Not in the copy lists.</p>' + MT.tbl(['Phrase', 'Cost', 'Why held back'], held.sort((a, b) => b.cost - a.cost).map(x => ['"' + x.g + '"', F.money(x.cost, 2), x.why]), { num: [1] }) + '</div>';
+  if (unsure.length) h += '<div class="card"><h3>Zero conversions, not enough evidence</h3><p class="sub">' + unsure.length + ' terms (' + F.money(S.sum(unsure.map(r => r.cost)), 0) + ') have no conversions, but at this click volume that is normal. Do not negate them on this evidence alone.</p>' + MT.tbl(['Term', 'Cost', 'Clicks', 'Chance of 0 by luck'], unsure.slice(0, 15).map(r => [r.term, F.money(r.cost, 2), F.int(r.clicks), F.pct(pZero(r.clicks), 0)]), { num: [1, 2, 3] }) + (unsure.length > 15 ? '<p class="sub">Showing 15 of ' + unsure.length + '.</p>' : '') + '</div>';
+  if (prot.length) h += MT.note('<b>Protected terms</b> (' + MT.esc(prot.map(p => p.s).join(', ')) + '): no listed negative contains one, and no listed phrase negative would block a term that does.' + (held.length ? ' Phrases that would are under "Held back".' : ''));
   h += '<div class="card"><div id="c1"></div></div>'; $('#out').innerHTML = h;
   C.hbars($('#c1'), { title: 'Cost by suggested phrase negative, top 12', cats: phrases.slice(0, 12).map(p => '"' + p.g + '"'), values: phrases.slice(0, 12).map(p => p.cost), fmt: v => F.money(v, 0) });
   const lists = { p: pl.join('\n'), e: el.join('\n'), a: pl.concat(el).join('\n') };
   MT.$$('[data-c]').forEach(b => b.addEventListener('click', e => MT.copy(lists[b.dataset.c], e.target)));
-  const dl = $('#dl'); if (dl) dl.addEventListener('click', () => MT.download('negative-keywords.csv', MT.toCSV([['keyword', 'match_type', 'wasted_cost']].concat(phrases.map(p => [p.g, 'phrase', p.cost.toFixed(2)]), exactOnly.map(r => [r.term, 'exact', r.cost.toFixed(2)]))), 'text/csv'));
+  const dl = $('#dl'); if (dl) dl.addEventListener('click', () => MT.download('negative-keywords.csv', MT.toCSV([['keyword', 'match_type', 'criterion_type', 'past_cost']].concat(phrases.map(p => [p.g, 'phrase', 'Negative Phrase', p.cost.toFixed(2)]), exactOnly.map(r => [r.term, 'exact', 'Negative Exact', r.cost.toFixed(2)]))), 'text/csv'));
 }
 $('#go').addEventListener('click', run);
 })();

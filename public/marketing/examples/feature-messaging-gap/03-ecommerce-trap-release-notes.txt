@@ -1,0 +1,8 @@
+- Added product bundles with tiered discounts
+- Improved reports
+- Abandoned cart recovery by SMS
+- Inventory forecasting by SKU
+- Multi-currency checkout with local payment methods
+- Gift cards and store credit
+- Returns portal with prepaid labels
+- Scheduled report delivery to Slack

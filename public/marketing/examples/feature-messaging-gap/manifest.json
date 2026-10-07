@@ -1,0 +1,62 @@
+[
+  {
+    "file": "01-auto-marketplace-release-notes.txt",
+    "label": "Auto marketplace: release notes",
+    "kind": "happy",
+    "note": "Paste into \"Release notes\". Eight features are listed; the result should show 5 covered with a benefit, 2 with no benefit and 1 missing (360 tours)."
+  },
+  {
+    "file": "01-auto-marketplace-launch-email.txt",
+    "label": "Auto marketplace: launch email",
+    "kind": "happy",
+    "note": "Paste into \"Marketing copy\" together with the matching release notes."
+  },
+  {
+    "file": "02-nonprofit-release-notes-messy.md",
+    "label": "Nonprofit: messy release notes",
+    "kind": "messy",
+    "note": "Markdown with bug fixes, internal items and repeats. About 8 features are customer-facing, and 5 of them are covered in the copy; ignore the bug fixes."
+  },
+  {
+    "file": "02-nonprofit-landing-page-copy.txt",
+    "label": "Nonprofit: landing page copy",
+    "kind": "messy",
+    "note": "Paste into \"Marketing copy\" with the messy release notes above."
+  },
+  {
+    "file": "03-ecommerce-trap-release-notes.txt",
+    "label": "Ecommerce: release notes",
+    "kind": "trap",
+    "note": "Paste into \"Release notes\". Five features that the copy mentions only in a list."
+  },
+  {
+    "file": "03-ecommerce-trap-copy.txt",
+    "label": "Ecommerce: copy",
+    "kind": "trap",
+    "note": "Paste into \"Marketing copy\". Five features are listed with no benefit, and one vague line about \"control and confidence\" should not count as a benefit for all of them."
+  },
+  {
+    "file": "04-bilingual-trap-release-notes-fr.txt",
+    "label": "French: release notes",
+    "kind": "trap",
+    "note": "Paste into \"Release notes\". French text that the tool may not read well."
+  },
+  {
+    "file": "04-bilingual-trap-copy-fr.txt",
+    "label": "French: copy",
+    "kind": "trap",
+    "note": "Paste into \"Marketing copy\". All 5 features are covered and 3 have a benefit, so a score of zero would be wrong."
+  },
+  {
+    "file": "05-stemmer-and-filler-bug-release-notes.txt",
+    "label": "Word forms: release notes",
+    "kind": "trap",
+    "note": "Paste into \"Release notes\". Plural and hyphenated words such as \"templates\" and \"role-based\"."
+  },
+  {
+    "file": "05-stemmer-and-filler-bug-copy.txt",
+    "label": "Word forms: copy",
+    "kind": "trap",
+    "note": "Paste into \"Marketing copy\". All 5 features are covered with a benefit, so a missing result is a matching error."
+  }
+]

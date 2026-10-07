@@ -1,0 +1,71 @@
+[
+  {
+    "file": "01-nonprofit-relaunch-clean.csv",
+    "label": "Nonprofit relaunch",
+    "kind": "happy",
+    "note": "36 rows with one real two-step chain. The correct result is a warning to collapse the chain, with nothing else wrong.",
+    "values": {
+      "Site host": "www.harbourlight.example"
+    }
+  },
+  {
+    "file": "02-healthcare-bilingual-messy.csv",
+    "label": "Bilingual clinic site",
+    "kind": "messy",
+    "note": "A header row inside the data, accented and encoded duplicates, wildcard rows and a real loop between /en/careers and /en/jobs. Review the wildcard rows by hand, because they are not real patterns here.",
+    "values": {
+      "Site host": "www.clinique.example"
+    }
+  },
+  {
+    "file": "03a-trap-travel-domain-move-path-to-absolute.csv",
+    "label": "Domain move, path to full URL",
+    "kind": "trap",
+    "note": "Moving a path to the same path on a new domain is valid. All 9 rules are good and none is a self-reference.",
+    "values": {
+      "Site host": "www.oldvoyages.example"
+    }
+  },
+  {
+    "file": "03b-trap-ecommerce-loop-hidden-by-query-string.csv",
+    "label": "Loops hidden by query strings",
+    "kind": "trap",
+    "note": "Three redirects loop once the query string is added. Do not deploy this map even if the check shows no loops."
+  },
+  {
+    "file": "03c-trap-multi-region-same-path.csv",
+    "label": "Multi-region sites, same path",
+    "kind": "trap",
+    "note": "The same path redirects differently on different domains. These 5 rules are fine, not conflicts.",
+    "values": {
+      "Site host": "www.example-brand.com"
+    }
+  },
+  {
+    "file": "03d-trap-legit-normalisation-rows-flagged-as-errors.csv",
+    "label": "Normalisation rows",
+    "kind": "trap",
+    "note": "Rows that fix slashes, capitals, http to https and www. These are normal and flagging them as errors is a false alarm.",
+    "values": {
+      "Site host": "www.example-shop.com"
+    }
+  },
+  {
+    "file": "03e-trap-strict-mode-silent-conflict.csv",
+    "label": "Two rules for /team",
+    "kind": "trap",
+    "note": "Two rules send /team to different places. Set trailing slash to \"different\" and case to \"sensitive\": a clean report would be wrong because the second rule can never run."
+  },
+  {
+    "file": "04-large-migration-first-1500-rows.csv",
+    "label": "Large migration, first 1,500 rows",
+    "kind": "happy",
+    "note": "A larger map to see how the tool handles volume. Long result tables may be shortened on screen."
+  },
+  {
+    "file": "05-windows-1252-export-mojibake.csv",
+    "label": "Excel export with accents",
+    "kind": "messy",
+    "note": "A file saved in the older Windows encoding. If an accented letter shows as a question mark, save it as UTF-8 and try again."
+  }
+]

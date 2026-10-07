@@ -1,0 +1,44 @@
+[
+  {
+    "file": "01-happy-ecommerce-ads-vs-ga4.csv",
+    "label": "Ecommerce ads against analytics",
+    "kind": "happy",
+    "note": "One month, one time zone. Display prospecting is the real outlier at about 47%, and the other campaigns are fine."
+  },
+  {
+    "file": "02-messy-quebec-bilingual-lead-gen.csv",
+    "label": "Roofing lead gen, French headers",
+    "kind": "messy",
+    "note": "Semicolons, \"7 815,40 $\" amounts and repeated campaign names. Merge the repeats, drop the total row and map columns by hand; overall about 85.6% is normal."
+  },
+  {
+    "file": "03-trap-consent-mode-eu-vs-us.csv",
+    "label": "EU against US consent",
+    "kind": "trap",
+    "note": "EU sessions are low because visitors decline analytics, not because of bad clicks. Do not cut EU spend on this alone."
+  },
+  {
+    "file": "04-trap-ga-vs-server-log.csv",
+    "label": "Analytics against server logs",
+    "kind": "trap",
+    "note": "Run it twice, mapping first GA and then the server log as the sessions column. Clicks reach the server (about 106%) but GA records about 47%, which points to tagging or consent, not accidental clicks."
+  },
+  {
+    "file": "05a-timezone-aligned-same-tz.csv",
+    "label": "Black Friday, same time zone",
+    "kind": "happy",
+    "note": "Ad platform and analytics use the same time zone, and the result is healthy at about 89%."
+  },
+  {
+    "file": "05b-trap-timezone-misaligned.csv",
+    "label": "Black Friday, different time zones",
+    "kind": "trap",
+    "note": "Every campaign sits at a similar 68 to 76%, including brand. That even drop points to a day-window mismatch, not bad traffic."
+  },
+  {
+    "file": "06-edge-tiny-volume-and-zero-clicks.csv",
+    "label": "Tiny volumes and a zero-click row",
+    "kind": "trap",
+    "note": "Ignore rows with a handful of clicks and flag the zero-click row. A red overall banner would be an overreaction."
+  }
+]

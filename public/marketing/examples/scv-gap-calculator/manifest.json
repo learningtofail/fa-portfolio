@@ -1,0 +1,66 @@
+[
+  {
+    "label": "Pet-supply retailer, online and stores",
+    "kind": "happy",
+    "note": "A reasonable set of inputs with the uncertainty slider at 15. Expect about half of customers fragmented and a monthly cost of about $9,900, with a range shown.",
+    "values": {
+      "Real customers and prospects in scope": "180000",
+      "Effective cookie lifetime (days)": "7",
+      "Average days between visits": "12",
+      "Users on 2 or more devices (%)": "38",
+      "Average devices for multi-device users": "2.2",
+      "Sessions per active user per month": "2.6",
+      "Web sessions matched to a CRM ID (%)": "34",
+      "CRM duplicate contact rate (%)": "6",
+      "Monthly ad spend ($)": "90000",
+      "Spend that depends on identity (%)": "40",
+      "Share of fragmented spend that is redundant (%)": "30",
+      "Cost to acquire one lead ($)": "22",
+      "New leads per month": "3100",
+      "Cost per contact per month in ESP ($)": "0.015"
+    }
+  },
+  {
+    "label": "Auto marketplace, three duplicate rates",
+    "kind": "messy",
+    "note": "Run it three times with duplicate rate 6.6 (exact email), 12.3 (cleaned email) and 29.0 (fuzzy name match). The spread in cost shows how much the matching method matters; the true rate is about 12.4.",
+    "values": {
+      "Real customers and prospects in scope": "65000",
+      "Effective cookie lifetime (days)": "7",
+      "Average days between visits": "25",
+      "Users on 2 or more devices (%)": "55",
+      "Average devices for multi-device users": "2.6",
+      "Sessions per active user per month": "1.8",
+      "Web sessions matched to a CRM ID (%)": "18",
+      "CRM duplicate contact rate (%)": "12.3",
+      "Monthly ad spend ($)": "60000",
+      "Spend that depends on identity (%)": "50",
+      "Share of fragmented spend that is redundant (%)": "40",
+      "Cost to acquire one lead ($)": "48",
+      "New leads per month": "2600",
+      "Cost per contact per month in ESP ($)": "0.03"
+    }
+  },
+  {
+    "label": "Quebec nonprofit with low consent",
+    "kind": "trap",
+    "note": "Only about 35% of visitors consent to analytics, and set the uncertainty slider to 0. A high web match rate is not possible on that base, and the matching of donor records needs a privacy review.",
+    "values": {
+      "Real customers and prospects in scope": "50000",
+      "Effective cookie lifetime (days)": "7",
+      "Average days between visits": "40",
+      "Users on 2 or more devices (%)": "30",
+      "Average devices for multi-device users": "2.0",
+      "Sessions per active user per month": "1.3",
+      "Web sessions matched to a CRM ID (%)": "65",
+      "CRM duplicate contact rate (%)": "9",
+      "Monthly ad spend ($)": "30000",
+      "Spend that depends on identity (%)": "30",
+      "Share of fragmented spend that is redundant (%)": "30",
+      "Cost to acquire one lead ($)": "70",
+      "New leads per month": "700",
+      "Cost per contact per month in ESP ($)": "0.02",
+      "Visitors who consent to analytics cookies (%)": "35"
+    }
+  }
+]

@@ -1,0 +1,26 @@
+Address,Redirect URL
+/Fr/Nos-Cliniques/Montréal,/fr/cliniques/montreal
+/fr/nos-cliniques/montreal/,/fr/cliniques/montreal
+/fr/nos-cliniques/laval,/fr/cliniques/laval
+/fr/services/physiothérapie,/fr/services/physiotherapie
+/fr/services/physioth%C3%A9rapie,/fr/services/physiotherapie
+/fr/services/ergothérapie,/fr/services/ergotherapie
+/en/our-clinics/montreal,/en/clinics/montreal
+/en/our-clinics/montreal?lang=en,/en/clinics/montreal
+/en/our-clinics/laval/,/en/clinics/laval
+/EN/Our-Clinics/Laval,/en/clinics/laval-v2
+/rendez-vous.php?clinic=12,/fr/rendez-vous/montreal
+/rendez-vous.php?clinic=14,/fr/rendez-vous/laval
+/rendez-vous.php,/fr/rendez-vous
+/blog/(.*),/fr/blogue/$1
+/old/*,/fr/
+/fr/blogue/conseils-dos,/fr/blogue/conseils-pour-le-dos
+/fr/blogue/conseils-pour-le-dos,/fr/blogue/mal-de-dos
+/fr/a-propos,/fr/a-propos
+/fr/politique de confidentialité,/fr/confidentialite
+/fr/carrières,/fr/carrieres
+/fr/carri%C3%A8res,/fr/emplois
+/only-a-source-with-no-target
+,/orphan-target
+/en/careers,/en/jobs,301
+/en/jobs,/en/careers

@@ -1,0 +1,5 @@
+- Improved invoice templates
+- Updated message pages
+- Enhanced device services
+- Introducing role-based permissions
+- Export to Excel

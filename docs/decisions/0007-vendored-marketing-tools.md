@@ -4,7 +4,7 @@ Status: accepted. Files live in `public/marketing/`, served by the `handle /mark
 
 ## Decision
 
-- The 21 marketing tools are single-file HTML pages built by a separate project (`build.py`, `standalone: true`, `home_url: ""`). They are copied here as built output, never edited by hand. To change one, rebuild from that project and replace the file.
+- The 21 marketing tools are single-file HTML pages built by a separate project (`build.py`, `standalone: true`, `home_url: ""`). They are copied here as built output, never edited by hand. To change one, rebuild from that project and replace the file. The project is github.com/learningtofail/marketing-tools; `scripts/export-for-portfolio.sh <this repo>/public/marketing` builds the pages with the home links removed and copies them here.
 - They are not Astro pages. They do not use the Orchis tokens, the kit or the BEM styles, and they carry inline `<script>`, `<style>` and `style` attributes. This is a documented exception to decision 0005 (no inline styles), limited to `public/marketing/`.
 - Because of that, `/marketing/*` gets its own enforced CSP: inline script and style allowed, `connect-src 'none'`, `form-action 'none'`, `default-src 'none'`, `img-src data: blob:`, and `frame-ancestors https://www.faysalahmed.ca`. A page that cannot make a request cannot send what a visitor types anywhere (decision 0002 still holds).
 - www shows each tool in its own app window through the same iframe path as the five Astro tools (decision 0003). The frame there adds `allow-modals` so Print or save PDF works.

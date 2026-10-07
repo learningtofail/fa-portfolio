@@ -1,0 +1,436 @@
+Session ID,User-Agent,ISP / Org,Pays,Pages vues,Durée (hh:mm:ss),Rebond,Prise de RDV
+S00000,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,5,00:04:58,FALSE,NON
+S00001,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00002,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,US,1,00:00:00,TRUE,NON
+S00003,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00004,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00005,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,US,4,00:06:16,FALSE,NON
+S00006,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,4,00:00:33,FALSE,NON
+S00007,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00008,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00009,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,5,00:01:07,FALSE,NON
+S00010,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00011,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,5,00:01:34,FALSE,NON
+S00012,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00013,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00014,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00015,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,3,00:05:57,FALSE,NON
+S00016,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,US,3,00:00:34,FALSE,NON
+S00017,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00018,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00019,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,1,00:02:37,TRUE,NON
+S00020,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,5,00:04:49,FALSE,NON
+S00021,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00022,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,3,00:03:11,FALSE,NON
+S00023,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00024,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,US,1,00:00:00,TRUE,NON
+S00025,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,5,00:06:23,FALSE,NON
+S00026,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,4,00:02:55,FALSE,NON
+S00027,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,5,00:03:44,FALSE,NON
+S00028,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,US,1,00:00:00,TRUE,NON
+S00029,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,4,00:05:06,FALSE,NON
+S00030,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00031,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,3,00:05:11,FALSE,NON
+S00032,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,4,00:04:17,FALSE,NON
+S00033,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,2,00:01:02,FALSE,NON
+S00034,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00035,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,4,00:00:52,FALSE,NON
+S00036,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,US,5,00:06:11,FALSE,NON
+S00037,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,1,00:02:07,TRUE,NON
+S00038,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00039,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00040,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,5,00:04:46,FALSE,NON
+S00041,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00042,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,US,3,00:04:55,FALSE,NON
+S00043,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,3,00:02:27,FALSE,NON
+S00044,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,3,00:05:35,FALSE,NON
+S00045,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00046,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00047,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00048,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,3,00:03:43,FALSE,NON
+S00049,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,3,00:03:34,FALSE,NON
+S00050,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,CA,3,00:00:18,FALSE,NON
+S00051,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,4,00:06:37,FALSE,NON
+S00052,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,US,1,00:00:00,TRUE,NON
+S00053,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,1,00:04:48,TRUE,NON
+S00054,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00055,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00056,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00057,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,3,00:03:02,FALSE,NON
+S00058,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,US,2,00:06:40,FALSE,NON
+S00059,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,3,00:00:24,FALSE,NON
+S00060,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,5,00:00:35,FALSE,NON
+S00061,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,4,00:01:33,FALSE,OUI
+S00062,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00063,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,4,00:05:25,FALSE,NON
+S00064,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00065,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,3,00:06:21,FALSE,OUI
+S00066,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00067,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00068,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,4,00:00:36,FALSE,NON
+S00069,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,4,00:05:46,FALSE,OUI
+S00070,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00071,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,5,00:01:33,FALSE,OUI
+S00072,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,US,4,00:04:50,FALSE,NON
+S00073,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00074,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,1,00:00:59,TRUE,NON
+S00075,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00076,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,US,4,00:05:27,FALSE,NON
+S00077,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00078,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,2,00:05:20,FALSE,NON
+S00079,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,US,1,00:00:00,TRUE,NON
+S00080,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,US,5,00:04:18,FALSE,NON
+S00081,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00082,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,2,00:04:17,FALSE,NON
+S00083,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,US,2,00:03:15,FALSE,NON
+S00084,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00085,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,5,00:01:49,FALSE,NON
+S00086,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,4,00:05:20,FALSE,NON
+S00087,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00088,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00089,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,4,00:02:44,FALSE,NON
+S00090,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,US,1,00:00:00,TRUE,NON
+S00091,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,US,1,00:02:24,TRUE,NON
+S00092,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,3,00:04:26,FALSE,NON
+S00093,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,1,00:02:50,TRUE,NON
+S00094,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00095,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,4,00:05:20,FALSE,NON
+S00096,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,US,2,00:05:16,FALSE,NON
+S00097,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00098,,,CA,,00:00:01,,
+S00099,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00100,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,US,3,00:06:07,FALSE,NON
+S00101,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,5,00:04:07,FALSE,NON
+S00102,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00103,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,US,5,00:01:56,FALSE,OUI
+S00104,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,2,00:01:27,FALSE,NON
+S00105,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,4,00:06:38,FALSE,NON
+S00106,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,5,00:03:41,FALSE,NON
+S00107,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,US,4,00:00:35,FALSE,NON
+S00108,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00109,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00110,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,4,00:00:35,FALSE,NON
+S00111,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,US,1,00:03:58,TRUE,NON
+S00112,,,,,00:00:02,,
+S00113,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,5,00:01:08,FALSE,NON
+S00114,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,5,00:03:40,FALSE,NON
+S00115,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,1,00:03:41,TRUE,NON
+S00116,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,3,00:03:46,FALSE,NON
+S00117,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,5,00:04:01,FALSE,NON
+S00118,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,US,3,00:06:12,FALSE,OUI
+S00119,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00120,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,5,00:01:36,FALSE,NON
+S00121,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,US,1,00:01:13,TRUE,NON
+S00122,,,CA,,00:00:03,,
+S00123,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00124,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,US,3,00:04:22,FALSE,NON
+S00125,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,1,00:04:35,TRUE,NON
+S00126,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00127,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,2,00:04:34,FALSE,NON
+S00128,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00129,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,US,4,00:05:11,FALSE,NON
+S00130,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,US,2,00:03:05,FALSE,NON
+S00131,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,US,1,00:02:17,TRUE,NON
+S00132,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,US,1,00:00:00,TRUE,NON
+S00133,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,3,00:05:54,FALSE,NON
+S00134,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,4,00:03:04,FALSE,NON
+S00135,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,3,00:00:22,FALSE,NON
+S00136,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00137,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,5,00:00:56,FALSE,NON
+S00138,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00139,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,US,5,00:06:22,FALSE,NON
+S00140,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00141,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00142,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,CA,1,00:06:15,TRUE,NON
+S00143,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00144,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,3,00:01:29,FALSE,NON
+S00145,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,US,1,00:00:00,TRUE,NON
+S00146,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,3,00:05:13,FALSE,NON
+S00147,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,2,00:05:56,FALSE,NON
+S00148,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00149,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,5,00:04:54,FALSE,OUI
+S00150,,,,,00:00:03,,
+S00151,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,2,00:01:56,FALSE,NON
+S00152,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00153,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,4,00:03:18,FALSE,NON
+S00154,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,CA,2,00:00:19,FALSE,NON
+S00155,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00156,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00157,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,4,00:02:23,FALSE,NON
+S00158,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00159,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,3,00:00:32,FALSE,NON
+S00160,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,US,2,00:06:37,FALSE,NON
+S00161,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,4,00:03:22,FALSE,NON
+S00162,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,CA,2,00:06:37,FALSE,NON
+S00163,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00164,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,US,1,00:02:10,TRUE,NON
+S00165,,,,,00:00:00,,
+S00166,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,2,00:04:49,FALSE,NON
+S00167,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,4,00:03:30,FALSE,OUI
+S00168,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,4,00:05:02,FALSE,NON
+S00169,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,5,00:04:12,FALSE,NON
+S00170,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,US,1,00:00:00,TRUE,NON
+S00171,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,US,4,00:01:24,FALSE,NON
+S00172,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,3,00:05:15,FALSE,NON
+S00173,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,4,00:03:43,FALSE,OUI
+S00174,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,CA,3,00:02:15,FALSE,OUI
+S00175,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,5,00:03:18,FALSE,NON
+S00176,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,3,00:01:01,FALSE,NON
+S00177,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,1,00:02:19,TRUE,NON
+S00178,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,1,00:04:58,TRUE,NON
+S00179,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,2,00:01:30,FALSE,NON
+S00180,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00181,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00182,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00183,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,US,1,00:04:18,TRUE,NON
+S00184,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,US,4,00:01:10,FALSE,NON
+S00185,,,CA,,00:00:02,,
+S00186,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,US,1,00:03:40,TRUE,NON
+S00187,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,5,00:04:02,FALSE,NON
+S00188,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00189,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,US,4,00:02:45,FALSE,NON
+S00190,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,5,00:05:48,FALSE,NON
+S00191,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00192,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,3,00:03:47,FALSE,NON
+S00193,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,US,2,00:01:33,FALSE,NON
+S00194,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00195,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00196,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,4,00:05:02,FALSE,NON
+S00197,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,5,00:00:41,FALSE,NON
+S00198,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,4,00:02:03,FALSE,NON
+S00199,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,2,00:04:59,FALSE,NON
+S00200,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,US,4,00:02:10,FALSE,NON
+S00201,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00202,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00203,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00204,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,5,00:02:53,FALSE,NON
+S00205,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,US,4,00:05:51,FALSE,OUI
+S00206,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,US,1,00:02:05,TRUE,NON
+S00207,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00208,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,4,00:00:58,FALSE,OUI
+S00209,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,5,00:00:56,FALSE,NON
+S00210,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,3,00:03:47,FALSE,NON
+S00211,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,3,00:01:11,FALSE,NON
+S00212,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,5,00:02:52,FALSE,NON
+S00213,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00214,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,2,00:02:03,FALSE,NON
+S00215,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,2,00:01:16,FALSE,NON
+S00216,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00217,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00218,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,US,1,00:05:09,TRUE,NON
+S00219,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,2,00:01:13,FALSE,NON
+S00220,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,US,1,00:05:31,TRUE,NON
+S00221,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00222,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00223,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,US,1,00:00:00,TRUE,NON
+S00224,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,2,00:06:36,FALSE,NON
+S00225,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00226,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,2,00:03:14,FALSE,NON
+S00227,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,2,00:01:56,FALSE,NON
+S00228,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,US,1,00:05:36,TRUE,NON
+S00229,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,4,00:04:04,FALSE,NON
+S00230,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,US,3,00:00:49,FALSE,NON
+S00231,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,4,00:00:43,FALSE,NON
+S00232,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00233,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,US,4,00:05:19,FALSE,NON
+S00234,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,3,00:05:07,FALSE,NON
+S00235,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00236,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00237,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,US,1,00:00:00,TRUE,NON
+S00238,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00239,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00240,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,5,00:05:21,FALSE,NON
+S00241,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,US,2,00:01:03,FALSE,NON
+S00242,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00243,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00244,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00245,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,5,00:03:03,FALSE,NON
+S00246,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00247,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,US,1,00:00:00,TRUE,NON
+S00248,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,2,00:02:53,FALSE,NON
+S00249,,,,,00:00:03,,
+S00250,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00251,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,5,00:04:44,FALSE,NON
+S00252,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00253,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,3,00:01:33,FALSE,NON
+S00254,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,US,1,00:00:37,TRUE,NON
+S00255,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,3,00:05:27,FALSE,NON
+S00256,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,4,00:02:17,FALSE,NON
+S00257,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,US,2,00:06:02,FALSE,NON
+S00258,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,US,3,00:04:32,FALSE,NON
+S00259,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00260,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00261,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00262,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,5,00:04:39,FALSE,NON
+S00263,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,3,00:04:37,FALSE,NON
+S00264,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,3,00:03:13,FALSE,NON
+S00265,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00266,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,2,00:01:05,FALSE,NON
+S00267,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,US,1,00:00:00,TRUE,NON
+S00268,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,US,5,00:04:15,FALSE,NON
+S00269,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00270,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,US,1,00:00:00,TRUE,NON
+S00271,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00272,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,3,00:00:47,FALSE,NON
+S00273,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00274,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,3,00:00:15,FALSE,NON
+S00275,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,4,00:03:19,FALSE,NON
+S00276,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,US,4,00:00:25,FALSE,NON
+S00277,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,2,00:02:24,FALSE,NON
+S00278,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,2,00:02:18,FALSE,NON
+S00279,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00280,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00281,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,5,00:04:20,FALSE,NON
+S00282,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00283,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,US,2,00:02:53,FALSE,NON
+S00284,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00285,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:01:52,TRUE,NON
+S00286,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,5,00:03:04,FALSE,OUI
+S00287,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,5,00:04:00,FALSE,NON
+S00288,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,2,00:04:40,FALSE,NON
+S00289,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00290,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,3,00:05:23,FALSE,NON
+S00291,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,2,00:05:53,FALSE,NON
+S00292,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,5,00:03:53,FALSE,NON
+S00293,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,US,5,00:03:15,FALSE,NON
+S00294,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00295,,,CA,,00:00:03,,
+S00296,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,US,1,00:00:00,TRUE,NON
+S00297,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,1,00:03:22,TRUE,NON
+S00298,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,US,1,00:00:00,TRUE,NON
+S00299,,,,,00:00:03,,
+S00300,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,US,1,00:00:00,TRUE,NON
+S00301,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:28,TRUE,NON
+S00302,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Cogeco Cable,CA,4,00:01:15,FALSE,NON
+S00303,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,US,4,00:02:41,FALSE,NON
+S00304,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,US,3,00:01:43,FALSE,NON
+S00305,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00306,,,,,00:00:02,,
+S00307,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,4,00:02:43,FALSE,NON
+S00308,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,2,00:04:35,FALSE,NON
+S00309,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,US,1,00:00:00,TRUE,NON
+S00310,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,US,4,00:03:23,FALSE,NON
+S00311,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,US,1,00:00:00,TRUE,NON
+S00312,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00313,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,3,00:03:44,FALSE,OUI
+S00314,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,3,00:04:13,FALSE,OUI
+S00315,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00316,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,US,1,00:01:21,TRUE,NON
+S00317,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00318,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,5,00:02:10,FALSE,NON
+S00319,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00320,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,4,00:04:48,FALSE,NON
+S00321,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00322,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00323,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00324,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,3,00:05:31,FALSE,NON
+S00325,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,US,5,00:02:49,FALSE,NON
+S00326,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00327,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00328,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,3,00:01:59,FALSE,NON
+S00329,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,US,5,00:03:11,FALSE,OUI
+S00330,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,US,1,00:00:00,TRUE,NON
+S00331,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00332,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,4,00:03:49,FALSE,NON
+S00333,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00334,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00335,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00336,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,US,1,00:00:00,TRUE,NON
+S00337,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,3,00:00:26,FALSE,NON
+S00338,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00339,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,4,00:05:49,FALSE,NON
+S00340,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,3,00:01:23,FALSE,NON
+S00341,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00342,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,US,1,00:00:00,TRUE,NON
+S00343,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,4,00:06:03,FALSE,OUI
+S00344,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,2,00:05:00,FALSE,NON
+S00345,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,US,4,00:04:35,FALSE,NON
+S00346,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,US,5,00:03:05,FALSE,NON
+S00347,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00348,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,5,00:02:48,FALSE,NON
+S00349,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,5,00:05:03,FALSE,NON
+S00350,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,US,5,00:01:11,FALSE,NON
+S00351,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,4,00:04:17,FALSE,NON
+S00352,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,4,00:02:11,FALSE,NON
+S00353,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,3,00:01:30,FALSE,OUI
+S00354,,,CA,,00:00:01,,
+S00355,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,US,3,00:01:32,FALSE,NON
+S00356,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,CA,3,00:06:31,FALSE,NON
+S00357,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,US,2,00:05:54,FALSE,NON
+S00358,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00359,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,4,00:04:22,FALSE,NON
+S00360,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,1,00:02:47,TRUE,NON
+S00361,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,2,00:04:20,FALSE,NON
+S00362,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,US,2,00:01:17,FALSE,NON
+S00363,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00364,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00365,,,CA,,00:00:02,,
+S00366,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00367,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00368,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00369,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00370,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00371,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,5,00:04:16,FALSE,NON
+S00372,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Telus Communications,US,1,00:00:00,TRUE,NON
+S00373,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,2,00:02:59,FALSE,NON
+S00374,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,CA,5,00:05:08,FALSE,NON
+S00375,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,CA,1,00:00:00,TRUE,NON
+S00376,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00377,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,3,00:01:50,FALSE,NON
+S00378,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,4,00:01:09,FALSE,NON
+S00379,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00380,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,CA,1,00:04:14,TRUE,NON
+S00381,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,US,2,00:01:38,FALSE,NON
+S00382,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,1,00:02:46,TRUE,NON
+S00383,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,3,00:04:38,FALSE,OUI
+S00384,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00385,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,CA,1,00:00:00,TRUE,NON
+S00386,,,,,00:00:00,,
+S00387,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Rogers Communications,CA,5,00:02:15,FALSE,NON
+S00388,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,3,00:06:06,FALSE,NON
+S00389,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,2,00:05:29,FALSE,NON
+S00390,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,US,3,00:01:33,FALSE,NON
+S00391,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,5,00:04:56,FALSE,NON
+S00392,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00393,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00394,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00395,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00396,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,US,1,00:00:00,TRUE,NON
+S00397,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,US,5,00:05:13,FALSE,OUI
+S00398,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,US,3,00:01:22,FALSE,NON
+S00399,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,CA,5,00:02:52,FALSE,NON
+S00400,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00401,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,1,00:00:00,TRUE,NON
+S00402,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,US,1,00:00:50,TRUE,NON
+S00403,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,1,00:05:43,TRUE,NON
+S00404,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,US,3,00:03:28,FALSE,OUI
+S00405,,,CA,,00:00:02,,
+S00406,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,3,00:04:45,FALSE,NON
+S00407,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,US,1,00:04:12,TRUE,NON
+S00408,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00409,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Videotron Ltee,CA,1,00:03:49,TRUE,NON
+S00410,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Videotron Ltee,US,1,00:00:00,TRUE,NON
+S00411,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Videotron Ltee,US,1,00:03:40,TRUE,NON
+S00412,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00413,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Telus Communications,CA,2,00:05:10,FALSE,NON
+S00414,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,5,00:04:41,FALSE,NON
+S00415,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,4,00:06:31,FALSE,NON
+S00416,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Cogeco Cable,US,1,00:05:44,TRUE,NON
+S00417,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,US,5,00:03:48,FALSE,OUI
+S00418,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Telus Communications,CA,3,00:02:18,FALSE,NON
+S00419,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Cogeco Cable,US,1,00:00:00,TRUE,NON
+S00000,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Videotron Ltee,CA,5,00:04:58,FALSE,NON
+S00001,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00002,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Rogers Communications,US,1,00:00:00,TRUE,NON
+S00003,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00004,"Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",Rogers Communications,CA,1,00:00:00,TRUE,NON
+S00005,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Cogeco Cable,US,4,00:06:16,FALSE,NON
+S00006,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",Bell Canada,CA,4,00:00:33,FALSE,NON
+S00007,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Bell Canada,CA,1,00:00:00,TRUE,NON
+S00008,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00009,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",Bell Canada,CA,5,00:01:07,FALSE,NON
+S00010,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON
+S00011,"Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",Telus Communications,CA,5,00:01:34,FALSE,NON
+S00012,"""Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0, +bot-check""",Hetzner Online GmbH,DE,1,00:00:00,TRUE,NON
+S00013,Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html),Google LLC,US,1,00:00:00,TRUE,NON
+S00014,python-requests/2.31.0,OVH SAS,FR,1,00:00:00,TRUE,NON

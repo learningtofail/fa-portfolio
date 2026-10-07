@@ -1,0 +1,56 @@
+[
+  {
+    "file": "03_happy_multivariate_saas_demo_agg.csv",
+    "label": "Demo page, three elements",
+    "kind": "happy",
+    "note": "Choose Multivariate with one row per combination, and untick the conversions column as a factor. The ROI-led headline beats the original by about 0.46 points, and the other elements do not matter."
+  },
+  {
+    "file": "04b_messy_travel_booking_value_raw.csv",
+    "label": "Booking value with mixed formats",
+    "kind": "messy",
+    "note": "Values like \"$1,234.50\", \"412,35\" and refunds in brackets, with blanks for non-bookers. Read blank as zero and the decimal comma as a decimal; the true difference per visitor is tiny (about +1%) and not significant."
+  },
+  {
+    "file": "06_trap_peeking_aa_leadgen_daily.csv",
+    "label": "A/A test checked every day",
+    "kind": "trap",
+    "note": "Both groups are the same, yet checking daily can show a false win. Decide the test length before you start."
+  },
+  {
+    "file": "06b_peeking_day14_snapshot_summary.csv",
+    "label": "Day 14 snapshot",
+    "kind": "trap",
+    "note": "Type the two rows into the summary table. It looks like a win with p near 0.03, but it is noise from stopping early."
+  },
+  {
+    "file": "06c_peeking_day21_final_summary.csv",
+    "label": "Day 21 final result",
+    "kind": "trap",
+    "note": "The same test at the planned end. The difference is gone (p near 0.35), which is the honest answer."
+  },
+  {
+    "file": "08_trap_tiny_sample_healthcare_summary.csv",
+    "label": "Tiny sample, 2 versus 9 events",
+    "kind": "trap",
+    "note": "60 visitors per group. A standard test calls it significant, but an exact test gives p of about 0.053, so nine events against two is not enough to act on."
+  },
+  {
+    "file": "09_multiple_comparisons_8_variants_summary.csv",
+    "label": "Eight variants, one looks best",
+    "kind": "happy",
+    "note": "The best variant is up 14% but adjusted for eight comparisons it is not significant. A correct tool says no clear winner."
+  },
+  {
+    "file": "10_trap_multivariate_crossover_interaction_agg.csv",
+    "label": "Headline and image crossover",
+    "kind": "trap",
+    "note": "Some pairings win and others lose by about 40%, which cancels out on average. Look at the interaction, not just the overall verdict; conversions column is \"signups\"."
+  },
+  {
+    "file": "11_unequal_split_90_10_summary.csv",
+    "label": "90/10 holdout",
+    "kind": "happy",
+    "note": "Enter 90,10 as the planned split. With the split declared, the result is clean and not significant; leave it empty and you get a false warning."
+  }
+]

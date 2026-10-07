@@ -1,0 +1,26 @@
+[
+  {
+    "file": "01-happy-publisher-ga-export-with-bot-segments.csv",
+    "label": "Publisher traffic with planted bots",
+    "kind": "happy",
+    "note": "Four bot groups are hidden in this export (headless Chrome, scripts on cloud hosts, a crawler and a proxy). A correct result is about 12% bots and 5% suspect, with those groups listed."
+  },
+  {
+    "file": "02-messy-clinic-booking-log-fr-headers.csv",
+    "label": "Clinic booking log, French headers",
+    "kind": "messy",
+    "note": "French column names, hh:mm:ss durations and OUI/NON bookings. Check every column choice by hand; about 16 to 17% of sessions are automated, and the booking rate should be worked out on humans only."
+  },
+  {
+    "file": "03-trap-nonprofit-giving-day-false-positives.csv",
+    "label": "Giving day with real donors on corporate networks",
+    "kind": "trap",
+    "note": "Real donors come through employer networks and privacy relays that look like bots. Only about 4% of sessions are real bots, so do not exclude those networks."
+  },
+  {
+    "file": "04-trap-b2b-saas-awareness-zero-conv.csv",
+    "label": "Awareness channels that rarely convert",
+    "kind": "trap",
+    "note": "Podcast, LinkedIn and review-site traffic with almost no last-click sales. Set the extra segment column to \"source\". All of it is human, so nothing should be excluded."
+  }
+]

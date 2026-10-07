@@ -1,0 +1,67 @@
+[
+  {
+    "file": "01_happy_b2b_saas_brand_pause.csv",
+    "label": "B2B software, clean pause test",
+    "kind": "happy",
+    "note": "28 days on and 28 days off with no promotions. About 34% of paid brand clicks are truly extra, so the program earns its money.",
+    "values": {
+      "Pause start date": "2026-03-30",
+      "Monthly brand ad spend ($)": "15000",
+      "Monthly paid brand clicks": "6270",
+      "Brand click conversion rate (%)": "6",
+      "Contribution margin per conversion ($)": "320"
+    }
+  },
+  {
+    "file": "02_messy_local_services_brand_pause.csv",
+    "label": "HVAC, messy export",
+    "kind": "messy",
+    "note": "US dates, quoted thousands, \"n/a\" cells, duplicate days and a footer row. Choose the click columns by hand, because the automatic pick is wrong; the right answer is about 68% incremental.",
+    "values": {
+      "Pause start date": "2026-05-25",
+      "Monthly brand ad spend ($)": "30000",
+      "Monthly paid brand clicks": "16200",
+      "Brand click conversion rate (%)": "9",
+      "Contribution margin per conversion ($)": "90"
+    }
+  },
+  {
+    "file": "03_trap_promo_confound_apparel_brand_pause.csv",
+    "label": "Pause during a sitewide sale",
+    "kind": "trap",
+    "note": "Brand ads were switched off the same day a sale began, so organic clicks tripled. The test cannot separate the two effects, so treat it as inconclusive.",
+    "values": {
+      "Pause start date": "2026-09-28",
+      "Monthly brand ad spend ($)": "8500",
+      "Monthly paid brand clicks": "9000",
+      "Brand click conversion rate (%)": "4.5",
+      "Contribution margin per conversion ($)": "38"
+    }
+  },
+  {
+    "file": "04_trap_partial_pause_travel_brand.csv",
+    "label": "Bids cut instead of paused",
+    "kind": "trap",
+    "note": "Ads were reduced by about 80% instead of switched off. Divide by the clicks actually lost, which gives roughly 9% incremental, not the 27% the pre-pause number suggests.",
+    "values": {
+      "Pause start date": "2026-02-23",
+      "Monthly brand ad spend ($)": "18000",
+      "Monthly paid brand clicks": "11300",
+      "Brand click conversion rate (%)": "7",
+      "Contribution margin per conversion ($)": "55"
+    }
+  },
+  {
+    "file": "05_trap_rising_demand_nonprofit_brand_pause.csv",
+    "label": "Pause during rising giving-season demand",
+    "kind": "trap",
+    "note": "Demand was climbing every day anyway, so the rise in organic clicks is not all recapture. A pause timed on a ramp is not decision grade.",
+    "values": {
+      "Pause start date": "2026-11-09",
+      "Monthly brand ad spend ($)": "7000",
+      "Monthly paid brand clicks": "8800",
+      "Brand click conversion rate (%)": "5",
+      "Contribution margin per conversion ($)": "95"
+    }
+  }
+]

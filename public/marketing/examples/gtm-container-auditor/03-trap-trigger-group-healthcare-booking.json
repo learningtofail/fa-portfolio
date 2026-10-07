@@ -1,0 +1,281 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2026-09-30 10:14:52",
+  "containerVersion": {
+    "path": "accounts/6012345678/containers/98765432/versions/0",
+    "accountId": "6012345678",
+    "containerId": "98765432",
+    "containerVersionId": "0",
+    "container": {
+      "path": "accounts/6012345678/containers/98765432",
+      "accountId": "6012345678",
+      "containerId": "98765432",
+      "name": "clinicflow-booking.example",
+      "publicId": "GTM-CF2J7LP",
+      "usageContext": [
+        "WEB"
+      ],
+      "fingerprint": "1700000000000",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/6012345678/containers/98765432/workspaces?apiLink=container"
+    },
+    "tag": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "tagId": "1",
+        "name": "Google tag - GA4",
+        "type": "googtag",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "tagId",
+            "value": "G-CLIN12345"
+          }
+        ],
+        "firingTriggerId": [
+          "2147479553"
+        ],
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "tagId": "2",
+        "name": "GA4 - booking_complete",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "booking_complete"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "G-CLIN12345"
+          }
+        ],
+        "firingTriggerId": [
+          "50"
+        ],
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "tagId": "3",
+        "name": "Nurse-line click-to-call",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "call_click"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "G-CLIN12345"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "phone_dest",
+            "value": "{{JS - clinic by page}}"
+          }
+        ],
+        "firingTriggerId": [
+          "60"
+        ],
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "triggerId": "51",
+        "name": "CE - form_step_3_seen",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "form_step_3"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "triggerId": "52",
+        "name": "CE - consent_given",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "consent_given"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "triggerId": "50",
+        "name": "Group - step 3 AND consent",
+        "type": "TRIGGER_GROUP",
+        "parameter": [
+          {
+            "type": "LIST",
+            "key": "triggerIds",
+            "list": [
+              {
+                "type": "TRIGGER_REFERENCE",
+                "value": "51"
+              },
+              {
+                "type": "TRIGGER_REFERENCE",
+                "value": "52"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "triggerId": "60",
+        "name": "Click - tel links",
+        "type": "LINK_CLICK",
+        "autoEventFilter": [
+          {
+            "type": "STARTS_WITH",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{Click URL}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "tel:"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "variableId": "1",
+        "name": "JS - clinic by page",
+        "type": "jsm",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "javascript",
+            "value": "function(){var m={\"/toronto\":\"+1-416-000-0000\",\"/montreal\":\"+1-514-000-0000\"};return m[location.pathname]||\"\";}"
+          }
+        ]
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "variableId": "2",
+        "name": "Const - CMP vendor id",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "cmp-882"
+          }
+        ]
+      }
+    ],
+    "builtInVariable": [
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "type": "PAGE_URL",
+        "name": "Page URL"
+      },
+      {
+        "accountId": "6012345678",
+        "containerId": "98765432",
+        "fingerprint": "1700000000000",
+        "type": "CLICK_URL",
+        "name": "Click URL"
+      }
+    ],
+    "folder": [],
+    "fingerprint": "1700000000000",
+    "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/6012345678/containers/98765432/versions/0?apiLink=version"
+  }
+}
