@@ -1,0 +1,43 @@
+Search term,Match type,Added/Excluded,Campaign,Ad group,Currency code,Clicks,Impr.,Cost,Conv. rate,Conversions,Cost / conv.
+taskly,Exact match (close variant),Added,Brand,Brand Core,USD,210,980,412.30,,61,
+taskly pricing,Exact match,Added,Brand,Brand Core,USD,88,300,151.20,,19,
+taskly login,Phrase match (close variant),None,Brand,Brand Core,USD,340,900,121.77,,0,
+TASKLY REVIEWS,Broad match,None,Brand,Brand Core,USD,45,260,88.02,,6,
+project management software,Phrase match,Added,NB Core,PM software,USD,402,"9,100","1,642.50",,18,
+project management software for small teams,Phrase match (close variant),None,NB Core,PM software,USD,130,"3,100",588.10,,9,
+  best task management app ,Broad match,None,NB Core,Task app,USD,96,"4,200",402.00,,4,
+asana alternative,Phrase match,Added,Competitor,Alt,USD,61,"1,400",233.00,,3,
+monday.com login,Broad match,None,Competitor,Alt,USD,57,"1,500",210.54,,0,
+free project management software,Broad match,None,NB Core,PM software,USD,233,"6,100",702.10,,0,
+free project management template excel,Broad match,None,NB Core,PM software,USD,77,"2,900",160.00,,0,
+project manager jobs remote,Broad match,None,NB Core,PM software,USD,64,"3,300",180.20,,0,
+project management certification pmp,Broad match,None,NB Core,PM software,USD,91,"4,100",255.40,,0,
+what is project management,Broad match,None,NB Core,PM software,USD,50,"5,200",96.00,,0,
+jira vs trello vs asana,Broad match,None,NB Core,PM software,USD,38,"1,900",120.00,,1,
+construction project management app,Broad match,None,NB Core,PM software,USD,58,"2,500",266.10,,0,
+gantt chart template,Broad match,None,NB Core,Task app,USD,71,"3,600",143.00,,0,
+task tracker spreadsheet,Phrase match,None,NB Core,Task app,USD,44,"2,100",105.00,,0,
+"project management tools ""enterprise""",Exact match,None,NB Core,PM software,USD,12,150,61.00,,2,
++project +management +software,Broad match,None,NB Core,PM software,USD,9,200,30.10,,0,
+free project management software,Broad match,None,NB Test,PM software,USD,20,500,41.00,0%,0,--
+task app query 1,Broad match,None,NB Core,Task app,USD,2,44,2.89,0.0%,0,--
+task app query 2,Broad match,None,NB Core,Task app,USD,2,74,3.23,0.0%,0,--
+task app query 3,Broad match,None,NB Core,Task app,USD,3,120,9.00,--,0,--
+task app query 4,Broad match,None,NB Core,Task app,USD,1,25,3.16,--,0,--
+task app query 5,Broad match,None,NB Core,Task app,USD,5,180,13.60,0.0%,0,--
+task app query 6,Broad match,None,NB Core,Task app,USD,1,33,2.99,0.0%,0,--
+task app query 7,Broad match,None,NB Core,Task app,USD,3,84,5.23,0.0%,0,--
+task app query 8,Broad match,None,NB Core,Task app,USD,5,155,15.44,0.0%,0,--
+task app query 9,Broad match,None,NB Core,Task app,USD,5,80,13.29,0.0%,0,--
+task app query 10,Broad match,None,NB Core,Task app,USD,3,60,9.37,0.0%,0,--
+task app query 11,Broad match,None,NB Core,Task app,USD,7,245,16.29,--,0,--
+task app query 12,Broad match,None,NB Core,Task app,USD,3,108,7.94,0.0%,0,--
+task app query 13,Broad match,None,NB Core,Task app,USD,3,96,9.07,0.0%,0,--
+task app query 14,Broad match,None,NB Core,Task app,USD,3,93,5.74,0.0%,0,--
+task app query 15,Broad match,None,NB Core,Task app,USD,4,144,12.26,--,0,--
+task app query 16,Broad match,None,NB Core,Task app,USD,5,130,10.57,--,0,--
+task app query 17,Broad match,None,NB Core,Task app,USD,5,170,12.05,0.0%,0,--
+task app query 18,Broad match,None,NB Core,Task app,USD,7,252,21.13,0.0%,0,--
+Other search terms,,,,,USD,412,15200,"1,010.44",,4,
+Total: Search terms,--,--,--,--,,"3,500","95,000","7,700.00",,140,
+Total: Account,--,--,--,--,,"5,100","120,000","9,000.00",,170,

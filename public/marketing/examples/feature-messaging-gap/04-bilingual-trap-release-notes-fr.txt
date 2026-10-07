@@ -1,0 +1,5 @@
+- Ajout de l'exportation CSV en masse pour les rapports
+- Nouvelles autorisations par rôle pour les espaces de travail
+- Envoi planifié des rapports vers Slack
+- Authentification à deux facteurs
+- Mode sombre pour le tableau de bord

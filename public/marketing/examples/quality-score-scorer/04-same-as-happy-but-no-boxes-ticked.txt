@@ -1,0 +1,32 @@
+SCENARIO: Identical to sample 01 but the user did not tick any manual box (they have not audited speed, mobile, assets). The tool cannot distinguish unchecked from failed.
+
+Target keyword:
+tuscany villa rental
+
+Ad headlines (one per line):
+Tuscany Villa Rental
+140 Inspected Villas With Pools
+Free Date Changes to 30 Days
+Chianti, Siena and Maremma
+From 1,350 EUR per Week
+Local Host in Every Villa
+Book With No Booking Fee
+Rated 4.8 by 3,100 Guests
+
+Ad descriptions (one per line):
+Compare private villas in Tuscany by region, bedrooms and pool. Weekly prices shown up front.
+Request your dates today. We confirm availability within 24 hours and charge no booking fee.
+
+Display path / final URL:
+example-villas.com/tuscany/villa-rental
+
+Page title:
+Tuscany Villa Rental | 140 Inspected Villas | Example Villas
+
+H1 heading:
+Tuscany Villa Rental
+
+Visible page text:
+Find your private villa in Tuscany. Our Tuscany villa rental collection covers 140 hand-inspected properties between Florence and Siena, from two-bedroom farmhouses to twelve-guest estates with pools. Every villa listing shows the weekly price, the exact distance to the nearest village, and photos taken by our own inspectors. Book a Tuscany villa rental with free date changes up to 30 days before arrival. Prices in July and August start at 2,400 euros per week; spring and autumn weeks start at 1,350 euros. Choose by region, number of bedrooms, pool, or pet policy. Each villa has a local host who answers the phone in English, Italian and German. Our guests rate their stay 4.8 out of 5 across 3,100 verified reviews. Chianti villas sit among vineyards with cellar tours included. Val d'Orcia villas have views of the cypress-lined hills. Maremma villas are 20 minutes from the beach. Compare villas side by side, save favourites, and send a request to the host without paying a booking fee. We confirm availability within 24 hours. Deposit is 30 percent; the balance is due 60 days before arrival. Cancel for a full refund up to 60 days out. Frequently asked questions cover cleaning fees, arrival times, linen, local taxes, and how to reach each property from Pisa and Florence airports. Contact our Florence office Monday to Friday, or write to us at any time. Read our privacy policy and terms before booking.
+
+Tick these checklist boxes (0-based index, then label):

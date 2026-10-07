@@ -1,0 +1,43 @@
+SCENARIO: Regulated health vertical trap. Fabricated cure claims, keyword stuffing, no real content, every box ticked. Google would disapprove the ads (healthcare and misleading claims policies) and the page is a doorway. The tool should not give this a high score.
+
+Target keyword:
+cure diabetes fast
+
+Ad headlines (one per line):
+Cure Diabetes Fast
+Cure Diabetes Fast in 7 Days
+Diabetes Cure Supplement
+Doctors Hate This Diabetes Cure
+Stop Insulin Now
+Cure Diabetes Fast Naturally
+Cure Diabetes Fast Online
+Buy Diabetes Cure Today
+
+Ad descriptions (one per line):
+Cure diabetes fast with our natural diabetes cure supplement. Stop insulin in 7 days. Order today.
+Miracle cure diabetes fast. 100 percent guaranteed. Free shipping. Buy now.
+
+Display path / final URL:
+cure-diabetes-fast.example/cure-diabetes-fast
+
+Page title:
+Cure Diabetes Fast | Diabetes Cure Supplement | Buy Now
+
+H1 heading:
+Cure Diabetes Fast
+
+Visible page text:
+Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. Miracle diabetes cure. Diabetes cure fast. Cure diabetes naturally in 7 days. Best diabetes cure. Diabetes cure supplement. Buy diabetes cure online. 
+
+Tick these checklist boxes (0-based index, then label):
+  [0] Ad includes a clear offer, price or differentiator
+  [1] Ad has a strong call to action
+  [2] Ad uses ad assets (sitelinks, callouts, structured snippets)
+  [3] Keyword is in a match type that fits its intent (not broad on a head term)
+  [4] Page loads in under 3 seconds on mobile
+  [5] Page is mobile responsive with tap-friendly buttons
+  [6] Call to action is visible above the fold
+  [7] Page has clear navigation, privacy policy and contact details
+  [8] Page uses HTTPS with no intrusive pop-ups or interstitials
+  [9] Page offers original, useful content about the searched topic
+  [10] Ad group holds a tight theme (under 15 closely related keywords)

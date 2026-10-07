@@ -1,0 +1,103 @@
+[
+  {
+    "label": "Fitness gear, 15% off for 5 days",
+    "kind": "happy",
+    "note": "Profit goes up by about $7,339 and warehouse use is about 78%. Break-even is a 1.9 times lift against the 2.6 planned.",
+    "values": {
+      "Regular price ($)": "80",
+      "COGS per order ($)": "24",
+      "Shipping per order ($)": "7",
+      "Pick and pack per order ($)": "2",
+      "Payment fee (%)": "2.9",
+      "Baseline orders per day": "120",
+      "Discount (%)": "15",
+      "Expected order volume multiple": "2.6",
+      "Promo duration (days)": "5",
+      "Extra marketing cost ($)": "3000",
+      "Pull-forward (% of extra orders taken from later weeks)": "20",
+      "Return rate during promo (%)": "10",
+      "Baseline return rate (%)": "8",
+      "Max orders shipped per day": "400",
+      "Support tickets per 100 orders (baseline)": "6",
+      "Ticket rate multiple during promo": "1.2",
+      "Cost per ticket ($)": "4",
+      "Support capacity (tickets per day)": "80"
+    }
+  },
+  {
+    "label": "Rates typed as fractions, blank capacity",
+    "kind": "messy",
+    "note": "Rates are entered as 0.15 instead of 15 and two capacity boxes are blank. A correct reading is that the inputs are wrong, so fix them before using any result.",
+    "values": {
+      "Regular price ($)": "80",
+      "COGS per order ($)": "24",
+      "Shipping per order ($)": "7",
+      "Pick and pack per order ($)": "2",
+      "Payment fee (%)": "0.029",
+      "Baseline orders per day": "120",
+      "Discount (%)": "0.15",
+      "Expected order volume multiple": "2.6",
+      "Promo duration (days)": "5",
+      "Extra marketing cost ($)": "3000",
+      "Pull-forward (% of extra orders taken from later weeks)": "0.2",
+      "Return rate during promo (%)": "0.1",
+      "Baseline return rate (%)": "0.08",
+      "Max orders shipped per day": "(leave blank)",
+      "Support tickets per 100 orders (baseline)": "6",
+      "Ticket rate multiple during promo": "1.2",
+      "Cost per ticket ($)": "4",
+      "Support capacity (tickets per day)": "(leave blank)"
+    }
+  },
+  {
+    "label": "Profitable promo, not enough stock",
+    "kind": "trap",
+    "note": "Only 1,800 units are on hand for 2,400 promo units. Enter the stock box: the promo runs out of stock on day 5.",
+    "values": {
+      "Regular price ($)": "80",
+      "COGS per order ($)": "24",
+      "Shipping per order ($)": "7",
+      "Pick and pack per order ($)": "2",
+      "Payment fee (%)": "2.9",
+      "Baseline orders per day": "200",
+      "Discount (%)": "10",
+      "Expected order volume multiple": "2.0",
+      "Promo duration (days)": "6",
+      "Extra marketing cost ($)": "2500",
+      "Pull-forward (% of extra orders taken from later weeks)": "15",
+      "Return rate during promo (%)": "10",
+      "Baseline return rate (%)": "8",
+      "Max orders shipped per day": "500",
+      "Support tickets per 100 orders (baseline)": "6",
+      "Ticket rate multiple during promo": "1.2",
+      "Cost per ticket ($)": "4",
+      "Support capacity (tickets per day)": "120",
+      "Orders you can fill from stock (optional)": "1800"
+    }
+  },
+  {
+    "label": "Dental package promo",
+    "kind": "trap",
+    "note": "Patients stand in for orders and chair slots for the warehouse. The red result is plausible, but clinician time and advertising rules for health services are not covered by this tool.",
+    "values": {
+      "Regular price ($)": "420",
+      "COGS per order ($)": "95",
+      "Shipping per order ($)": "0",
+      "Pick and pack per order ($)": "0",
+      "Payment fee (%)": "2.9",
+      "Baseline orders per day": "14",
+      "Discount (%)": "25",
+      "Expected order volume multiple": "2.0",
+      "Promo duration (days)": "10",
+      "Extra marketing cost ($)": "1500",
+      "Pull-forward (% of extra orders taken from later weeks)": "40",
+      "Return rate during promo (%)": "3",
+      "Baseline return rate (%)": "2",
+      "Max orders shipped per day": "22",
+      "Support tickets per 100 orders (baseline)": "15",
+      "Ticket rate multiple during promo": "1.5",
+      "Cost per ticket ($)": "8",
+      "Support capacity (tickets per day)": "6"
+    }
+  }
+]

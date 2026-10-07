@@ -1,0 +1,62 @@
+[
+  {
+    "file": "a-travel-clean.csv",
+    "label": "Travel referral program, 80 partners",
+    "kind": "happy",
+    "note": "A clean export with one partner at about 27% of revenue. A correct reading is moderate risk: the top 3 partners bring in about 48% and you need 4 partners to reach half of revenue."
+  },
+  {
+    "file": "b-nonprofit-messy.csv",
+    "label": "Fundraising partners, European export",
+    "kind": "messy",
+    "note": "Semicolons, decimal commas, euro signs, a refund in brackets, a blank partner and a \"Total\" row. Pick the columns by hand and clean those rows first; after cleaning there are 9 partners and the biggest holds about 45% of revenue, which is high risk."
+  },
+  {
+    "file": "c-fragmented-subids-trap.csv",
+    "label": "Nine sub-IDs of one network",
+    "kind": "trap",
+    "note": "Nine partner IDs that all belong to one parent network, each near 9%. Looked at one by one the risk seems low, but grouped by parent one network holds about 79% of revenue."
+  },
+  {
+    "file": "c-five-equal-partners.csv",
+    "label": "Five equal partners",
+    "kind": "trap",
+    "note": "Five partners with 20% each. Perfectly even sharing in a small program still scores as moderate risk because the score has a built-in floor, so do not read it as a warning."
+  },
+  {
+    "file": "c-three-equal-partners.csv",
+    "label": "Three equal partners",
+    "kind": "trap",
+    "note": "Three partners with a third each. A \"high risk\" label here only reflects that there are few partners, not that one of them dominates."
+  },
+  {
+    "file": "e-float-boundary-n80.csv",
+    "label": "Exactly 80% in two partners",
+    "kind": "trap",
+    "note": "Shares of 70, 10, 10 and 10 percent. The correct answer is that 2 partners reach 80% of revenue, so a result of 3 partners is a rounding error."
+  },
+  {
+    "file": "negnet.csv",
+    "label": "Partner with negative net revenue",
+    "kind": "trap",
+    "note": "One partner has refunds larger than sales. A careful reading includes that reversal in the total instead of dropping the partner."
+  },
+  {
+    "file": "onepos.csv",
+    "label": "One partner has all the revenue",
+    "kind": "trap",
+    "note": "A single partner earns everything. The right answer is 100% concentrated, not an error message."
+  },
+  {
+    "file": "preamble.csv",
+    "label": "Title lines above the header",
+    "kind": "messy",
+    "note": "An export with report title lines before the column names. Delete the lines above the header row and upload again if the columns are not found."
+  },
+  {
+    "file": "tab.tsv",
+    "label": "Tab-separated file",
+    "kind": "happy",
+    "note": "The same kind of data with tabs instead of commas. It should load normally."
+  }
+]

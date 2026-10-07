@@ -1,0 +1,44 @@
+[
+  {
+    "file": "01-leadgen-local-services-clean.csv",
+    "label": "HVAC lead gen, clean links",
+    "kind": "happy",
+    "note": "40 correctly formed links. A correct result is a score of 100 with no issues."
+  },
+  {
+    "file": "02-ecommerce-bilingual-messy-ga4-export.csv",
+    "label": "Bilingual store, GA4 export with notes",
+    "kind": "messy",
+    "note": "The comment lines at the top of a GA4 export break the reading of the Sessions column. Delete them first (see the next file); the right score is about 76."
+  },
+  {
+    "file": "02b-same-data-preamble-stripped.csv",
+    "label": "Same data, comment lines removed",
+    "kind": "messy",
+    "note": "The same rows with the preamble removed. About 78 of 181 links need fixing and 31 of them are blocking."
+  },
+  {
+    "file": "03-trap-marketplace-channel-fragmentation.csv",
+    "label": "One channel under many names",
+    "kind": "trap",
+    "note": "Facebook is spread across facebook, fb, meta, instagram and ig, and Google across several names. Neatly written values can still split one channel in your reports."
+  },
+  {
+    "file": "04-large-publisher-ga4-export-1000-rows.csv",
+    "label": "Large publisher export, 1,000 rows",
+    "kind": "happy",
+    "note": "A bigger file to try the tool at volume. Only the first rows of problems are shown on screen."
+  },
+  {
+    "file": "05-ga4-source-medium-export-unsupported.csv",
+    "label": "Source and medium report",
+    "kind": "trap",
+    "note": "This report has no links in it, so the tool cannot audit it and says no URLs were found. Export landing pages with their query strings instead."
+  },
+  {
+    "file": "06-plain-url-list-headerless-weights.txt",
+    "label": "Plain list of links",
+    "kind": "messy",
+    "note": "Just links with no header row, with optional counts. It should be audited as is."
+  }
+]

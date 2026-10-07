@@ -1,0 +1,3 @@
+variant,visitors,conversions
+control,90000,2700
+holdout,10000,310

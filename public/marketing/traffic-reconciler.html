@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -235,6 +248,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">7</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Ecommerce ads against analytics</b></div><p class="example__note">One month, one time zone. Display prospecting is the real outlier at about 47%, and the other campaigns are fine.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/traffic-reconciler/01-happy-ecommerce-ads-vs-ga4.csv" download>Download 01-happy-ecommerce-ads-vs-ga4.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Roofing lead gen, French headers</b></div><p class="example__note">Semicolons, &quot;7 815,40 $&quot; amounts and repeated campaign names. Merge the repeats, drop the total row and map columns by hand; overall about 85.6% is normal.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/traffic-reconciler/02-messy-quebec-bilingual-lead-gen.csv" download>Download 02-messy-quebec-bilingual-lead-gen.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">EU against US consent</b></div><p class="example__note">EU sessions are low because visitors decline analytics, not because of bad clicks. Do not cut EU spend on this alone.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/traffic-reconciler/03-trap-consent-mode-eu-vs-us.csv" download>Download 03-trap-consent-mode-eu-vs-us.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Analytics against server logs</b></div><p class="example__note">Run it twice, mapping first GA and then the server log as the sessions column. Clicks reach the server (about 106%) but GA records about 47%, which points to tagging or consent, not accidental clicks.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/traffic-reconciler/04-trap-ga-vs-server-log.csv" download>Download 04-trap-ga-vs-server-log.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Black Friday, same time zone</b></div><p class="example__note">Ad platform and analytics use the same time zone, and the result is healthy at about 89%.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/traffic-reconciler/05a-timezone-aligned-same-tz.csv" download>Download 05a-timezone-aligned-same-tz.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Black Friday, different time zones</b></div><p class="example__note">Every campaign sits at a similar 68 to 76%, including brand. That even drop points to a day-window mismatch, not bad traffic.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/traffic-reconciler/05b-trap-timezone-misaligned.csv" download>Download 05b-trap-timezone-misaligned.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Tiny volumes and a zero-click row</b></div><p class="example__note">Ignore rows with a handful of clicks and flag the zero-click row. A red overall banner would be an overreaction.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/traffic-reconciler/06-edge-tiny-volume-and-zero-clicks.csv" download>Download 06-edge-tiny-volume-and-zero-clicks.csv</a></p></li></ul></details>
 
 <div class="card"><h3>Campaign data</h3>
   <p class="sub">One row per campaign: platform clicks and analytics sessions for the same dates and the same UTM campaign. Spend is optional.</p>

@@ -1,0 +1,38 @@
+[
+  {
+    "file": "01-happy-travel-tuscany-villa.txt",
+    "label": "Tuscany villa rentals, English",
+    "kind": "happy",
+    "note": "A well-aligned ad and page, with every box ticked after a real review. A high score is fair, but 10 out of 10 is unusual without real auction data."
+  },
+  {
+    "file": "02-messy-healthcare-quebec-dental-fr.txt",
+    "label": "Quebec dental ad in French",
+    "kind": "messy",
+    "note": "Accents and plurals such as \"Montréal\" and \"urgences\" against the typed \"montreal\" and \"urgence\". The page is well aligned, so a poor ad relevance rating here would be wrong."
+  },
+  {
+    "file": "02b-control-english-twin-of-dental-page.txt",
+    "label": "English twin of the dental page",
+    "kind": "happy",
+    "note": "The same clinic and page in English, for comparison with the French example. The scores should be close."
+  },
+  {
+    "file": "03-trap-healthcare-claims-keyword-stuffed-doorway.txt",
+    "label": "Fake cure claims and keyword stuffing",
+    "kind": "trap",
+    "note": "False \"cure diabetes fast\" claims and a keyword repeated hundreds of times. Ads like this would be rejected, so do not trust any high score."
+  },
+  {
+    "file": "04-same-as-happy-but-no-boxes-ticked.txt",
+    "label": "Same ad, page not audited",
+    "kind": "trap",
+    "note": "The first example with no boxes ticked. Unticked means not checked, not failed, so the lower score is unknown rather than bad."
+  },
+  {
+    "file": "05-stemming-edge-cases-ecommerce-shoes.txt",
+    "label": "Singular keyword, plural page",
+    "kind": "trap",
+    "note": "The keyword says \"shoe\" and the page says \"shoes\". Google treats these as the same, so these checks should pass."
+  }
+]

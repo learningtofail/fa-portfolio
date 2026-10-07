@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -234,6 +247,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">3</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Skincare brand, healthy margins</b></div><p class="example__note">Commission is reversed on returns. The highest safe commission is about 31.9% and all four tiers (10 to 18%) are viable.</p><table class="t example__values"><tbody><tr><th scope="row">Retail price ($)</th><td>64</td></tr><tr><th scope="row">COGS per unit ($)</th><td>14.5</td></tr><tr><th scope="row">Payment fee (%)</th><td>2.9</td></tr><tr><th scope="row">Payment fee fixed ($)</th><td>0.3</td></tr><tr><th scope="row">Shipping and packaging per order ($)</th><td>6.2</td></tr><tr><th scope="row">Return rate (%)</th><td>6</td></tr><tr><th scope="row">Returned units resold (%)</th><td>60</td></tr><tr><th scope="row">Customer discount via affiliate (%)</th><td>15</td></tr><tr><th scope="row">Target contribution margin (% of kept revenue)</th><td>25</td></tr><tr><th scope="row">Flat payout per order to test ($)</th><td>8</td></tr><tr><th scope="row">Commission is reversed on returns</th><td>Checked</td></tr><tr><th scope="row">Partner tier 1</th><td>Micro creators, 15 orders per month, 10% commission</td></tr><tr><th scope="row">Partner tier 2</th><td>Mid bloggers, 80 orders per month, 12% commission</td></tr><tr><th scope="row">Partner tier 3</th><td>Top reviewers, 300 orders per month, 15% commission</td></tr><tr><th scope="row">Partner tier 4</th><td>Elite partners, 1200 orders per month, 18% commission</td></tr></tbody></table></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">At-home lab kit, regulated</b></div><p class="example__note">Returned kits cannot be resold and the network pays on gross sales. Expect a highest safe commission near 28.9%, the 30% coupon tier below target, and ignore the blank-name row.</p><table class="t example__values"><tbody><tr><th scope="row">Retail price ($)</th><td>129</td></tr><tr><th scope="row">COGS per unit ($)</th><td>41</td></tr><tr><th scope="row">Payment fee (%)</th><td>2.9</td></tr><tr><th scope="row">Payment fee fixed ($)</th><td>0.3</td></tr><tr><th scope="row">Shipping and packaging per order ($)</th><td>11</td></tr><tr><th scope="row">Return rate (%)</th><td>3</td></tr><tr><th scope="row">Returned units resold (%)</th><td>0</td></tr><tr><th scope="row">Customer discount via affiliate (%)</th><td>20</td></tr><tr><th scope="row">Target contribution margin (% of kept revenue)</th><td>15</td></tr><tr><th scope="row">Flat payout per order to test ($)</th><td>25</td></tr><tr><th scope="row">Commission is reversed on returns</th><td>Unchecked</td></tr><tr><th scope="row">Partner tier 1</th><td>Clinic referrals, 12 orders per month, 20% commission</td></tr><tr><th scope="row">Partner tier 2</th><td>Wellness blogs, 60 orders per month, 25% commission</td></tr><tr><th scope="row">Partner tier 3</th><td>Coupon portal, 400 orders per month, 30% commission</td></tr><tr><th scope="row">Partner tier 4</th><td>(blank name), 0 orders per month, 0% commission</td></tr></tbody></table></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Coupon and cashback partners</b></div><p class="example__note">Every tier looks viable, but that assumes every order is new. If only 25 to 50 percent of coupon and cashback orders are truly new, these tiers lose money, so test that assumption before you sign.</p><table class="t example__values"><tbody><tr><th scope="row">Retail price ($)</th><td>120</td></tr><tr><th scope="row">COGS per unit ($)</th><td>38</td></tr><tr><th scope="row">Payment fee (%)</th><td>2.9</td></tr><tr><th scope="row">Payment fee fixed ($)</th><td>0.3</td></tr><tr><th scope="row">Shipping and packaging per order ($)</th><td>9</td></tr><tr><th scope="row">Return rate (%)</th><td>22</td></tr><tr><th scope="row">Returned units resold (%)</th><td>85</td></tr><tr><th scope="row">Customer discount via affiliate (%)</th><td>25</td></tr><tr><th scope="row">Target contribution margin (% of kept revenue)</th><td>15</td></tr><tr><th scope="row">Flat payout per order to test ($)</th><td>10</td></tr><tr><th scope="row">Commission is reversed on returns</th><td>Checked</td></tr><tr><th scope="row">Partner tier 1</th><td>Cashback portal, 900 orders per month, 12% commission</td></tr><tr><th scope="row">Partner tier 2</th><td>Coupon aggregator, 2400 orders per month, 9% commission</td></tr></tbody></table></li></ul></details>
 
 <div class="split">
   <div>

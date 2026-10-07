@@ -1,0 +1,52 @@
+[
+  {
+    "file": "01_happy_dtc_skincare_lag.csv",
+    "label": "Skincare brand with its own lag data",
+    "kind": "happy",
+    "note": "Paste this file into \"Conversion lag data\". Google Ads comes out cheapest per sale, and Meta changes only because its view-through share is removed, not because of the window.",
+    "values": {
+      "Platform: spend, reported conversions, click window (days), view window (days), view share (%)": "Meta: 42000, 1250, 7, 1, 35\nGoogle Ads: 55000, 1980, 30, 0, 0\nTikTok: 15000, 410, 7, 1, 40\nPinterest: 9000, 260, 30, 1, 20",
+      "Target click window (days)": "7",
+      "Target view-through": "Exclude",
+      "Conversions eligible for paid attribution": "3100",
+      "Revenue per conversion ($)": "78"
+    }
+  },
+  {
+    "file": "02_messy_lag_export.csv",
+    "label": "Messy lag export",
+    "kind": "messy",
+    "note": "Title lines, European thousands such as \"5.200\", a text label \"Day 3\" and a \"Total\" row. Clean the file first and compare the conversion count the tool prints with the true total of about 9,435.",
+    "values": {
+      "Platform: spend, reported conversions, click window (days), view window (days), view share (%)": "Meta: 42000, 1250, 7, 1, 35\nGoogle Ads: 55000, 1980, 30, 0, 0\nTikTok: 15000, 410, 7, 1, 40\nPinterest: 9000, 260, 30, 1, 20",
+      "Target click window (days)": "7",
+      "Target view-through": "Exclude",
+      "Conversions eligible for paid attribution": "3100",
+      "Revenue per conversion ($)": "78"
+    }
+  },
+  {
+    "file": "03_trap_b2b_saas_long_cycle_lag.csv",
+    "label": "B2B software with a long sales cycle",
+    "kind": "trap",
+    "note": "Deals take about 24 days to close, so a 7-day window cannot be scaled up safely. Treat the Meta result as inconclusive even if it looks cheapest.",
+    "values": {
+      "Platform: spend, reported conversions, click window (days), view window (days), view share (%)": "Google Ads: 60000, 210, 30, 0, 0\nLinkedIn: 48000, 150, 30, 7, 15\nMeta: 20000, 95, 7, 1, 30",
+      "Target click window (days)": "30",
+      "Target view-through": "Exclude",
+      "Conversions eligible for paid attribution": "380",
+      "Revenue per conversion ($)": "9000"
+    }
+  },
+  {
+    "label": "Channel with spend and zero sales",
+    "kind": "trap",
+    "note": "A podcast with $18,000 spend and no conversions. It is the worst cost per sale in the plan and must stay visible in the totals, so check that it is not dropped. No lag file is needed.",
+    "values": {
+      "Platform: spend, reported conversions, click window (days), view window (days), view share (%)": "Meta: 30000, 900, 7, 1, 30\nGoogle Ads: 30000, 1000, 30, 0, 0\nPodcast sponsorship: 18000, 0, 30, 0, 0",
+      "Target click window (days)": "7",
+      "Target view-through": "Exclude",
+      "Conversions eligible for paid attribution": "2500"
+    }
+  }
+]

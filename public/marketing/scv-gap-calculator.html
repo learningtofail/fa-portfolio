@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -234,6 +247,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">3</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Pet-supply retailer, online and stores</b></div><p class="example__note">A reasonable set of inputs with the uncertainty slider at 15. Expect about half of customers fragmented and a monthly cost of about $9,900, with a range shown.</p><table class="t example__values"><tbody><tr><th scope="row">Real customers and prospects in scope</th><td>180000</td></tr><tr><th scope="row">Effective cookie lifetime (days)</th><td>7</td></tr><tr><th scope="row">Average days between visits</th><td>12</td></tr><tr><th scope="row">Users on 2 or more devices (%)</th><td>38</td></tr><tr><th scope="row">Average devices for multi-device users</th><td>2.2</td></tr><tr><th scope="row">Sessions per active user per month</th><td>2.6</td></tr><tr><th scope="row">Web sessions matched to a CRM ID (%)</th><td>34</td></tr><tr><th scope="row">CRM duplicate contact rate (%)</th><td>6</td></tr><tr><th scope="row">Monthly ad spend ($)</th><td>90000</td></tr><tr><th scope="row">Spend that depends on identity (%)</th><td>40</td></tr><tr><th scope="row">Share of fragmented spend that is redundant (%)</th><td>30</td></tr><tr><th scope="row">Cost to acquire one lead ($)</th><td>22</td></tr><tr><th scope="row">New leads per month</th><td>3100</td></tr><tr><th scope="row">Cost per contact per month in ESP ($)</th><td>0.015</td></tr></tbody></table></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Auto marketplace, three duplicate rates</b></div><p class="example__note">Run it three times with duplicate rate 6.6 (exact email), 12.3 (cleaned email) and 29.0 (fuzzy name match). The spread in cost shows how much the matching method matters; the true rate is about 12.4.</p><table class="t example__values"><tbody><tr><th scope="row">Real customers and prospects in scope</th><td>65000</td></tr><tr><th scope="row">Effective cookie lifetime (days)</th><td>7</td></tr><tr><th scope="row">Average days between visits</th><td>25</td></tr><tr><th scope="row">Users on 2 or more devices (%)</th><td>55</td></tr><tr><th scope="row">Average devices for multi-device users</th><td>2.6</td></tr><tr><th scope="row">Sessions per active user per month</th><td>1.8</td></tr><tr><th scope="row">Web sessions matched to a CRM ID (%)</th><td>18</td></tr><tr><th scope="row">CRM duplicate contact rate (%)</th><td>12.3</td></tr><tr><th scope="row">Monthly ad spend ($)</th><td>60000</td></tr><tr><th scope="row">Spend that depends on identity (%)</th><td>50</td></tr><tr><th scope="row">Share of fragmented spend that is redundant (%)</th><td>40</td></tr><tr><th scope="row">Cost to acquire one lead ($)</th><td>48</td></tr><tr><th scope="row">New leads per month</th><td>2600</td></tr><tr><th scope="row">Cost per contact per month in ESP ($)</th><td>0.03</td></tr></tbody></table></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Quebec nonprofit with low consent</b></div><p class="example__note">Only about 35% of visitors consent to analytics, and set the uncertainty slider to 0. A high web match rate is not possible on that base, and the matching of donor records needs a privacy review.</p><table class="t example__values"><tbody><tr><th scope="row">Real customers and prospects in scope</th><td>50000</td></tr><tr><th scope="row">Effective cookie lifetime (days)</th><td>7</td></tr><tr><th scope="row">Average days between visits</th><td>40</td></tr><tr><th scope="row">Users on 2 or more devices (%)</th><td>30</td></tr><tr><th scope="row">Average devices for multi-device users</th><td>2.0</td></tr><tr><th scope="row">Sessions per active user per month</th><td>1.3</td></tr><tr><th scope="row">Web sessions matched to a CRM ID (%)</th><td>65</td></tr><tr><th scope="row">CRM duplicate contact rate (%)</th><td>9</td></tr><tr><th scope="row">Monthly ad spend ($)</th><td>30000</td></tr><tr><th scope="row">Spend that depends on identity (%)</th><td>30</td></tr><tr><th scope="row">Share of fragmented spend that is redundant (%)</th><td>30</td></tr><tr><th scope="row">Cost to acquire one lead ($)</th><td>70</td></tr><tr><th scope="row">New leads per month</th><td>700</td></tr><tr><th scope="row">Cost per contact per month in ESP ($)</th><td>0.02</td></tr><tr><th scope="row">Visitors who consent to analytics cookies (%)</th><td>35</td></tr></tbody></table></li></ul></details>
 
 <div class="split">
 <div>

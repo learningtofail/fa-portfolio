@@ -1,0 +1,101 @@
+[
+  {
+    "file": "a_happy_history.csv",
+    "label": "Consumables with a 7-day promo",
+    "kind": "happy",
+    "note": "Paste the history into the daily units box and enter the values. The forecast is about 332 a day and the ceiling about $2,328 a day against $2,000 planned.",
+    "values": {
+      "Units on hand": "13000",
+      "Max units shipped per day": "700",
+      "Safety stock to keep (units)": "500",
+      "Horizon (days)": "45",
+      "Baseline units per day (if no history)": "300",
+      "Promo lift on baseline (%)": "50",
+      "Promo start (day)": "7",
+      "Promo length (days)": "7",
+      "Planned daily ad spend ($)": "2000",
+      "Cost per incremental order ($)": "30",
+      "Units per order": "1.3",
+      "Purchase order": "Arrives on day 20, 5000 units"
+    }
+  },
+  {
+    "file": "b_messy_history.txt",
+    "label": "French Excel paste with stock-outs",
+    "kind": "messy",
+    "note": "Decimal commas, blanks, a note row and stock-out zeros. Clean the paste to about 16 real days first, and read the zeros as lost sales rather than real demand.",
+    "values": {
+      "Units on hand": "13000",
+      "Max units shipped per day": "700",
+      "Safety stock to keep (units)": "500",
+      "Horizon (days)": "45",
+      "Baseline units per day (if no history)": "300",
+      "Promo lift on baseline (%)": "50",
+      "Promo start (day)": "7",
+      "Promo length (days)": "7",
+      "Planned daily ad spend ($)": "2000",
+      "Cost per incremental order ($)": "30",
+      "Units per order": "1.3",
+      "Purchase order": "Arrives on day 20, 5000 units"
+    }
+  },
+  {
+    "file": "c1_trap_ramp_history.csv",
+    "label": "Ten-day launch ramp",
+    "kind": "trap",
+    "note": "Ten days of rising sales cannot support a 60-day trend. Treat any long-range forecast from it as a guess.",
+    "values": {
+      "Units on hand": "30000",
+      "Max units shipped per day": "2000",
+      "Safety stock to keep (units)": "300",
+      "Horizon (days)": "60",
+      "Baseline units per day (if no history)": "200",
+      "Promo lift on baseline (%)": "0",
+      "Promo start (day)": "0",
+      "Promo length (days)": "0",
+      "Planned daily ad spend ($)": "0",
+      "Cost per incremental order ($)": "25",
+      "Units per order": "1.0",
+      "Purchase order": "Arrives on day 30, 20000 units"
+    }
+  },
+  {
+    "file": "c2_trap_censored_history.csv",
+    "label": "History with stock-out days",
+    "kind": "trap",
+    "note": "Four of twelve days show zero because stock ran out. Those zeros are lost sales, so leave them out (tick the stock-out box).",
+    "values": {
+      "Units on hand": "30000",
+      "Max units shipped per day": "2000",
+      "Safety stock to keep (units)": "300",
+      "Horizon (days)": "60",
+      "Baseline units per day (if no history)": "200",
+      "Promo lift on baseline (%)": "0",
+      "Promo start (day)": "0",
+      "Promo length (days)": "0",
+      "Planned daily ad spend ($)": "0",
+      "Cost per incremental order ($)": "25",
+      "Units per order": "1.0",
+      "Purchase order": "Arrives on day 30, 20000 units"
+    }
+  },
+  {
+    "label": "Local HVAC service promo",
+    "kind": "trap",
+    "note": "Capacity is technician jobs, and the shop is closed Sundays, so 40 jobs a day is really about 200 a week. The tool counts 7 days, so read its capacity result as optimistic.",
+    "values": {
+      "Units on hand": "1000000",
+      "Max units shipped per day": "40",
+      "Safety stock to keep (units)": "0",
+      "Horizon (days)": "28",
+      "Baseline units per day (if no history)": "32",
+      "Promo lift on baseline (%)": "40",
+      "Promo start (day)": "7",
+      "Promo length (days)": "14",
+      "Planned daily ad spend ($)": "600",
+      "Cost per incremental order ($)": "60",
+      "Units per order": "1",
+      "Purchase order": "None"
+    }
+  }
+]

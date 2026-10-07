@@ -1,0 +1,10 @@
+source,target
+/flights/toronto-paris,https://www.newvoyages.example/flights/toronto-paris
+/flights/montreal-lisbon,https://www.newvoyages.example/flights/montreal-lisbon
+/packages/algarve-week,https://www.newvoyages.example/packages/algarve-week
+/packages/tuscany-villa,https://www.newvoyages.example/packages/tuscany-villa
+/blog/packing-checklist,https://www.newvoyages.example/blog/packing-checklist
+/about,https://www.newvoyages.example/about
+/contact,https://www.newvoyages.example/contact
+/deals,https://www.newvoyages.example/offers
+/privacy,https://www.newvoyages.example/legal/privacy

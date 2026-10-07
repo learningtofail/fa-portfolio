@@ -1,0 +1,44 @@
+SCENARIO: Regulated healthcare, Quebec French. Same intent is written with accents (Montréal, d’urgence) while the keyword is typed the way users type it (no accents). Google folds accents; this tool does not.
+
+Target keyword:
+dentiste urgence montreal
+
+Ad headlines (one per line):
+Dentiste d’urgence à Montréal
+Urgences dentaires sans rendez-vous
+Dentistes ouverts le samedi
+Douleur dentaire ? Appelez-nous
+Assurances acceptées
+
+Ad descriptions (one per line):
+Dent cassée, abcès ou douleur aiguë ? Notre clinique vous reçoit le jour même, sans rendez-vous.
+Facturation directe aux assureurs. Tarifs affichés avant le traitement. Appelez maintenant.
+
+Display path / final URL:
+cliniquedentaire-exemple.ca/urgence-montreal
+
+Page title:
+Urgence dentaire Montréal | Clinique Dentaire Exemple
+
+H1 heading:
+Urgence dentaire à Montréal
+
+Visible page text:
+Accueil | Nos services | Équipe | Rendez-vous | Contact
+
+Vous avez une urgence dentaire à Montréal ? Notre clinique reçoit les patients sans rendez-vous du lundi au samedi. Nos dentistes traitent les douleurs aiguës, les dents cassées, les abcès et les pertes de plombage le jour même. Appelez-nous avant 15 h pour être vu aujourd’hui. La clinique est située près du métro Berri-UQAM. Nous acceptons la plupart des assurances et facturons directement. Les tarifs sont affichés avant le traitement. Notre équipe parle français, anglais et espagnol. Accueil | Nos services | Équipe | Rendez-vous | Contact
+
+Vous avez une urgence dentaire à Montréal ? Notre clinique reçoit les patients sans rendez-vous du lundi au samedi. Nos dentistes traitent les douleurs aiguës, les dents cassées, les abcès et les pertes de plombage le jour même. Appelez-nous avant 15 h pour être vu aujourd’hui. La clinique est située près du métro Berri-UQAM. Nous acceptons la plupart des assurances et facturons directement. Les tarifs sont affichés avant le traitement. Notre équipe parle français, anglais et espagnol. Accueil | Nos services | Équipe | Rendez-vous | Contact
+
+Vous avez une urgence dentaire à Montréal ? Notre clinique reçoit les patients sans rendez-vous du lundi au samedi. Nos dentistes traitent les douleurs aiguës, les dents cassées, les abcès et les pertes de plombage le jour même. Appelez-nous avant 15 h pour être vu aujourd’hui. La clinique est située près du métro Berri-UQAM. Nous acceptons la plupart des assurances et facturons directement. Les tarifs sont affichés avant le traitement. Notre équipe parle français, anglais et espagnol. 
+
+Tick these checklist boxes (0-based index, then label):
+  [0] Ad includes a clear offer, price or differentiator
+  [1] Ad has a strong call to action
+  [2] Ad uses ad assets (sitelinks, callouts, structured snippets)
+  [4] Page loads in under 3 seconds on mobile
+  [5] Page is mobile responsive with tap-friendly buttons
+  [6] Call to action is visible above the fold
+  [7] Page has clear navigation, privacy policy and contact details
+  [8] Page uses HTTPS with no intrusive pop-ups or interstitials
+  [9] Page offers original, useful content about the searched topic

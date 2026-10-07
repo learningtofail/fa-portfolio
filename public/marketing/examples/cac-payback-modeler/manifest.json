@@ -1,0 +1,110 @@
+[
+  {
+    "file": "a-curve-workaround-1.8pct-churn-36mo.txt",
+    "label": "B2B software with a retention curve",
+    "kind": "happy",
+    "note": "Type the values in and paste this curve into the custom retention box. The correct result is a fully loaded cost per customer of about $4,082, payback near 6.2 months and LTV to CAC of about 4.1.",
+    "values": {
+      "New customers acquired (all channels)": "85",
+      "Paid media spend ($)": "120000",
+      "Agency and creative fees ($)": "15000",
+      "Marketing headcount, fully loaded ($)": "60000",
+      "Sales headcount, fully loaded ($)": "140000",
+      "Tools, software and other overhead ($)": "12000",
+      "Revenue per customer per month ($)": "900",
+      "COGS and delivery cost (% of revenue)": "18",
+      "Other variable cost per customer per month ($)": "25",
+      "Monthly churn (%)": "1.8",
+      "CAC basis for payback": "Fully loaded",
+      "Annual discount rate (%)": "10",
+      "Horizon (months)": "36"
+    }
+  },
+  {
+    "label": "Subscription box with a spreadsheet curve",
+    "kind": "messy",
+    "note": "The curve is pasted with percent signs the way a spreadsheet exports it. Check that the tool used it: the correct payback is about 13.1 months, not the 7.8 you get from the churn field alone.",
+    "values": {
+      "New customers acquired (all channels)": "1240",
+      "Paid media spend ($)": "98000",
+      "Agency and creative fees ($)": "9500",
+      "Marketing headcount, fully loaded ($)": "22000",
+      "Sales headcount, fully loaded ($)": "0",
+      "Tools, software and other overhead ($)": "4800",
+      "Revenue per customer per month ($)": "49.9",
+      "COGS and delivery cost (% of revenue)": "52",
+      "Other variable cost per customer per month ($)": "5.2",
+      "Monthly churn (%)": "9",
+      "CAC basis for payback": "Fully loaded",
+      "Annual discount rate (%)": "0",
+      "Horizon (months)": "36",
+      "Custom retention curve (optional)": "100%, 71%, 58%, 49%, 43%, 39%, 36%, 34%, 32%, 30%, 29%, 28%"
+    }
+  },
+  {
+    "label": "Dealer subscriptions, mostly organic",
+    "kind": "trap",
+    "note": "Only 18 of 60 new dealers came from paid media. The cost per paid dealer is $3,000, not $900, so judge payback on the fully loaded figure (about 6.1 months).",
+    "values": {
+      "New customers acquired (all channels)": "60",
+      "Paid media spend ($)": "54000",
+      "Agency and creative fees ($)": "8000",
+      "Marketing headcount, fully loaded ($)": "40000",
+      "Sales headcount, fully loaded ($)": "90000",
+      "Tools, software and other overhead ($)": "10000",
+      "Revenue per customer per month ($)": "749",
+      "COGS and delivery cost (% of revenue)": "12",
+      "Other variable cost per customer per month ($)": "30",
+      "Monthly churn (%)": "3",
+      "CAC basis for payback": "Paid media only",
+      "Annual discount rate (%)": "0",
+      "Horizon (months)": "36",
+      "Custom retention curve (optional)": "100,93,88,84,81,79,77,75,74,73,72,71"
+    }
+  },
+  {
+    "label": "One-time purchase retailer",
+    "kind": "trap",
+    "note": "Customers buy once, so enter churn 100 and the curve \"100\". The result of no payback within 12 months is right, and the tool has no repeat-purchase model to show more.",
+    "values": {
+      "New customers acquired (all channels)": "3200",
+      "Paid media spend ($)": "150000",
+      "Agency and creative fees ($)": "18000",
+      "Marketing headcount, fully loaded ($)": "35000",
+      "Sales headcount, fully loaded ($)": "0",
+      "Tools, software and other overhead ($)": "9000",
+      "Revenue per customer per month ($)": "64",
+      "COGS and delivery cost (% of revenue)": "48",
+      "Other variable cost per customer per month ($)": "9",
+      "Monthly churn (%)": "100",
+      "CAC basis for payback": "Fully loaded",
+      "Annual discount rate (%)": "0",
+      "Horizon (months)": "12",
+      "Custom retention curve (optional)": "100"
+    }
+  },
+  {
+    "file": "curve-clean.txt",
+    "label": "Retention curve, clean",
+    "kind": "happy",
+    "note": "A simple retention curve with one percent value per month. It should be read as written."
+  },
+  {
+    "file": "curve-paste-tab-separated-percent.txt",
+    "label": "Retention curve, tabs and percent signs",
+    "kind": "messy",
+    "note": "A curve pasted from a spreadsheet with tabs and percent signs. If results look the same as with no curve, the paste was not read, so retype it with commas."
+  },
+  {
+    "file": "curve-fractions-wrong-units.txt",
+    "label": "Retention curve as fractions",
+    "kind": "trap",
+    "note": "Values like 0.71 mean 71 percent. Entered as is they are read as under 1 percent, so multiply by 100 first."
+  },
+  {
+    "file": "curve-rising-tail-explodes.txt",
+    "label": "Curve that rises at the end",
+    "kind": "trap",
+    "note": "Retention goes up in the last month (60, 40, then 45). Extending that trend inflates lifetime value, so fix the tail before trusting the result."
+  }
+]

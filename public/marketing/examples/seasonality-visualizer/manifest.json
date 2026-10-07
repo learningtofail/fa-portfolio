@@ -1,0 +1,86 @@
+[
+  {
+    "file": "01-happy-gift-ecommerce-daily-3y.csv",
+    "label": "Gift retailer, three years daily",
+    "kind": "happy",
+    "note": "Daily revenue with a clear holiday peak. December is about 163, November 146 and January 79, and the yearly trend is about +9%."
+  },
+  {
+    "file": "02a-messy-fr-month-names-quebec-moving.csv",
+    "label": "French month names",
+    "kind": "messy",
+    "note": "Month labels like \"janv. 2022\" and numbers like \"1 598,00\". Pick the value column by hand; the real peak is June and the low is December."
+  },
+  {
+    "file": "02b-messy-dd-mm-yyyy-quebec-moving.csv",
+    "label": "Day-first dates",
+    "kind": "messy",
+    "note": "The same data with dates like 01/05/2022. If it reports only a few months of data, the dates were read the wrong way round."
+  },
+  {
+    "file": "02c-messy-dd-mm-yyyy-month-end-dates.csv",
+    "label": "Day-first, month-end dates",
+    "kind": "messy",
+    "note": "Dates like 31/01/2022. A confident curve here may be wrong, so check that the number of years matches what you uploaded."
+  },
+  {
+    "file": "02d-messy-daily-dd-mm-yyyy-quebec-moving.csv",
+    "label": "Daily, day-first dates",
+    "kind": "messy",
+    "note": "Daily moving searches with a strong May and June peak. A result that says there is no seasonality means the dates were misread."
+  },
+  {
+    "file": "03a-travel-ski-resort-canada-only.csv",
+    "label": "Ski travel, Canada",
+    "kind": "happy",
+    "note": "Winter peak in the northern hemisphere. A clean, single-region curve."
+  },
+  {
+    "file": "03b-travel-ski-resort-australia-only.csv",
+    "label": "Ski travel, Australia",
+    "kind": "happy",
+    "note": "Winter in Australia runs June to August, so the peak is in the middle of the year."
+  },
+  {
+    "file": "03c-trap-multi-region-combined-ca-plus-au.csv",
+    "label": "Canada and Australia combined",
+    "kind": "trap",
+    "note": "Adding two opposite seasons produces a curve that is wrong for both. Always analyze regions separately."
+  },
+  {
+    "file": "04-trap-short-history-growth-saas-signups.csv",
+    "label": "Short history with strong growth",
+    "kind": "trap",
+    "note": "15 months of steady growth with no real seasons. The honest result is inconclusive, and the peak month it names is only the growth."
+  },
+  {
+    "file": "05-trap-lunar-new-year-moving-holiday-travel.csv",
+    "label": "Travel around Lunar New Year",
+    "kind": "trap",
+    "note": "The holiday moves each year, so a fixed monthly curve misses it. The January and February split changes year to year."
+  },
+  {
+    "file": "06-trap-hourly-utc-timestamps-publisher.csv",
+    "label": "Hourly timestamps in UTC",
+    "kind": "trap",
+    "note": "Hourly rows treated as daily show almost no weekday pattern. Total the data by day in your own time zone first."
+  },
+  {
+    "file": "07-edge-missing-months-and-zero-month-local-services.csv",
+    "label": "Missing months and a zero month",
+    "kind": "trap",
+    "note": "Three months are missing and one month is zero because ads were paused. Fill the gaps before trusting the result."
+  },
+  {
+    "file": "08-trap-pure-noise-36-months.csv",
+    "label": "Random noise, 36 months",
+    "kind": "trap",
+    "note": "There is no real pattern in this data. Any peak the tool names is chance."
+  },
+  {
+    "file": "09-trap-flat-daily-rate-monthly-totals.csv",
+    "label": "Flat daily rate, monthly totals",
+    "kind": "trap",
+    "note": "The daily rate never changes, but monthly totals differ because months have different lengths. That is not seasonality."
+  }
+]

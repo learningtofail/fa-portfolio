@@ -206,13 +206,26 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
 .guide code{ font-family:"JetBrains Mono",monospace; font-size:.8em; background:var(--surface-2); padding:0 .25rem; border-radius:3px; }
 .guide .table-wrap{ margin:.6rem 0 1rem; }
 @media print{
-  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint{ display:none !important; }
+  .topbar,.toolbar,.actions,.drop,.theme-btn,.guide,.foot,.privacy,.hint,.examples{ display:none !important; }
   body{ background:#fff; } .wrap{ max-width:none; padding:0; }
   .card,.verdict,.stats{ break-inside:avoid; box-shadow:none; }
   textarea{ display:none !important; }
 }
 .guide p{ margin:.5rem 0; }
 #guide{ scroll-margin-top:72px; }
+
+/* example files card (build.py, examples/<slug>/manifest.json) */
+.examples > summary{ cursor:pointer; font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+.examples > summary:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.examples[open] > summary{ margin-bottom:0.35rem; }
+.examples__list{ list-style:none; display:grid; gap:0.9rem; padding:0; margin:0.75rem 0 0; }
+.example{ border-top:1px solid var(--border); padding-top:0.75rem; }
+.example__head{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.example__note{ font-size:0.85rem; color:var(--ink-secondary); max-width:80ch; margin:0.35rem 0; }
+table.example__values{ font-size:0.8rem; margin:0.4rem 0; width:100%; max-width:46rem; }
+table.example__values th{ font-family:inherit; font-size:0.8rem; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:600; width:55%; white-space:normal; }
+table.example__values td{ white-space:pre-line; }
+.example__dl{ margin:0.4rem 0 0; }
 </style>
 </head>
 <body>
@@ -235,6 +248,7 @@ mark.hl-ok{ background:var(--good-wash); color:inherit; border-bottom:2px solid 
     <button class="btn btn-ghost btn-sm" type="button" data-act="clear">Clear saved inputs</button>
     <span class="saved-note"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> runs the tool</span>
   </div>
+<details class="card examples"><summary class="examples__summary">Example files <span class="tag">4</span></summary><p class="sub">Sample data you can try in this tool. Each one shows what a correct reading looks like. All data is made up.</p><ul class="examples__list"><li class="example"><div class="example__head"><span class="tag tag-good">Happy path</span> <b class="example__label">Publisher traffic with planted bots</b></div><p class="example__note">Four bot groups are hidden in this export (headless Chrome, scripts on cloud hosts, a crawler and a proxy). A correct result is about 12% bots and 5% suspect, with those groups listed.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/bot-traffic-screener/01-happy-publisher-ga-export-with-bot-segments.csv" download>Download 01-happy-publisher-ga-export-with-bot-segments.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-warn">Messy data</span> <b class="example__label">Clinic booking log, French headers</b></div><p class="example__note">French column names, hh:mm:ss durations and OUI/NON bookings. Check every column choice by hand; about 16 to 17% of sessions are automated, and the booking rate should be worked out on humans only.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/bot-traffic-screener/02-messy-clinic-booking-log-fr-headers.csv" download>Download 02-messy-clinic-booking-log-fr-headers.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Giving day with real donors on corporate networks</b></div><p class="example__note">Real donors come through employer networks and privacy relays that look like bots. Only about 4% of sessions are real bots, so do not exclude those networks.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/bot-traffic-screener/03-trap-nonprofit-giving-day-false-positives.csv" download>Download 03-trap-nonprofit-giving-day-false-positives.csv</a></p></li><li class="example"><div class="example__head"><span class="tag tag-bad">Trap</span> <b class="example__label">Awareness channels that rarely convert</b></div><p class="example__note">Podcast, LinkedIn and review-site traffic with almost no last-click sales. Set the extra segment column to &quot;source&quot;. All of it is human, so nothing should be excluded.</p><p class="example__dl"><a class="btn btn-secondary btn-sm" href="examples/bot-traffic-screener/04-trap-b2b-saas-awareness-zero-conv.csv" download>Download 04-trap-b2b-saas-awareness-zero-conv.csv</a></p></li></ul></details>
 
 <div class="card"><h3>Traffic export</h3>
   <p class="sub">Any CSV with at least one of: user agent, network domain or ISP, session duration, pages per session. Sessions, bounces and conversions columns add precision. One row can be one session (logs) or an aggregate (analytics). Durations can be seconds or hh:mm:ss. Conversions can be counts or yes/no (oui/non).</p>

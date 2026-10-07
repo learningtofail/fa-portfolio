@@ -1,0 +1,7 @@
+source,target
+/shop,/store?ref=legacy
+/store,/shop
+/category/boots,/c/boots?src=migr
+/c/boots,/category/boots
+/checkout,/cart
+/cart,/checkout?step=1

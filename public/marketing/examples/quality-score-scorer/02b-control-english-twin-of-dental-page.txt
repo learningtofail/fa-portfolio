@@ -1,0 +1,44 @@
+SCENARIO: Control: the same dental clinic page in English with matching keyword. Compare the Quality Score estimate with sample 02.
+
+Target keyword:
+emergency dentist montreal
+
+Ad headlines (one per line):
+Emergency Dentist in Montreal
+Walk-In Dental Emergencies
+Dentists Open on Saturday
+Tooth Pain? Call Us Now
+Insurance Accepted
+
+Ad descriptions (one per line):
+Broken tooth, abscess or acute pain? Our clinic sees you the same day, no appointment needed.
+Direct billing to insurers. Fees shown before treatment. Call now.
+
+Display path / final URL:
+exampledental.ca/emergency-montreal
+
+Page title:
+Emergency Dentist Montreal | Example Dental Clinic
+
+H1 heading:
+Emergency Dentist in Montreal
+
+Visible page text:
+Home | Services | Team | Book | Contact
+
+Do you have a dental emergency in Montreal? Our clinic sees walk-in patients Monday to Saturday. Our dentists treat acute pain, broken teeth, abscesses and lost fillings the same day. Call us before 3 pm to be seen today. The clinic is near Berri-UQAM metro. We accept most insurance plans and bill directly. Fees are shown before treatment. Our team speaks French, English and Spanish. Home | Services | Team | Book | Contact
+
+Do you have a dental emergency in Montreal? Our clinic sees walk-in patients Monday to Saturday. Our dentists treat acute pain, broken teeth, abscesses and lost fillings the same day. Call us before 3 pm to be seen today. The clinic is near Berri-UQAM metro. We accept most insurance plans and bill directly. Fees are shown before treatment. Our team speaks French, English and Spanish. Home | Services | Team | Book | Contact
+
+Do you have a dental emergency in Montreal? Our clinic sees walk-in patients Monday to Saturday. Our dentists treat acute pain, broken teeth, abscesses and lost fillings the same day. Call us before 3 pm to be seen today. The clinic is near Berri-UQAM metro. We accept most insurance plans and bill directly. Fees are shown before treatment. Our team speaks French, English and Spanish. 
+
+Tick these checklist boxes (0-based index, then label):
+  [0] Ad includes a clear offer, price or differentiator
+  [1] Ad has a strong call to action
+  [2] Ad uses ad assets (sitelinks, callouts, structured snippets)
+  [4] Page loads in under 3 seconds on mobile
+  [5] Page is mobile responsive with tap-friendly buttons
+  [6] Call to action is visible above the fold
+  [7] Page has clear navigation, privacy policy and contact details
+  [8] Page uses HTTPS with no intrusive pop-ups or interstitials
+  [9] Page offers original, useful content about the searched topic
