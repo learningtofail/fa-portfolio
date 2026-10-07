@@ -32,6 +32,11 @@
   font-size: 0.75rem;
 }
 
+.chart__axis-title {
+  font-size: 0.75rem;
+  fill: var(--ink-soft);
+}
+
 .chart__bar {
   fill: var(--chart-1);
 }

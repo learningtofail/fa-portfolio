@@ -8,8 +8,9 @@ const seriesClass = (/** @type {number} */ index) => `chart__series--${(index % 
 /**
  * Grouped bar chart. data: [{ group: string, series: [{ key, value }] }]
  * seriesKeys: ordered list of series keys, used for consistent color + legend.
+ * yAxisTitle: optional title for the value axis (the unit).
  */
-export default function GroupedBarChart({ data, seriesKeys }) {
+export default function GroupedBarChart({ data, seriesKeys, yAxisTitle = "" }) {
   const svgRef = useRef(null);
   const legendRef = useRef(null);
   const [containerRef, width] = useChartWidth(700);
@@ -48,6 +49,16 @@ export default function GroupedBarChart({ data, seriesKeys }) {
 
     g.append("g").call(d3.axisLeft(y).ticks(5)).attr("class", "chart__axis");
 
+    if (yAxisTitle) {
+      g.append("text")
+        .attr("class", "chart__axis-title")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -innerH / 2)
+        .attr("y", -margin.left + 14)
+        .attr("text-anchor", "middle")
+        .text(yAxisTitle);
+    }
+
     const groupG = g
       .selectAll(".group")
       .data(data)
@@ -78,7 +89,7 @@ export default function GroupedBarChart({ data, seriesKeys }) {
     legendItems.append("span").attr("class", (d) => `chart__swatch ${classFor(d)}`);
 
     legendItems.append("span").text((d) => d);
-  }, [data, seriesKeys, width, containerRef]);
+  }, [data, seriesKeys, yAxisTitle, width, containerRef]);
 
   return (
     // Decorative — every value here is also in the "Full matrix" table below it.

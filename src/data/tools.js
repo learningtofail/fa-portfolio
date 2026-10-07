@@ -57,9 +57,9 @@ export const tools = [
     title: "Multi-Touch Attribution",
     description: "Upload a CSV of touchpoints and compare attribution models.",
     intro:
-      "The channel that looks best depends entirely on which attribution model you ask. Upload a CSV of touchpoints and see the same data scored five different ways, side by side. Nothing you upload is sent anywhere — parsing and analysis happen entirely in this tab.",
+      "The channel that looks best depends entirely on which attribution model you ask. Upload a CSV of touchpoints and see the same data scored five different ways, side by side, with shares, rank changes and a CSV export. It maps common column names, counts one revenue value per journey, gives non-converting journeys no credit, reads dates as UTC and reports every data-quality issue it finds. Nothing you upload is sent anywhere. Parsing and analysis happen entirely in this tab.",
     metaDescription:
-      "Upload a CSV of journey touchpoints and compare last-touch, first-touch, linear, position-based, and time-decay attribution, entirely in your browser.",
+      "Upload a CSV of journey touchpoints and compare last-touch, first-touch, linear, position-based, and time-decay attribution with a lookback window, data-quality checks and CSV export, entirely in your browser.",
     live: true,
     wide: true,
   },

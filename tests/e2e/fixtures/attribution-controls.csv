@@ -1,0 +1,7 @@
+journey_id,channel,timestamp,revenue,touch_type
+j1,Display,2026-01-01,,view
+j1,Search,2026-02-01,,click
+j1,Brand,2026-03-01,"$1,200.00",click
+j2,display,2026-02-15,,impression
+j2,Brand,2026-03-01,300,click
+j3,Search,2026-03-01,,click

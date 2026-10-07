@@ -41,6 +41,16 @@ describe("charts redraw on resize (D10)", () => {
     expect(svgOf(container).getAttribute("width")).toBe("500");
   });
 
+  it("GroupedBarChart draws a value axis title when given one", () => {
+    const data = [{ group: "email", series: [{ key: "Linear", value: 2 }] }];
+    const { container } = render(
+      <GroupedBarChart data={data} seriesKeys={["Linear"]} yAxisTitle="Credit (conversions)" />,
+    );
+    expect(container.querySelector(".chart__axis-title")?.textContent).toBe("Credit (conversions)");
+    const without = render(<GroupedBarChart data={data} seriesKeys={["Linear"]} />);
+    expect(without.container.querySelector(".chart__axis-title")).toBeNull();
+  });
+
   it("PaybackChart follows the container width", () => {
     const { container } = render(
       <PaybackChart monthlyGrossProfit={100} cac={500} paybackMonths={5} horizonMonths={12} />,

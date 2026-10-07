@@ -1,0 +1,126 @@
+﻿Journey_ID , Channel,Timestamp ,Revenue
+ACME-001,Partner Referral,2026-01-22T00:00:00Z,
+ACME-001,LinkedIn Ads,2026-02-06T00:00:00Z,
+ACME-001,paid search,2026-02-20T00:00:00Z,
+ACME-001,G2 Review Site,02/28/2026,
+ACME-001,Partner Referral,2026-03-28,
+ACME-001,Paid Search,04/04/2026,
+ACME-002,Webinar,2026-01-15,
+ACME-002,Paid Search,02/18/2026,
+ACME-002,Outbound SDR,03/10/2026,
+ACME-002,Webinar,,
+ACME-002,Outbound SDR,04/11/2026,
+ACME-002,paid search,05/08/2026,24000
+ACME-003,Outbound SDR,,
+ACME-003,"Content Syndication, Tier 1",04-Feb-2026,"$12,500.00"
+ACME-003,"Content Syndication, Tier 1",04-Feb-2026,"$12,500.00"
+ACME-004,paid search,,
+ACME-004,LinkedIn Ads,2026-02-11,
+ACME-004,LinkedIn Ads,2026-02-26T00:00:00Z,
+ACME-004,Outbound SDR,2026-03-08T00:00:00Z,
+ACME-004,Organic Search,11-Mar-2026,
+ACME-004,Webinar,2026-03-15,"9.600,00"
+ACME-004,Webinar,2026-03-15,"9.600,00"
+ACME-005,Paid Search,11-Jan-2026,
+ACME-005,paid search,02/07/2026,
+ACME-005,Paid Search,25-Feb-2026,36000.00
+ACME-006,Outbound SDR,2026-01-23,
+ACME-006,Webinar,2026-02-14,
+ACME-006,"Content Syndication, Tier 1",2026-02-27,
+ACME-006,Partner Referral,03/26/2026,
+ACME-006,paid search,04/04/2026,
+ACME-006,Webinar,2026-04-23T00:00:00Z,"9.600,00"
+ACME-007,Partner Referral,01/07/2026,
+ACME-007,Paid Search,01/23/2026,
+ACME-007,Webinar,,"$12,500.00"
+ACME-008,Partner Referral,07-Jan-2026,
+ACME-008,Direct,01/18/2026,
+ACME-008,organic search ,20-Feb-2026,24000
+ACME-009,paid search,01/15/2026,
+ACME-009,Paid Search,2026-02-10,
+ACME-009,organic search ,03/06/2026,
+ACME-009,Outbound SDR,03/13/2026,"9.600,00"
+ACME-010,Direct,01/17/2026,
+ACME-010,Organic Search,2026-01-27T00:00:00Z,
+ACME-010,Direct,2026-02-23T00:00:00Z,
+ACME-010,G2 Review Site,03/03/2026,
+ACME-010,Partner Referral,03/11/2026,
+ACME-010,Partner Referral,2026-03-21T00:00:00Z,24000
+ACME-011,organic search ,2026-01-11T00:00:00Z,
+ACME-011,organic search ,2026-01-29T00:00:00Z,
+ACME-011,"Content Syndication, Tier 1",2026-02-13T00:00:00Z,
+ACME-011,Webinar,2026-02-28T00:00:00Z,
+ACME-011,Webinar,2026-03-23,
+ACME-011,Paid Search,04/17/2026,
+ACME-011,LinkedIn Ads,05/07/2026,
+ACME-011,Webinar,2026-05-27T00:00:00Z,"9.600,00"
+ACME-012,Paid Search,19-Jan-2026,
+ACME-012,"Content Syndication, Tier 1",24-Jan-2026,
+ACME-012,"Content Syndication, Tier 1",02/15/2026,
+ACME-012,Partner Referral,,
+ACME-012,Webinar,2026-04-04,
+ACME-012,Partner Referral,04/14/2026,
+ACME-012,paid search,2026-05-10,
+ACME-012,Organic Search,2026-06-12,36000.00
+ACME-012,Organic Search,2026-06-12,36000.00
+ACME-013,G2 Review Site,2026-01-16,
+ACME-013,paid search,2026-02-02T00:00:00Z,
+ACME-013,LinkedIn Ads,2026-03-01T00:00:00Z,
+ACME-013,Outbound SDR,04-Mar-2026,48000
+ACME-013,Outbound SDR,04-Mar-2026,48000
+ACME-014,Outbound SDR,01/11/2026,
+ACME-014,Organic Search,02/03/2026,24000
+ACME-015,Partner Referral,01/18/2026,
+ACME-015,Outbound SDR,01/25/2026,
+ACME-015,"Content Syndication, Tier 1",2026-02-18,
+ACME-015,Partner Referral,03/21/2026,
+ACME-015,G2 Review Site,21-Apr-2026,
+ACME-015,G2 Review Site,04-May-2026,
+ACME-015,Direct,2026-05-31,
+ACME-015,G2 Review Site,12-Jun-2026,
+ACME-016,Outbound SDR,01/21/2026,
+ACME-016,G2 Review Site,2026-01-26T00:00:00Z,"9.600,00"
+ACME-017,Partner Referral,2026-01-07T00:00:00Z,
+ACME-017,Organic Search,2026-02-04,
+ACME-017,organic search ,2026-02-15T00:00:00Z,
+ACME-018,Paid Search,11-Jan-2026,
+ACME-018,Paid Search,2026-01-15,24000
+ACME-019,paid search,2026-01-12T00:00:00Z,
+ACME-019,G2 Review Site,22-Jan-2026,
+ACME-019,Paid Search,2026-02-21T00:00:00Z,
+ACME-019,G2 Review Site,2026-03-06,
+ACME-020,LinkedIn Ads,2026-01-24,
+ACME-020,LinkedIn Ads,18-Feb-2026,
+ACME-020,Webinar,2026-03-05,
+ACME-020,Webinar,2026-03-16,
+ACME-020,Outbound SDR,04/04/2026,
+ACME-020,G2 Review Site,2026-05-03,
+ACME-020,paid search,2026-05-07,
+ACME-020,organic search ,06/01/2026,48000
+ACME-021,Paid Search,01/07/2026,
+ACME-021,Direct,2026-02-11T00:00:00Z,
+ACME-021,paid search,2026-02-25,"18,000"
+ACME-022,"Content Syndication, Tier 1",,
+ACME-022,organic search ,2026-02-01T00:00:00Z,"9.600,00"
+ACME-023,Paid Search,2026-01-16,
+ACME-023,organic search ,17-Feb-2026,
+ACME-023,Direct,2026-03-04,
+ACME-023,organic search ,03/07/2026,
+ACME-023,Direct,2026-04-04,
+ACME-023,Organic Search,28-Apr-2026,
+ACME-023,Outbound SDR,2026-05-11,
+ACME-023,Outbound SDR,2026-06-06,48000
+ACME-023,Outbound SDR,2026-06-06,48000
+ACME-024,Paid Search,14-Jan-2026,
+ACME-024,Webinar,20-Jan-2026,
+ACME-024,organic search ,2026-02-11,
+ACME-024,G2 Review Site,02/25/2026,36000.00
+ACME-025,Direct,01/23/2026,
+ACME-025,Partner Referral,2026-02-11T00:00:00Z,
+ACME-025,"Content Syndication, Tier 1",,
+ACME-025,Organic Search,17-Mar-2026,
+ACME-025,Outbound SDR,04/21/2026,
+ACME-025,G2 Review Site,04/28/2026,"18,000"
+,Direct,2026-02-01,
+ACME-099,,2026-02-02,
+ACME-099,Webinar,not a date,5000
