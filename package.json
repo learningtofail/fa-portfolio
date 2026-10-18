@@ -25,13 +25,13 @@
     "deploy:dry-run": "bash scripts/deploy-release.sh --dry-run"
   },
   "dependencies": {
-    "@astrojs/react": "^7.0.0",
-    "astro": "^7.3.5",
+    "@astrojs/react": "^7.0.1",
+    "astro": "^7.3.8",
     "d3": "^7.9.0",
-    "papaparse": "^5.4.1",
-    "pdfkit": "^0.19.1",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "papaparse": "^5.7.0",
+    "pdfkit": "^0.20.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "engines": {
     "node": ">=22.12.0"
